@@ -1,3 +1,10 @@
+const recurrentSpends = [
+  {
+    day: 25,
+    value: 1000
+  }
+]
+
 
 function processSpendFromForm() {
   var range = SpreadsheetApp.getActiveRange();
@@ -9,4 +16,11 @@ function processSpendFromForm() {
       console.log(value)
       updateSpend(date, category, value)
   }
+}
+
+
+function processRecurrentSpends() {
+  const date = new Date("2023-08-03")
+  console.log(date.getDay())
+  // TODO: continue
 }
