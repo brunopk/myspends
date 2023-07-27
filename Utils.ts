@@ -21,37 +21,30 @@ function getSpendColumn(category) {
 
 function updateSpend(date, category, value) {
   const monthlySheetName = "Mensual"
-  const activeSpreadSheet = SpreadsheetApp.getActiveSpreadsheet()
-  const monthlySheet = activeSpreadSheet.getSheetByName(monthlySheetName)
-
-  activeSpreadSheet.setActiveSheet(monthlySheet)
-  const dataRange = monthlySheet.getDataRange()
-  
   let rowForCurrentMonth = null
-  const data = dataRange.getValues().slice(1)
+  const data = readAllRows(monthlySheetName)?.slice(1)
   for (let i = 0; i < data.length; i++) {
     if (data[i][0].getMonth() == date.getMonth()) {
       // 1 (because of header row) + 1 (because first row index is 1)
-      rowForCurrentMonth = i+2
+      rowForCurrentMonth = i + 2
       break
     }
   }
-  
+
   const columnForRemainingAmount = 7
   if (!rowForCurrentMonth) {
     const newRow = [date, 0, 0, 0, 0, 0, 117168, 0, 117168] 
     newRow[getSpendColumn(category) - 1] = value
     newRow[columnForRemainingAmount - 1] = newRow[columnForRemainingAmount - 1] - value
-    console.log(`Adding new row (${newRow}) to sheet "${monthlySheetName}"`)
-    activeSpreadSheet.appendRow(newRow)
+    addRow(monthlySheetName, newRow)
   } else {
-    const cellForCategory = dataRange.getCell(rowForCurrentMonth, getSpendColumn(category))
-    cellForCategory.setValue(cellForCategory.getValue() + value)
-    const cellForRemainingAmount = dataRange.getCell(rowForCurrentMonth, columnForRemainingAmount)
-    cellForRemainingAmount.setValue(cellForRemainingAmount.getValue() - value)
+    const currentCategoryAmount = getValue(monthlySheetName, rowForCurrentMonth, getSpendColumn(category))
+    setValue(monthlySheetName, rowForCurrentMonth, getSpendColumn(category), currentCategoryAmount + value)
+    const currentRemainingAmount = getValue(monthlySheetName, rowForCurrentMonth, columnForRemainingAmount)
+    setValue(monthlySheetName, rowForCurrentMonth, columnForRemainingAmount, currentRemainingAmount - value)
   }
 }
 
-function test() {
+function testUpdateSpend() {
   updateSpend(new Date("2023-08-02"), "Psicólogo", 1000)
 }
