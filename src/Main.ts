@@ -16,7 +16,7 @@ function processRecurrentSpends() {
     const currentSpend = RECURRENT_SPENDS[i]
     if (today.getDate() == currentSpend.day) {
       const taskTitle = TASK_TITLE_TEMPLATE.replace("X", currentSpend.name).replace("Y", currentSpend.account)
-      const taskTitleDescription = TASK_TITLE_TEMPLATE.replace("X", currentSpend.name)
+      const taskTitleDescription = TASK_DESCRIPTION_TEMPLATE.replace("X", currentSpend.name)
         .replace("Y", currentSpend.account)
         .replace("Z", formatDate(today))
       const task = createTask(TASKS_LIST, taskTitle, taskTitleDescription, today)
