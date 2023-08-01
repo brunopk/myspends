@@ -26,7 +26,7 @@ function processRecurrentSpends() {
 
       const newRow2 = [
         today,
-        today,
+        formatDate(today),
         currentSpend.category,
         currentSpend.subCategory,
         null,
