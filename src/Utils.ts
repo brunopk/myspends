@@ -45,6 +45,13 @@ function updateSpend(date, category, value) {
   }
 }
 
+function formatDate(date: Date): string {
+  const year = date.getFullYear()
+  const month = date.getMonth().toString().padStart(2, "0")
+  const day = date.getDate()
+  return `${day}/${month}/${year}`
+}
+
 function testUpdateSpend() {
   updateSpend(new Date("2023-08-02"), "Psicólogo", 1000)
 }
