@@ -10,7 +10,7 @@ function processSpendFromForm() {
 
     console.log(value)
 
-    updateSpend(date, category, value)
+    updateSpend(MONTHLY_SHEET_NAME, date, category, value)
 
     let subCategory = range.getCell(i, SUBCATEGORY_COLUMN_1).getValue()
     subCategory = subCategory == "" ? range.getCell(i, SUBCATEGORY_COLUMN_2).getValue() : subCategory
