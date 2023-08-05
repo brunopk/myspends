@@ -1,12 +1,21 @@
 function processSpendFromForm() {
-  const range = SpreadsheetApp.getActiveRange();
-  const numRows = range.getNumRows();
+  const range = SpreadsheetApp.getActiveRange()
+  const numRows = range.getNumRows()
+
+  // Normally active range contains one row (last inserted row)
   for (let i = 1; i <= numRows; i++) {
-    const date = range.getCell(i, DATE_COLUMN).getValue() 
+    const date = range.getCell(i, DATE_COLUMN).getValue()
     const category = range.getCell(i, CATEGORY_COLUMN).getValue()
     const value = range.getCell(i, VALUE_COLUMN).getValue()
+
     console.log(value)
+
     updateSpend(date, category, value)
+
+    let subCategory = range.getCell(i, SUBCATEGORY_COLUMN_1).getValue()
+    subCategory = subCategory == "" ? range.getCell(i, SUBCATEGORY_COLUMN_2).getValue() : subCategory
+    subCategory = subCategory == "" ? range.getCell(i, SUBCATEGORY_COLUMN_2).getValue() : subCategory
+    range.getCell(i, SUBCATEGORY_COLUMN).setValue(subCategory)
   }
 }
 

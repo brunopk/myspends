@@ -1,6 +1,10 @@
 const CATEGORY_COLUMN = 3
 const DATE_COLUMN = 2
-const VALUE_COLUMN = 8
+const VALUE_COLUMN = 9
+const SUBCATEGORY_COLUMN = 4
+const SUBCATEGORY_COLUMN_1 = 5
+const SUBCATEGORY_COLUMN_2 = 6
+
 const TASKS_LIST = ""
 const TASK_TITLE_TEMPLATE = "Verificar pago de X"
 const TASK_DESCRIPTION_TEMPLATE = "Verificar pago de X en cuenta Y realizado el día Z"
