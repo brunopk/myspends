@@ -8,14 +8,24 @@ function processSpendFromForm() {
     const category = range.getCell(i, CATEGORY_COLUMN).getValue()
     const value = range.getCell(i, VALUE_COLUMN).getValue()
 
-    console.log(value)
-
-    updateSpend(MONTHLY_SHEET_NAME, date, category, value)
-
     let subCategory = range.getCell(i, SUBCATEGORY_COLUMN_1).getValue()
     subCategory = subCategory == "" ? range.getCell(i, SUBCATEGORY_COLUMN_2).getValue() : subCategory
     subCategory = subCategory == "" ? range.getCell(i, SUBCATEGORY_COLUMN_2).getValue() : subCategory
     range.getCell(i, SUBCATEGORY_COLUMN).setValue(subCategory)
+
+    const account = range.getCell(i, ACCOUNT_COLUMN).getValue()
+    let accountSheetName
+    if (account == ACCOUNT_2) {
+      accountSheetName = SHEET_FOR_ACCOUNT_2
+    } else if (account == ACCOUNT_1) {
+      accountSheetName = SHEET_FOR_ACCOUNT_1
+    } else if (category == "Comida" && subCategory == "Mercado Pago (70% OFF)") {
+      accountSheetName = SHEET_FOR_ACCOUNT_1
+    } else {
+      throw new Error(`Cannot determine which account sheet to update for spend on row ${range.getRow()}.`)
+    }
+    updateSpend(MONTHLY_SHEET_NAME, date, category, value)
+    updateSpend(accountSheetName, date, category, value)
   }
 }
 

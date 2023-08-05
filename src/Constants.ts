@@ -4,8 +4,13 @@ const VALUE_COLUMN = 9
 const SUBCATEGORY_COLUMN = 4
 const SUBCATEGORY_COLUMN_1 = 5
 const SUBCATEGORY_COLUMN_2 = 6
+const ACCOUNT_COLUMN = 8
+const ACCOUNT_1 = "Itaú"
+const ACCOUNT_2 = "Brou"
 
 const MONTHLY_SHEET_NAME = "Mensual"
+const SHEET_FOR_ACCOUNT_1 = "Mensual Itaú"
+const SHEET_FOR_ACCOUNT_2 = "Mensual Brou"
 
 const TASKS_LIST = ""
 const TASK_TITLE_TEMPLATE = "Verificar pago de X"
