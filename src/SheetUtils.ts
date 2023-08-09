@@ -17,6 +17,47 @@ function getSpendColumn(category) {
   }
 }
 
+function getSubcategoryColumn(category: string, subCategory: string): number {
+  const errorMessage = "Cannot obtain column for category 'C' and subcategory 'S'"
+  switch (category) {
+    case CATEGORY_1:
+      switch (subCategory) {
+        case CATEGORY_1_SUBCATEGORY_1:
+          return 2
+        case CATEGORY_1_SUBCATEGORY_2:
+          return 3
+        default:
+          throw new Error(errorMessage.replace("C", category).replace("S", subCategory))
+      }
+    case CATEGORY_2:
+      switch (subCategory) {
+        case "Bus":
+          return 2
+        case "Nafta":
+          return 3
+        case "Taxi":
+          return 4
+        case "Uber":
+          return 5
+        default:
+          throw new Error(errorMessage.replace("C", category).replace("S", subCategory))
+      }
+    default:
+      throw new Error(errorMessage.replace("C", category).replace("S", subCategory))
+  }
+}
+
+function getNumberOfSubcategories(category: string): number {
+  switch (category) {
+    case CATEGORY_1:
+      return CATEGORY_1_NUMBER_OF_SUBCATEGORIES
+    case CATEGORY_2:
+      return CATEGORY_2_NUMBER_OF_SUBCATEGORIES
+    default:
+      throw new Error(`Cannot obtain number of subcategories for category '${category}'`)
+  }
+}
+
 function getRowForCurrentMonth(sheetName: string, date: Date): number {
   let rowForCurrentMonth
   const data = readAllRows(sheetName)?.slice(1)
@@ -55,7 +96,7 @@ function getAccountSheet(account: string, category: string, subCategory: string)
   }
 }
 
-function getAccountSheetTotalColumn(accountSheetName: string) {
+function getTotalColumnForAccountSheet(accountSheetName: string) {
   switch (accountSheetName) {
     case SHEET_FOR_ACCOUNT_1:
       return ACCOUNT_1_SHEET_TOTAL_COLUMN
@@ -68,9 +109,22 @@ function getAccountSheetTotalColumn(accountSheetName: string) {
   }
 }
 
-function updateSheet(sheetName, date, category, value) {
+function getTotalColumnForCategorySheet(sheetName: string) {
+  switch (sheetName) {
+    case CATEGORY_1_SHEET_NAME:
+      return CATEGORY_1_NUMBER_OF_SUBCATEGORIES + 2
+    case CATEGORY_2_SHEET_NAME:
+      return CATEGORY_2_NUMBER_OF_SUBCATEGORIES + 2
+    default:
+      throw new Error(`Cannot obtain total column for sheet '${sheetName}'`)
+  }
+}
+
+function updateSheet(sheetName, date, value, category, subcategory) {
   const rowForCurrentMonth = getRowForCurrentMonth(sheetName, date)
+  const updatingSheetLogMessage = "Updating sheet S ..."
   if (sheetName === MONTHLY_SHEET_NAME) {
+    console.log(updatingSheetLogMessage.replace("S", sheetName))
     if (!rowForCurrentMonth) {
       const newRow = [date, 0, 0, 0, 0, 0, 0, value, INCOME, INCOME - value]
       newRow[getSpendColumn(category) - 1] = value
@@ -87,6 +141,7 @@ function updateSheet(sheetName, date, category, value) {
       setValue(sheetName, rowForCurrentMonth, MONTHLY_SHEET_REMAINING_AMOUNT_COLUMN, currentRemainingAmount - value)
     }
   } else if (sheetName == SHEET_FOR_ACCOUNT_1 || sheetName == SHEET_FOR_ACCOUNT_2) {
+    console.log(updatingSheetLogMessage.replace("S", sheetName))
     if (!rowForCurrentMonth) {
       const newRow = [date, 0, 0, 0, 0, 0, 0, value]
       newRow[getSpendColumn(category) - 1] = value
@@ -95,16 +150,33 @@ function updateSheet(sheetName, date, category, value) {
       const currentCategoryAmount = getValue(sheetName, rowForCurrentMonth, getSpendColumn(category))
       setValue(sheetName, rowForCurrentMonth, getSpendColumn(category), currentCategoryAmount + value)
 
-      const totalColum = getAccountSheetTotalColumn(sheetName)
+      const totalColum = getTotalColumnForAccountSheet(sheetName)
       const currentTotal = getValue(sheetName, rowForCurrentMonth, totalColum)
       setValue(sheetName, rowForCurrentMonth, totalColum, currentTotal + value)
     }
   } else if (sheetName == SHEET_FOR_ACCOUNT_3) {
+    console.log(updatingSheetLogMessage.replace("S", sheetName))
     if (!rowForCurrentMonth) {
       const newRow = [date, value]
       addRow(sheetName, newRow)
     } else {
-      const totalColum = getAccountSheetTotalColumn(sheetName)
+      const totalColum = getTotalColumnForAccountSheet(sheetName)
+      const currentTotal = getValue(sheetName, rowForCurrentMonth, totalColum)
+      setValue(sheetName, rowForCurrentMonth, totalColum, currentTotal + value)
+    }
+  } else if (sheetName == CATEGORY_1_SHEET_NAME || sheetName == CATEGORY_2_SHEET_NAME) {
+    console.log(updatingSheetLogMessage.replace("S", sheetName))
+    const subcategoryColumn = getSubcategoryColumn(category, subcategory)
+    const totalColum = getTotalColumnForCategorySheet(sheetName)
+    if (!rowForCurrentMonth) {
+      const newRow = [date].concat(Array(getNumberOfSubcategories(category) + 1).fill(0))
+      newRow[subcategoryColumn - 1] = value
+      newRow[totalColum - 1] = value
+      addRow(sheetName, newRow)
+    } else {
+      const currentSubcategoryTotal = getValue(sheetName, rowForCurrentMonth, subcategoryColumn)
+      setValue(sheetName, rowForCurrentMonth, subcategoryColumn, currentSubcategoryTotal + value)
+
       const currentTotal = getValue(sheetName, rowForCurrentMonth, totalColum)
       setValue(sheetName, rowForCurrentMonth, totalColum, currentTotal + value)
     }

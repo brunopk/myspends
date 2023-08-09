@@ -15,9 +15,15 @@ function processSpendFromForm() {
     // Copy subcategory (from different columns) to one specific column to make it more visible
     range.getCell(i, SUBCATEGORY_COLUMN).setValue(subCategory)
 
-    updateSheet(MONTHLY_SHEET_NAME, date, category, value)
+    updateSheet(MONTHLY_SHEET_NAME, date, value, category, subCategory)
     const accountSheet = getAccountSheet(account, category, subCategory)
-    updateSheet(accountSheet, date, category, value)
+    updateSheet(accountSheet, date, value, category, subCategory)
+    if (category == CATEGORY_1) {
+      updateSheet(CATEGORY_1_SHEET_NAME, date, value, category, subCategory)
+    }
+    if (category == CATEGORY_2) {
+      updateSheet(CATEGORY_2_SHEET_NAME, date, value, category, subCategory)
+    }
   }
 }
 

@@ -23,8 +23,14 @@ const SHEET_FOR_ACCOUNT_3 = "Mensual Itaú Alimentos"
 const ACCOUNT_3_SHEET_TOTAL_COLUMN = 2
 
 const CATEGORY_1 = "Comida"
+const CATEGORY_1_SHEET_NAME = "Mensual Comida"
+const CATEGORY_1_NUMBER_OF_SUBCATEGORIES = 2
 const CATEGORY_1_SUBCATEGORY_1 = "Mercado Pago (70% OFF)"
 const CATEGORY_1_SUBCATEGORY_2 = "VISA Alimentos"
+
+const CATEGORY_2 = "Transporte"
+const CATEGORY_2_SHEET_NAME = "Mensual Transporte"
+const CATEGORY_2_NUMBER_OF_SUBCATEGORIES = 4
 
 const INCOME = 117168
 const TASKS_LIST = ""
