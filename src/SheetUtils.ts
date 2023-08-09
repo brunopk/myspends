@@ -122,7 +122,7 @@ function getTotalColumnForCategorySheet(sheetName: string) {
 
 function updateSheet(sheetName, date, value, category, subcategory) {
   const rowForCurrentMonth = getRowForCurrentMonth(sheetName, date)
-  const updatingSheetLogMessage = "Updating sheet S ..."
+  const updatingSheetLogMessage = "Updating sheet 'S' ..."
   if (sheetName === MONTHLY_SHEET_NAME) {
     console.log(updatingSheetLogMessage.replace("S", sheetName))
     if (!rowForCurrentMonth) {
