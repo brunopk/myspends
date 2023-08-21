@@ -1,3 +1,4 @@
+// Form sheet
 const CATEGORY_COLUMN = 3
 const DATE_COLUMN = 2
 const VALUE_COLUMN = 9
@@ -6,21 +7,22 @@ const SUBCATEGORY_COLUMN_1 = 5
 const SUBCATEGORY_COLUMN_2 = 6
 const ACCOUNT_COLUMN = 8
 
+// Monthly sheet
 const MONTHLY_SHEET_NAME = "Mensual"
-const MONTHLY_SHEET_REMAINING_AMOUNT_COLUMN = 10
-const MONTHLY_SHEET_TOTAL_COLUMN = 8
 
+// Other constants
 const ACCOUNT_1 = "Itaú"
 const SHEET_FOR_ACCOUNT_1 = "Mensual Itaú"
-const ACCOUNT_1_SHEET_TOTAL_COLUMN = 8
 
-const ACCOUNT_2 = "Brou"
-const SHEET_FOR_ACCOUNT_2 = "Mensual Brou"
-const ACCOUNT_2_SHEET_TOTAL_COLUMN = 8
+const ACCOUNT_2 = "BROU"
+const SHEET_FOR_ACCOUNT_2 = "Mensual BROU"
 
-const ACCOUNT_3 = "Visa Alimentos"
-const SHEET_FOR_ACCOUNT_3 = "Mensual Itaú Alimentos"
-const ACCOUNT_3_SHEET_TOTAL_COLUMN = 2
+const ACCOUNT_3 = "Itaú Alimentos"
+
+const ACCOUNT_4 = "Cuenta de Papá"
+const SHEET_FOR_ACCOUNT_4 = "Mensual Cuenta de Papá"
+
+const ACCOUNT_SHEETS = [SHEET_FOR_ACCOUNT_1, SHEET_FOR_ACCOUNT_2, SHEET_FOR_ACCOUNT_4]
 
 const CATEGORY_1 = "Comida"
 const CATEGORY_1_SHEET_NAME = "Mensual Comida"
@@ -35,16 +37,19 @@ const CATEGORY_2_NUMBER_OF_SUBCATEGORIES = 4
 const INCOME = 117168
 const TASKS_LIST = ""
 const TASK_TITLE_TEMPLATE = "Verificar pago de X"
-const TASK_DESCRIPTION_TEMPLATE = "Verificar pago de X en cuenta Y realizado el día Z"
-const FORM_ASSOCIATED_SHEET = "Gastos"
+const TASK_DESCRIPTION_TEMPLATE = "Verificar pago de X realizado el día Z desde Y"
+const MAIL_RECIPIENT = ""
+const MAIL_SUBJECT = "Gasto recurrente agregado a planilla de gastos"
+const MAIL_BODY = "Se agrego %S a la planilla de gastos. Verificar el pago realizado desde %A el día %D"
+const MAIN_SHEET = "Gastos"
+const RECURRENT_SPEND_DESCRIPTION_FOR_MAIN_SHEET = "Gasto recurrente"
 const RECURRENT_SPENDS = [
   {
-    name: "Suat",
+    name: "SUAT",
     day: 25,
     value: 1000,
     category: "Salud",
-    subCategory: "Suat",
-    account: "BROU",
-    sheetName: "Suat"
+    subCategory: "SUAT",
+    account: "BROU"
   }
 ]

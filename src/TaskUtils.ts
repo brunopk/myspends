@@ -47,14 +47,9 @@ function listAllTasks(taskListId: string): tasks_v1.Schema$Tasks[] {
  * @param description description for the new task (`note`)
  * @param date due date for the new task (not allowed to set hour, minutes, etc, only date part)
  */
-function createTask(
-  taskListId: string,
-  title: string,
-  description: string,
-  date: Date
-): tasks_v1.Schema$Task | undefined {
+function createTask(taskListId: string, title: string, description: string, date: Date) {
   console.info(`Adding task on tasklist '${taskListId}'`)
-  return Tasks.Tasks?.insert({ due: date.toISOString(), title, notes: description}, taskListId)
+  Tasks.Tasks?.insert({ due: date.toISOString(), title, notes: description }, taskListId)
 }
 
 function completeTask(taskListId: string, taskId: string) {
