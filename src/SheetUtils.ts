@@ -109,7 +109,7 @@ function getRowForCurrentMonth(sheetName: string, date: Date): number {
   return rowForCurrentMonth
 }
 
-function getAccountSheet(account: string, category: string, subCategory: string): string {
+function getAccountSheet(account: string): string | null {
   switch (account) {
     case ACCOUNT_1:
       return SHEET_FOR_ACCOUNT_1
@@ -118,23 +118,7 @@ function getAccountSheet(account: string, category: string, subCategory: string)
     case ACCOUNT_4:
       return SHEET_FOR_ACCOUNT_4
     default:
-      switch (category) {
-        case CATEGORY_1:
-          switch (subCategory) {
-            case CATEGORY_1_SUBCATEGORY_1:
-              return SHEET_FOR_ACCOUNT_1
-
-
-
-              
-            default:
-              throw new Error(
-                `Cannot determine account sheet with account '${account}', category '${category}' and subcategory '${subCategory}'`
-              )
-          }
-        default:
-          throw new Error(`Cannot determine account sheet for account '${account}' and category '${category}'`)
-      }
+      return null
   }
 }
 

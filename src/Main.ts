@@ -16,8 +16,10 @@ function processSpendFromForm() {
     range.getCell(i, SUBCATEGORY_COLUMN).setValue(subCategory)
 
     updateSheet(MONTHLY_SHEET_NAME, date, account, value, category, subCategory)
-    const accountSheet = getAccountSheet(account, category, subCategory)
-    updateSheet(accountSheet, date, account, value, category, subCategory)
+    const accountSheet = getAccountSheet(account)
+    if (accountSheet && ACCOUNT_SHEETS.indexOf(accountSheet) !== -1) {
+      updateSheet(accountSheet, date, account, value, category, subCategory)
+    }
     if (category == CATEGORY_1) {
       updateSheet(CATEGORY_1_SHEET_NAME, date, account, value, category, subCategory)
     }
