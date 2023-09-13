@@ -17,21 +17,6 @@ function getColumnForCategory(category) {
   }
 }
 
-function getColumnForAccount(account: string) {
-  switch (account) {
-    case ACCOUNT_1:
-      return getNumberOfCategories() + getNumberOfExtraColumns() + 1
-    case ACCOUNT_2:
-      return getNumberOfCategories() + getNumberOfExtraColumns() + 2
-    case ACCOUNT_3:
-      return getNumberOfCategories() + getNumberOfExtraColumns() + 3
-    case ACCOUNT_4:
-      return getNumberOfCategories() + getNumberOfExtraColumns() + 4
-    default:
-      throw new Error(`Unknown account '${account}'`)
-  }
-}
-
 function getColumnForSubcategory(category: string, subCategory: string): number {
   const errorMessage = "Cannot obtain column for category '%C' and subcategory '%S'"
   switch (category) {
@@ -62,14 +47,9 @@ function getColumnForSubcategory(category: string, subCategory: string): number 
   }
 }
 
-function getColumnForRemainingAmount() {
-  // month column + categories + 1
-  return getNumberOfCategories() + 2
-}
-
 function getColumnForTotalSpend(): number {
-  // month column + categories  + remaining + 1
-  return getNumberOfCategories() + 3
+  // month column + categories  + 1
+  return getNumberOfCategories() + 2
 }
 
 function getNumberOfSubcategories(category: string): number {
@@ -92,8 +72,8 @@ function getNumberOfAccounts(): number {
 }
 
 function getNumberOfExtraColumns(): number {
-  // month column + remaining amount column + total column
-  return 3
+  // total column
+  return 1
 }
 
 function getRowForCurrentMonth(sheetName: string, date: Date): number {
@@ -170,13 +150,10 @@ function updateSheet(
   if (sheetName === MONTHLY_SHEET_NAME) {
     console.info(updatingSheetLogMessage.replace("S", sheetName))
     if (!rowForCurrentMonth) {
-      const newRowAux = Array(getNumberOfCategories() + getNumberOfAccounts() + getNumberOfExtraColumns()).fill(0)
+      const newRowAux = Array(getNumberOfCategories() + getNumberOfExtraColumns()).fill(0)
       const newRow: (Date | number)[] = [date].concat(newRowAux)
       newRow[getColumnForCategory(category) - 1] = value
-      newRow[getColumnForAccount(account) - 1] = value
       newRow[getColumnForTotalSpend() - 1] = value
-      newRow[getColumnForRemainingAmount() - 1] = INCOME - value
-      newRow[newRow.length - 1] = INCOME
 
       addRow(sheetName, newRow)
     } else {
@@ -187,14 +164,6 @@ function updateSheet(
       const columnForTotalSpend = getColumnForTotalSpend()
       const currentTotal = getValue(sheetName, rowForCurrentMonth, columnForTotalSpend)
       setValue(sheetName, rowForCurrentMonth, columnForTotalSpend, currentTotal + value)
-
-      const columnForRemainingAmount = getColumnForRemainingAmount()
-      const currentRemainingAmount = getValue(sheetName, rowForCurrentMonth, columnForRemainingAmount)
-      setValue(sheetName, rowForCurrentMonth, columnForRemainingAmount, currentRemainingAmount - value)
-
-      const columnForAccount = getColumnForAccount(account)
-      const currentAccountTotal = getValue(sheetName, rowForCurrentMonth, columnForAccount)
-      setValue(sheetName, rowForCurrentMonth, columnForAccount, currentAccountTotal + value)
     }
   } else if (ACCOUNT_SHEETS.indexOf(sheetName) !== -1) {
     console.info(updatingSheetLogMessage.replace("S", sheetName))

@@ -47,11 +47,11 @@ function processRecurrentSpends() {
         currentSpend.subCategory,
         null,
         null,
-        RECURRENT_SPEND_DESCRIPTION_FOR_MAIN_SHEET,
+        RECURRENT_SPEND_DESCRIPTION_FOR_FORM_SHEET,
         currentSpend.account,
         currentSpend.value
       ]
-      addRow(MAIN_SHEET, newRow)
+      addRow(FORM_SHEET, newRow)
 
       updateSheet(
         MONTHLY_SHEET_NAME,

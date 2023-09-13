@@ -41,8 +41,8 @@ const TASK_DESCRIPTION_TEMPLATE = "Verificar pago de X realizado el día Z desde
 const MAIL_RECIPIENT = ""
 const MAIL_SUBJECT = "Gasto recurrente agregado a planilla de gastos"
 const MAIL_BODY = "Se agrego %S a la planilla de gastos. Verificar el pago realizado desde %A el día %D"
-const MAIN_SHEET = "Gastos"
-const RECURRENT_SPEND_DESCRIPTION_FOR_MAIN_SHEET = "Gasto recurrente"
+const FORM_SHEET = "Gastos"
+const RECURRENT_SPEND_DESCRIPTION_FOR_FORM_SHEET = "Gasto recurrente"
 const RECURRENT_SPENDS = [
   {
     name: "SUAT",
