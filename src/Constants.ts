@@ -1,48 +1,69 @@
-// Form sheet
-const CATEGORY_COLUMN = 3
-const DATE_COLUMN = 2
-const VALUE_COLUMN = 9
-const SUBCATEGORY_COLUMN = 4
-const SUBCATEGORY_COLUMN_1 = 5
-const SUBCATEGORY_COLUMN_2 = 6
-const ACCOUNT_COLUMN = 8
+const FORMS = {
+  MAIN: {
+    NAME: "Principal",
+    COLUMNS: {
+      CATEGORY: 3,
+      DATE: 2,
+      VALUE: 9,
+      SUBCATEGORY: 4,
+      ACCOUNT: 8,
+      DESCRIPTION: 9,
+      DISCOUNT_APPLIED: 0
+    }
+  }
+}
 
-// Monthly sheet
-const MONTHLY_SHEET_NAME = "Mensual"
+const CATEGORIES = {
+  CATEGORY_1: {
+    NAME: "Comida"
+  },
+  CATEGORY_2: {
+    NAME: "Transporte",
+    SUBCATEGORIES: {
+      SUBCATEGORY_1: "Bus",
+      SUBCATEGORY_2: "Nafta",
+      SUBCATEGORY_3: "Taxi",
+      SUBCATEGORY_4: "Uber"
+    }
+  },
+  CATEGORY_3: {
+    NAME: "Psicólogo"
+  },
+  CATEGORY_4: {
+    NAME: "Celular"
+  },
+  CATEGORY_5: {
+    NAME: "Otros"
+  },
+  CATEGORY_6: {
+    NAME: "Salud"
+  }
+}
 
-// Other constants
-const ACCOUNT_1 = "Itaú"
-const SHEET_FOR_ACCOUNT_1 = "Mensual Itaú"
+const ACCOUNTS = {
+  ACCOUNT_1: "Itaú",
+  ACCOUNT_2: "BROU",
+  ACCOUNT_3: "Cuenta de Papá",
+  ACCOUNT_4: "Itaú Alimentos"
+}
 
-const ACCOUNT_2 = "BROU"
-const SHEET_FOR_ACCOUNT_2 = "Mensual BROU"
+const SPREADSHEETS = {
+  MAIN: {
+    ID: "1r93R3hKOCV6St4sac_88YZRM6OuYO9LxaxwMa2gWomE",
+    SHEETS: {
+      MAIN: "Principal"
+    }
+  },
+  MONTHLY: {
+    ID: "1nE0j6lgMZdimaLtO_31OKIpzVNNGBkVGB_xiPeAHoOw",
+    ACCOUNT_SHEETS: [ACCOUNTS.ACCOUNT_1, ACCOUNTS.ACCOUNT_2, ACCOUNTS.ACCOUNT_3],
+    CATEGORIES_SHEET: [CATEGORIES.CATEGORY_1.NAME, CATEGORIES.CATEGORY_2.NAME],
+    CATEGORIES_MAIN_SHEET: "Categorías"
+  }
+}
 
-const ACCOUNT_3 = "Itaú Alimentos"
+const YES = "Si"
 
-const ACCOUNT_4 = "Cuenta de Papá"
-const SHEET_FOR_ACCOUNT_4 = "Mensual Cuenta de Papá"
-
-const ACCOUNT_SHEETS = [SHEET_FOR_ACCOUNT_1, SHEET_FOR_ACCOUNT_2, SHEET_FOR_ACCOUNT_4]
-
-const CATEGORY_1 = "Comida"
-const CATEGORY_1_SHEET_NAME = "Mensual Comida"
-const CATEGORY_1_NUMBER_OF_SUBCATEGORIES = 2
-const CATEGORY_1_SUBCATEGORY_1 = "Mercado Pago (70% OFF)"
-const CATEGORY_1_SUBCATEGORY_2 = "VISA Alimentos"
-
-const CATEGORY_2 = "Transporte"
-const CATEGORY_2_SHEET_NAME = "Mensual Transporte"
-const CATEGORY_2_NUMBER_OF_SUBCATEGORIES = 4
-
-const INCOME = 117168
-const TASKS_LIST = ""
-const TASK_TITLE_TEMPLATE = "Verificar pago de X"
-const TASK_DESCRIPTION_TEMPLATE = "Verificar pago de X realizado el día Z desde Y"
-const MAIL_RECIPIENT = ""
-const MAIL_SUBJECT = "Gasto recurrente agregado a planilla de gastos"
-const MAIL_BODY = "Se agrego %S a la planilla de gastos. Verificar el pago realizado desde %A el día %D"
-const FORM_SHEET = "Gastos"
-const RECURRENT_SPEND_DESCRIPTION_FOR_FORM_SHEET = "Gasto recurrente"
 const RECURRENT_SPENDS = [
   {
     name: "SUAT",
@@ -53,3 +74,19 @@ const RECURRENT_SPENDS = [
     account: "BROU"
   }
 ]
+
+const INCOME = 1
+
+const TASKS_LIST = "TUg5NVN0TjNGdEJqTlEtVQ"
+
+const TASK_TITLE_TEMPLATE = "Verificar pago de X"
+
+const TASK_DESCRIPTION_TEMPLATE = "Verificar pago de X realizado el día Z desde Y"
+
+const MAIL_RECIPIENT = ""
+
+const MAIL_SUBJECT = "Gasto recurrente agregado a planilla de gastos"
+
+const MAIL_BODY = "Se agrego %S a la planilla de gastos. Verificar el pago realizado desde %A el día %D"
+
+const RECURRENT_SPEND_DESCRIPTION = "Gasto recurrente"
