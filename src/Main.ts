@@ -1,30 +1,77 @@
-function processSpendFromForm() {
+function processMainForm() {
   const range = SpreadsheetApp.getActiveRange()
   const numRows = range.getNumRows()
 
   // Normally active range contains one row (last inserted row)
   for (let i = 1; i <= numRows; i++) {
-    const date = range.getCell(i, DATE_COLUMN).getValue()
-    const category = range.getCell(i, CATEGORY_COLUMN).getValue()
-    const value = range.getCell(i, VALUE_COLUMN).getValue()
-    const account = range.getCell(i, ACCOUNT_COLUMN).getValue()
-    let subCategory = range.getCell(i, SUBCATEGORY_COLUMN).getValue()
-    subCategory = subCategory == "" ? range.getCell(i, SUBCATEGORY_COLUMN_1).getValue() : subCategory
-    subCategory = subCategory == "" ? range.getCell(i, SUBCATEGORY_COLUMN_2).getValue() : subCategory
+    const date = range.getCell(i, FORMS.MAIN.COLUMNS.DATE).getValue()
+    const category = range.getCell(i, FORMS.MAIN.COLUMNS.CATEGORY).getValue()
+    const value = range.getCell(i, FORMS.MAIN.COLUMNS.VALUE).getValue()
+    const account = range.getCell(i, FORMS.MAIN.COLUMNS.ACCOUNT).getValue()
+    const description = range.getCell(i, FORMS.MAIN.COLUMNS.DESCRIPTION).getValue()
+    const subCategory = range.getCell(i, FORMS.MAIN.COLUMNS.SUBCATEGORY).getValue()
+    let discountApplied = range.getCell(i, FORMS.MAIN.COLUMNS.DISCOUNT_APPLIED).getValue()
 
-    // Copy subcategory (from different columns) to one specific column to make it more visible
-    range.getCell(i, SUBCATEGORY_COLUMN).setValue(subCategory)
+    if (discountApplied === YES) {
+      discountApplied = true
+    } else {
+      discountApplied = false
+    }
 
-    updateSheet(MONTHLY_SHEET_NAME, date, account, value, category, subCategory)
-    const accountSheet = getAccountSheet(account)
-    if (accountSheet && ACCOUNT_SHEETS.indexOf(accountSheet) !== -1) {
-      updateSheet(accountSheet, date, account, value, category, subCategory)
+    updateSheet(
+      SPREADSHEETS.MAIN.ID,
+      SPREADSHEETS.MAIN.SHEETS.MAIN,
+      FORMS.MAIN.NAME,
+      date,
+      value,
+      account,
+      discountApplied,
+      category,
+      subCategory,
+      description
+    )
+
+    updateSheet(
+      SPREADSHEETS.MONTHLY.ID,
+      SPREADSHEETS.MONTHLY.CATEGORIES_MAIN_SHEET,
+      FORMS.MAIN.NAME,
+      date,
+      value,
+      account,
+      discountApplied,
+      category,
+      subCategory,
+      description
+    )
+
+    if (SPREADSHEETS.MONTHLY.ACCOUNT_SHEETS.indexOf(account) !== -1) {
+      updateSheet(
+        SPREADSHEETS.MONTHLY.ID,
+        account,
+        FORMS.MAIN.NAME,
+        date,
+        value,
+        account,
+        discountApplied,
+        category,
+        subCategory,
+        description
+      )
     }
-    if (category == CATEGORY_1) {
-      updateSheet(CATEGORY_1_SHEET_NAME, date, account, value, category, subCategory)
-    }
-    if (category == CATEGORY_2) {
-      updateSheet(CATEGORY_2_SHEET_NAME, date, account, value, category, subCategory)
+
+    if (SPREADSHEETS.MONTHLY.CATEGORIES_SHEET.indexOf(category) !== -1) {
+      updateSheet(
+        SPREADSHEETS.MONTHLY.ID,
+        category,
+        FORMS.MAIN.NAME,
+        date,
+        value,
+        account,
+        discountApplied,
+        category,
+        subCategory,
+        description
+      )
     }
   }
 }
@@ -42,43 +89,53 @@ function processRecurrentSpends() {
 
       const newRow = [
         today,
-        formatDate(today),
+        today,
+        null,
         currentSpend.category,
         currentSpend.subCategory,
-        null,
-        null,
-        RECURRENT_SPEND_DESCRIPTION_FOR_FORM_SHEET,
+        RECURRENT_SPEND_DESCRIPTION,
         currentSpend.account,
+        false,
         currentSpend.value
       ]
-      addRow(FORM_SHEET, newRow)
+      addRow(SPREADSHEETS.MAIN.ID, SPREADSHEETS.MAIN.SHEETS.MAIN, newRow)
 
       updateSheet(
-        MONTHLY_SHEET_NAME,
+        SPREADSHEETS.MONTHLY.ID,
+        SPREADSHEETS.MONTHLY.CATEGORIES_MAIN_SHEET,
+        null,
         today,
-        currentSpend.account,
         currentSpend.value,
+        currentSpend.account,
+        false,
         currentSpend.category,
-        currentSpend.subCategory
+        currentSpend.subCategory,
+        RECURRENT_SPEND_DESCRIPTION
       )
-      const accountSheet = getAccountSheet(currentSpend.account, currentSpend.category, currentSpend.subCategory)
       updateSheet(
-        accountSheet,
-        today,
+        SPREADSHEETS.MONTHLY.ID,
         currentSpend.account,
+        null,
+        today,
         currentSpend.value,
+        currentSpend.account,
+        false,
         currentSpend.category,
-        currentSpend.subCategory
+        currentSpend.subCategory,
+        RECURRENT_SPEND_DESCRIPTION
       )
-      const categorySheet = getCategorySheet(currentSpend.category)
-      if (categorySheet !== null) {
+      if (SPREADSHEETS.MONTHLY.CATEGORIES_SHEET.indexOf(currentSpend.category) !== -1) {
         updateSheet(
-          categorySheet,
-          today,
-          currentSpend.account,
-          currentSpend.value,
+          SPREADSHEETS.MONTHLY.ID,
           currentSpend.category,
-          currentSpend.subCategory
+          null,
+          today,
+          currentSpend.value,
+          currentSpend.account,
+          false,
+          currentSpend.category,
+          currentSpend.subCategory,
+          RECURRENT_SPEND_DESCRIPTION
         )
       }
 
