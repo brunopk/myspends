@@ -1,3 +1,5 @@
+let SpreadSheetHandlers = {}
+
 function processMainForm() {
   const range = SpreadsheetApp.getActiveRange()
   const numRows = range.getNumRows()
@@ -17,6 +19,8 @@ function processMainForm() {
     } else {
       discountApplied = false
     }
+
+    // TODO: From this line and on, code will change
 
     updateSheet(
       SPREADSHEETS.MAIN.ID,
