@@ -1,4 +1,4 @@
-let SpreadSheetHandlers = {}
+const SPREADSHEET_HANDLERS: { [name: string]: BaseSpreadSheetHandler } = {}
 
 function processMainForm() {
   const range = SpreadsheetApp.getActiveRange()
@@ -19,6 +19,13 @@ function processMainForm() {
     } else {
       discountApplied = false
     }
+
+    const newSpend: Spend = { date, category, value, account, description, subCategory, discountApplied }
+    console.info(`Adding new spend: ${newSpend} ...`)
+
+    Object.keys(SPREADSHEET_HANDLERS).forEach((handlerName) => {
+      SPREADSHEET_HANDLERS[handlerName].processSpend(newSpend)
+    })
 
     // TODO: From this line and on, code will change
 
