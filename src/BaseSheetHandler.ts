@@ -1,13 +1,15 @@
 abstract class BaseSheetHandler {
-  private spend: Spend
+  protected name: string
 
-  constructor(spend: Spend) {
-    this.spend = spend
+  protected spreadSheetName: string
+
+  protected spreadSheetId: string
+
+  constructor(name: string, spreadSheetName: string, spreadSheetId: string) {
+    this.name = name
+    this.spreadSheetName = spreadSheetName
+    this.spreadSheetId = spreadSheetId
   }
 
-  run() {
-    this.write(this.spend)
-  }
-
-  abstract write(spend: Spend): void
+  abstract processSpend(spend: Spend): void
 }

@@ -105,9 +105,7 @@ function updateSheet(
   const updatingSheetLogMessage = "Updating sheet 'X' on spreadsheet 'Y' ..."
 
   if (spreadSheetId === SPREADSHEETS.MAIN.ID) {
-    console.info(updatingSheetLogMessage.replace("X", sheetName).replace("Y", spreadSheetId))
-    const newRow = [new Date(), date, formName, category, subcategory, description, account, discountApplied, value]
-    addRow(spreadSheetId, sheetName, newRow)
+    
   } else if (spreadSheetId === SPREADSHEETS.MONTHLY.ID) {
     if (sheetName === SPREADSHEETS.MONTHLY.CATEGORIES_MAIN_SHEET) {
       console.info(updatingSheetLogMessage.replace("X", sheetName).replace("Y", spreadSheetId))

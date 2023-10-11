@@ -10,6 +10,17 @@ declare global {
     account: string
     description: string
     subCategory: string
+    formName: string
     discountApplied: boolean
+  }
+
+  type SheetConfig = {
+    name: string
+  }
+
+  type SpreadSheetConfig = {
+    id: string
+    name: string
+    sheets: { [name: string]: SheetConfig }
   }
 }
