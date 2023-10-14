@@ -6,4 +6,4 @@ class Monthly extends BaseSpreadSheetHandler {
 
 if (Object.keys(SPREADSHEET_HANDLERS).indexOf("MONTHLY") === -1) {
   SPREADSHEET_HANDLERS["MONTHLY"] = new Monthly()
-}
+} 
