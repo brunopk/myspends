@@ -5,8 +5,9 @@ function readAllRows(spreadSheetId: string, sheetName: string): any[][] | undefi
   return dataRange?.getValues()
 }
 
-function addRow(spreadSheetId: string, spreadSheetName: string, sheetName: string, row: any[]) {
+function addRow(spreadSheetId: string, sheetName: string, row: any[]) {
   const spreadSheet = SpreadsheetApp.openById(spreadSheetId)
+  const spreadSheetName = spreadSheet.getName()
   const sheet = spreadSheet.getSheetByName(sheetName)
   sheet?.appendRow(row)
   console.info(`New row added on sheet "${sheetName}" of "${spreadSheetName}"`)

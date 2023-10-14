@@ -1,7 +1,7 @@
-class MainSpreadSheetHandler extends BaseSpreadSheetHandler {
+class Main extends BaseSpreadSheetHandler {
   loadSheetHandlers(): BaseSheetHandler[] {
     return [
-      new MainSheetHandler(
+      new MainSheet(
         SPREADSHEET_CONFIG["main"].sheets["main"].name,
         SPREADSHEET_CONFIG["main"].name,
         SPREADSHEET_CONFIG["main"].id
@@ -10,4 +10,4 @@ class MainSpreadSheetHandler extends BaseSpreadSheetHandler {
   }
 }
 
-loadHandler(new MainSpreadSheetHandler())
+loadSpreadSheetHandler(new Main())

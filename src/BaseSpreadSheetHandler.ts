@@ -12,7 +12,7 @@ abstract class BaseSpreadSheetHandler {
   }
 }
 
-function loadHandler(handler: BaseSpreadSheetHandler) {
+function loadSpreadSheetHandler(handler: BaseSpreadSheetHandler) {
   SPREADSHEET_HANDLERS.push(handler)
   console.info("New handler loaded : ")
   console.info(handler)

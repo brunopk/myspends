@@ -1,4 +1,4 @@
-class MainSheetHandler extends BaseSheetHandler {
+class MainSheet extends BaseSheetHandler {
   processSpend(spend: Spend) {
     const newRow = [
       new Date(),
@@ -11,6 +11,6 @@ class MainSheetHandler extends BaseSheetHandler {
       spend.discountApplied,
       spend.value
     ]
-    addRow(this.spreadSheetId, this.spreadSheetName, this.name, newRow)
+    addRow(this.spreadSheetId, this.name, newRow)
   }
 }
