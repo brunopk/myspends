@@ -18,33 +18,6 @@ const FORMS = {
   }
 }
 
-const CATEGORIES = {
-  CATEGORY_1: {
-    NAME: "Comida"
-  },
-  CATEGORY_2: {
-    NAME: "Transporte",
-    SUBCATEGORIES: {
-      SUBCATEGORY_1: "Bus",
-      SUBCATEGORY_2: "Nafta",
-      SUBCATEGORY_3: "Taxi",
-      SUBCATEGORY_4: "Uber"
-    }
-  },
-  CATEGORY_3: {
-    NAME: "Psicólogo"
-  },
-  CATEGORY_4: {
-    NAME: "Celular"
-  },
-  CATEGORY_5: {
-    NAME: "Otros"
-  },
-  CATEGORY_6: {
-    NAME: "Salud"
-  }
-}
-
 const ACCOUNTS = {
   ACCOUNT_1: "Itaú",
   ACCOUNT_2: "BROU",

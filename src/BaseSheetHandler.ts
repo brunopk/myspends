@@ -13,10 +13,10 @@ abstract class BaseSheetHandler {
   /**
    * Get row for date.
    * @param date date from 0 to 11
-   * @returns index of the row or 'undefined'
+   * @returns index of the row or undefined
    */
-  protected getRowIndexForMonth(month: number): number {
-    let rowForCurrentMonth
+  protected getRowForMonth(month: number): number | undefined {
+    let rowForCurrentMonth: number | undefined
     const data = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)?.slice(1)
     for (let i = 0; i < data.length; i++) {
       if (data[i][0].getMonth() == month) {

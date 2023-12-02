@@ -1,3 +1,36 @@
+const categories = {
+  category_1: {
+    name: "Comida",
+    column: 3
+  },
+  category_2: {
+    name: "Transporte",
+    column: 6,
+    subcategories: {
+      subcategory_1: "Bus",
+      subcategory_2: "Nafta",
+      subcategory_3: "Taxi",
+      subcategory_4: "Uber"
+    }
+  },
+  category_3: {
+    name: "Psicólogo",
+    column: 4
+  },
+  category_4: {
+    name: "Celular",
+    column: 2
+  },
+  category_5: {
+    name: "Otros",
+    column: 7
+  },
+  category_6: {
+    name: "Salud",
+    column: 5
+  }
+}
+
 const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
   main: {
     id: "1r93R3hKOCV6St4sac_88YZRM6OuYO9LxaxwMa2gWomE",
@@ -12,28 +45,17 @@ const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
     id: "1nE0j6lgMZdimaLtO_31OKIpzVNNGBkVGB_xiPeAHoOw",
     name: "Mensual",
     sheets: {
-      comida: {
-        name: CATEGORIES.CATEGORY_1.NAME,
+      all_categories: {
+        name: "Categorías"
+      },
+      category_1: {
+        name: categories.category_1.name,
         type: MONTHLY_SHEET_TYPES.CATEGORY
       },
-      transporte: {
-        name: CATEGORIES.CATEGORY_2.NAME,
+      category_2: {
+        name: categories.category_2.name,
         type: MONTHLY_SHEET_TYPES.CATEGORY
       }
-    },
-    extra: {
-      categoriesColumns: {
-        [CATEGORIES.CATEGORY_4.NAME]: 2,
-        [CATEGORIES.CATEGORY_1.NAME]: 3,
-        [CATEGORIES.CATEGORY_3.NAME]: 4,
-        [CATEGORIES.CATEGORY_6.NAME]: 5,
-        [CATEGORIES.CATEGORY_2.NAME]: 6,
-        [CATEGORIES.CATEGORY_5.NAME]: 7
-      }
-    }/*,
-    extra: {
-      ACCOUNT_SHEETS: [ACCOUNTS.ACCOUNT_1, ACCOUNTS.ACCOUNT_2, ACCOUNTS.ACCOUNT_3],
-      CATEGORIES_MAIN_SHEET: "Categorías"
-    }*/
+    }
   }
 }

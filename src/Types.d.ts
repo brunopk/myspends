@@ -23,6 +23,6 @@ declare global {
     readonly id: string
     readonly name: string
     readonly sheets: { [name: string]: SheetConfig }
-    readonly extra?: object
+    readonly extra?: any
   }
 }
