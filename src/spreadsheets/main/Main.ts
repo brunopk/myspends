@@ -1,9 +1,9 @@
 class Main extends BaseSpreadSheetHandler {
-  constructor(config: SpreadSheetConfig) {
-    super(config, [new MainSheet(config.id, config.sheets.main.name)])
+  constructor(spreadSheetConfig: SpreadSheetConfig) {
+    super(spreadSheetConfig, [new MainSheet(spreadSheetConfig, spreadSheetConfig.sheets.main)])
   }
 }
 
 spreadSheetHandlers.push(new Main(spreadSheetConfig.main))
 
-console.info(`Handler for '${spreadSheetConfig.main.name}' added.`)
+console.info(`Handler for spreadsheet "${spreadSheetConfig.main.name}" loaded.`)

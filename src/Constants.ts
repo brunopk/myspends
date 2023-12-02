@@ -1,3 +1,8 @@
+enum MONTHLY_SHEET_TYPES {
+  CATEGORY,
+  ACCOUNT
+}
+
 const FORMS = {
   MAIN: {
     NAME: "Principal",
@@ -46,6 +51,7 @@ const ACCOUNTS = {
   ACCOUNT_3: "Cuenta de Papá",
   ACCOUNT_4: "Itaú Alimentos"
 }
+
 
 const YES = "Si"
 

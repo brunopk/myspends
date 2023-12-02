@@ -57,25 +57,7 @@ function getNumberOfSubcategoriesColumns(category: string): number {
 }
 
 function getNumberOfCategories(): number {
-  return 6
-}
-
-function getNumberOfExtraColumns(): number {
-  // total column
-  return 1
-}
-
-function getRowForCurrentMonth(spreadSheetId: string, sheetName: string, date: Date): number {
-  let rowForCurrentMonth
-  const data = readAllRows(spreadSheetId, sheetName)?.slice(1)
-  for (let i = 0; i < data.length; i++) {
-    if (data[i][0].getMonth() == date.getMonth()) {
-      // 1 (because of header row) + 1 (because first row index is 1)
-      rowForCurrentMonth = i + 2
-      break
-    }
-  }
-  return rowForCurrentMonth
+  return Object.keys(CATEGORIES).length
 }
 
 function getTotalColumnForCategorySheet(sheetName: string) {
@@ -102,7 +84,6 @@ function updateSheet(
   description: string
 ) {
   const rowForCurrentMonth = getRowForCurrentMonth(spreadSheetId, sheetName, date)
-  const updatingSheetLogMessage = "Updating sheet 'X' on spreadsheet 'Y' ..."
 
   if (spreadSheetId === SPREADSHEETS.MAIN.ID) {
   } else if (spreadSheetId === SPREADSHEETS.MONTHLY.ID) {

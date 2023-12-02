@@ -1,14 +1,17 @@
 abstract class BaseSpreadSheetHandler {
-  public spreadSheetName: string
-
   private sheetHandlers: BaseSheetHandler[]
+
+  private sheetName: string
 
   constructor(config: SpreadSheetConfig, sheetHandlers: BaseSheetHandler[]) {
     this.sheetHandlers = sheetHandlers
-    this.sheetHandlers.forEach((sheetHandler) => (sheetHandler.spreadSheetId = config.id))
+    this.sheetName = config.name
   }
 
   processSpend(spend: Spend): void {
-    this.sheetHandlers.forEach((handler) => handler.processSpend(spend))
+    this.sheetHandlers.forEach((sheetHandler) => {
+      console.info(`Updating sheet "${sheetHandler.sheetName}" on "${this.sheetName}" ...`)
+      sheetHandler.processSpend(spend)
+    })
   }
 }

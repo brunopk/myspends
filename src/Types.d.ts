@@ -16,11 +16,13 @@ declare global {
 
   type SheetConfig = {
     readonly name: string
+    readonly [property: string]: string | number | boolean
   }
 
   type SpreadSheetConfig = {
-    id: string
-    name: string
-    sheets: { [name: string]: SheetConfig }
+    readonly id: string
+    readonly name: string
+    readonly sheets: { [name: string]: SheetConfig }
+    readonly extra?: object
   }
 }
