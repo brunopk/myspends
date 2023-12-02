@@ -1,4 +1,4 @@
-const SPREADSHEET_CONFIG : { [name: string]: SpreadSheetConfig } = {
+const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
   main: {
     id: "1r93R3hKOCV6St4sac_88YZRM6OuYO9LxaxwMa2gWomE",
     name: "Principal",

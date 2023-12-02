@@ -15,7 +15,7 @@ declare global {
   }
 
   type SheetConfig = {
-    name: string
+    readonly name: string
   }
 
   type SpreadSheetConfig = {

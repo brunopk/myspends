@@ -105,7 +105,6 @@ function updateSheet(
   const updatingSheetLogMessage = "Updating sheet 'X' on spreadsheet 'Y' ..."
 
   if (spreadSheetId === SPREADSHEETS.MAIN.ID) {
-    
   } else if (spreadSheetId === SPREADSHEETS.MONTHLY.ID) {
     if (sheetName === SPREADSHEETS.MONTHLY.CATEGORIES_MAIN_SHEET) {
       console.info(updatingSheetLogMessage.replace("X", sheetName).replace("Y", spreadSheetId))

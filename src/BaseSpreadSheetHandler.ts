@@ -1,19 +1,14 @@
 abstract class BaseSpreadSheetHandler {
+  public spreadSheetName: string
+
   private sheetHandlers: BaseSheetHandler[]
 
-  constructor() {
-    this.sheetHandlers = this.loadSheetHandlers()
+  constructor(config: SpreadSheetConfig, sheetHandlers: BaseSheetHandler[]) {
+    this.sheetHandlers = sheetHandlers
+    this.sheetHandlers.forEach((sheetHandler) => (sheetHandler.spreadSheetId = config.id))
   }
-
-  protected abstract loadSheetHandlers(): BaseSheetHandler[]
 
   processSpend(spend: Spend): void {
     this.sheetHandlers.forEach((handler) => handler.processSpend(spend))
   }
-}
-
-function loadSpreadSheetHandler(handler: BaseSpreadSheetHandler) {
-  SPREADSHEET_HANDLERS.push(handler)
-  console.info("New handler loaded : ")
-  console.info(handler)
 }

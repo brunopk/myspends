@@ -1,13 +1,10 @@
 abstract class BaseSheetHandler {
-  protected name: string
+  protected readonly spreadSheetId: string
 
-  protected spreadSheetName: string
+  protected readonly sheetName: string
 
-  protected spreadSheetId: string
-
-  constructor(name: string, spreadSheetName: string, spreadSheetId: string) {
-    this.name = name
-    this.spreadSheetName = spreadSheetName
+  protected constructor(spreadSheetId: string, sheetName: string) {
+    this.sheetName = sheetName
     this.spreadSheetId = spreadSheetId
   }
 

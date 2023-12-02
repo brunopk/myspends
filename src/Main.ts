@@ -1,4 +1,4 @@
-const SPREADSHEET_HANDLERS: BaseSpreadSheetHandler[] = []
+const spreadSheetHandlers: BaseSpreadSheetHandler[] = []
 
 function processMainForm() {
   const range = SpreadsheetApp.getActiveRange()
