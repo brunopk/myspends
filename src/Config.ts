@@ -1,4 +1,4 @@
-const categories = {
+const categories: {[name: string]: CategoryConfig } = {
   category_1: {
     name: "Comida",
     column: 3
@@ -6,7 +6,7 @@ const categories = {
   category_2: {
     name: "Transporte",
     column: 6,
-    subcategories: {
+    subCategories: {
       subcategory_1: "Bus",
       subcategory_2: "Nafta",
       subcategory_3: "Taxi",

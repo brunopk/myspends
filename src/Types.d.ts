@@ -14,6 +14,17 @@ declare global {
     discountApplied: boolean
   }
 
+  type SubCategoryConfig = {
+    readonly name: string
+    readonly column: number
+  }
+
+  type CategoryConfig = {
+    readonly name: string
+    readonly column: number
+    readonly subCategories?: { [name: string]: SubCategoryConfig }
+  }
+
   type SheetConfig = {
     readonly name: string
     readonly [property: string]: string | number | boolean
