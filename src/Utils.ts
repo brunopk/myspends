@@ -1,9 +1,8 @@
-function getCategoryConfiguration(categoryName: string): CategoryConfig {
+function getCategoryConfiguration(categoryName: string): CategoryConfig | undefined {
   const categoryConfig = Object.keys(categories)
     .filter((key) => categories[key].name === categoryName)
     .map((key) => categories[key])
     .at(0)
-  if (typeof categoryConfig === "undefined") throw new Error(`Unknown category "${categoryName}"`)
   return categoryConfig
 }
 
@@ -27,27 +26,35 @@ function getColumnForCategory(categoryName: string) {
   return categoryConfig.column
 }
 
-function getColumnForSubcategory(category: string, subCategory: string, discountApplied: boolean): number {
+function getColumnForSubcategory(categoryName: string, subCategory: string, discountApplied: boolean): number {
   const errorMessage = "Cannot obtain column for category '%C' and subcategory '%S'"
-  switch (category) {
-    case categories.category_1.name:
+  switch (categoryName) {
+    case categories.category_1.name: {
       // TODO: it should not depend on an extra param (discountApplied) there should be two subcategories to represent wether discount was applied or not
       return discountApplied ? 2 : 3
-    case categories.category_2.name:
-      return getSubcategoryConfiguration(getCategoryConfiguration(category), subCategory).column
+    }
+    case categories.category_2.name: {
+      const categoryConfig = getCategoryConfiguration(categoryName)
+      if (typeof categoryConfig === "undefined") throw new Error(`Unknown category "${categoryName}"`)
+      return getSubcategoryConfiguration(categoryConfig, subCategory).column
+    }
     default:
-      throw new Error(errorMessage.replace("%C", category).replace("%S", subCategory))
+      throw new Error(errorMessage.replace("%C", categoryName).replace("%S", subCategory))
   }
 }
 
-function getNumberOfSubcategoriesColumns(category: string): number {
-  switch (category) {
-    case CATEGORIES.CATEGORY_1.NAME:
-      return 2
-    case CATEGORIES.CATEGORY_2.NAME:
-      return Object.keys(CATEGORIES.CATEGORY_2.SUBCATEGORIES).length
-    default:
-      throw new Error(`Cannot obtain number of subcategories for category '${category}'`)
+function getNumberOfSubcategories(categoryName: string): number {
+  if (categoryName === categories.category_1.name) {
+    return 2
+  } else {
+    const categoryConfig = getCategoryConfiguration(categoryName)
+    if (typeof categoryConfig === "undefined") {
+      throw new Error(`Unknown category "${categoryName}"`)
+    }
+    if (typeof categoryConfig.subCategories === "undefined") {
+      throw new Error(`No subcategories defined for category "${categoryName}"`)
+    }
+    return Object.keys(categoryConfig.subCategories).length
   }
 }
 

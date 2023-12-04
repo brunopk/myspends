@@ -7,10 +7,22 @@ const categories: {[name: string]: CategoryConfig } = {
     name: "Transporte",
     column: 6,
     subCategories: {
-      subcategory_1: "Bus",
-      subcategory_2: "Nafta",
-      subcategory_3: "Taxi",
-      subcategory_4: "Uber"
+      subcategory_1: {
+        name: "Bus",
+        column: 2
+      },
+      subcategory_2: {
+        name: "Nafta",
+        column: 3
+      },
+      subcategory_3: {
+        name: "Taxi",
+        column: 4
+      },
+      subcategory_4: {
+        name: "Uber",
+        column: 5
+      }
     }
   },
   category_3: {
