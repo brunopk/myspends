@@ -23,24 +23,14 @@ function getSubcategoryConfiguration(categoryConfig: CategoryConfig, subCategory
 
 function getColumnForCategory(categoryName: string) {
   const categoryConfig = getCategoryConfiguration(categoryName)
+  if (typeof categoryConfig === "undefined") throw new Error(`Unknown category "${categoryName}"`)
   return categoryConfig.column
 }
 
-function getColumnForSubcategory(categoryName: string, subCategory: string, discountApplied: boolean): number {
-  const errorMessage = "Cannot obtain column for category '%C' and subcategory '%S'"
-  switch (categoryName) {
-    case categories.category_1.name: {
-      // TODO: it should not depend on an extra param (discountApplied) there should be two subcategories to represent wether discount was applied or not
-      return discountApplied ? 2 : 3
-    }
-    case categories.category_2.name: {
-      const categoryConfig = getCategoryConfiguration(categoryName)
-      if (typeof categoryConfig === "undefined") throw new Error(`Unknown category "${categoryName}"`)
-      return getSubcategoryConfiguration(categoryConfig, subCategory).column
-    }
-    default:
-      throw new Error(errorMessage.replace("%C", categoryName).replace("%S", subCategory))
-  }
+function getColumnForSubcategory(categoryName: string, subCategory: string): number {
+  const categoryConfig = getCategoryConfiguration(categoryName)
+  if (typeof categoryConfig === "undefined") throw new Error(`Unknown category "${categoryName}"`)
+  return getSubcategoryConfiguration(categoryConfig, subCategory).column
 }
 
 function getNumberOfSubcategories(categoryName: string): number {
@@ -52,7 +42,7 @@ function getNumberOfSubcategories(categoryName: string): number {
       throw new Error(`Unknown category "${categoryName}"`)
     }
     if (typeof categoryConfig.subCategories === "undefined") {
-      throw new Error(`No subcategories defined for category "${categoryName}"`)
+      throw new Error(`No subcategories defined for "${categoryName}"`)
     }
     return Object.keys(categoryConfig.subCategories).length
   }

@@ -11,7 +11,6 @@ declare global {
     description: string
     subCategory: string
     formName: string
-    discountApplied: boolean
   }
 
   type SubCategoryConfig = {

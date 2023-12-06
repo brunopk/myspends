@@ -1,7 +1,17 @@
 const categories: {[name: string]: CategoryConfig } = {
   category_1: {
     name: "Comida",
-    column: 3
+    column: 3,
+    subCategories: {
+      subcategory_1: {
+        name: "Mercado Pago (70% OFF)",
+        column: 2
+      },
+      subcategory_2: {
+        name: "VISA Alimentos",
+        column: 3
+      }
+    }
   },
   category_2: {
     name: "Transporte",
