@@ -3,6 +3,8 @@ enum MONTHLY_SHEET_TYPES {
   ACCOUNT
 }
 
+// TODO: acomodar configuraciones, subir todo y probar
+
 const FORMS = {
   MAIN: {
     NAME: "Principal",

@@ -82,25 +82,6 @@ function updateSheet(
     if (sheetName === SPREADSHEETS.MONTHLY.CATEGORIES_MAIN_SHEET) {
     } else if (SPREADSHEETS.MONTHLY.ACCOUNT_SHEETS.indexOf(sheetName) !== -1) {
     } else if (SPREADSHEETS.MONTHLY.CATEGORIES_SHEET.indexOf(sheetName) !== -1) {
-      console.info(updatingSheetLogMessage.replace("X", sheetName).replace("Y", spreadSheetId))
-      const subcategoryColumn = getColumnForSubcategory(category, subcategory, discountApplied)
-      const totalColum = getTotalColumnForCategorySheet(sheetName)
-      if (!rowForCurrentMonth) {
-        const newRowAux = Array(getNumberOfSubcategoriesColumns(category) + 1).fill(0)
-        const newRow: (Date | number)[] = [date].concat(newRowAux)
-        newRow[subcategoryColumn - 1] = value
-        newRow[totalColum - 1] = value
-        addRow(spreadSheetId, sheetName, newRow)
-      } else {
-        const currentSubcategoryTotal = getValue(spreadSheetId, sheetName, rowForCurrentMonth, subcategoryColumn)
-        setValue(spreadSheetId, sheetName, rowForCurrentMonth, subcategoryColumn, currentSubcategoryTotal + value)
-
-        const currentTotal = getValue(spreadSheetId, sheetName, rowForCurrentMonth, totalColum)
-        setValue(spreadSheetId, sheetName, rowForCurrentMonth, totalColum, currentTotal + value)
-      }
-    } else {
-      throw new Error(`Sheet '${sheetName}' not found on spread sheet '${spreadSheetId}'`)
-    }
   } else {
     throw new Error(`Sheet '${sheetName}' not found on spread sheet '${spreadSheetId}'`)
   }

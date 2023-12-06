@@ -8,7 +8,6 @@ class MainSheet extends BaseSheetHandler {
       spend.subCategory,
       spend.description,
       spend.account,
-      spend.discountApplied,
       spend.value
     ]
     addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
