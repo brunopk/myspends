@@ -12,78 +12,12 @@ function processMainForm() {
     const account = range.getCell(i, FORMS.MAIN.COLUMNS.ACCOUNT).getValue()
     const description = range.getCell(i, FORMS.MAIN.COLUMNS.DESCRIPTION).getValue()
     const subCategory = range.getCell(i, FORMS.MAIN.COLUMNS.SUBCATEGORY).getValue()
-    let discountApplied = range.getCell(i, FORMS.MAIN.COLUMNS.DISCOUNT_APPLIED).getValue()
 
-    if (discountApplied === YES) {
-      discountApplied = true
-    } else {
-      discountApplied = false
-    }
+    const newSpend: Spend = { date, category, value, account, description, subCategory }
 
-    const newSpend: Spend = { date, category, value, account, description, subCategory, discountApplied }
-    console.info(`Adding new spend: ${newSpend} ...`)
-
-    SPREADSHEET_HANDLERS.forEach((handler) => {
+    spreadSheetHandlers.forEach((handler) => {
       handler.processSpend(newSpend)
     })
-
-    // TODO: From this line and on, code will change
-
-    updateSheet(
-      SPREADSHEETS.MAIN.ID,
-      SPREADSHEETS.MAIN.SHEETS.MAIN,
-      FORMS.MAIN.NAME,
-      date,
-      value,
-      account,
-      discountApplied,
-      category,
-      subCategory,
-      description
-    )
-
-    updateSheet(
-      SPREADSHEETS.MONTHLY.ID,
-      SPREADSHEETS.MONTHLY.CATEGORIES_MAIN_SHEET,
-      FORMS.MAIN.NAME,
-      date,
-      value,
-      account,
-      discountApplied,
-      category,
-      subCategory,
-      description
-    )
-
-    if (SPREADSHEETS.MONTHLY.ACCOUNT_SHEETS.indexOf(account) !== -1) {
-      updateSheet(
-        SPREADSHEETS.MONTHLY.ID,
-        account,
-        FORMS.MAIN.NAME,
-        date,
-        value,
-        account,
-        discountApplied,
-        category,
-        subCategory,
-        description
-      )
-    }
-
-    if (SPREADSHEETS.MONTHLY.CATEGORIES_SHEET.indexOf(category) !== -1) {
-      updateSheet(
-        SPREADSHEETS.MONTHLY.ID,
-        category,
-        FORMS.MAIN.NAME,
-        date,
-        value,
-        account,
-        discountApplied,
-        category,
-        subCategory,
-        description
-      )
-    }
   }
 }
 
