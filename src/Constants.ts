@@ -1,3 +1,5 @@
+enum MONTHLY_SHEET_TYPES { CATEGORY, ACCOUNT }
+
 const YES = "Si"
 
 const RECURRENT_SPENDS = [
