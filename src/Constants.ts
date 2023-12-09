@@ -1,33 +1,3 @@
-enum MONTHLY_SHEET_TYPES {
-  CATEGORY,
-  ACCOUNT
-}
-
-// TODO: acomodar configuraciones, subir todo y probar
-
-const FORMS = {
-  MAIN: {
-    NAME: "Principal",
-    COLUMNS: {
-      CATEGORY: 3,
-      DATE: 2,
-      VALUE: 9,
-      SUBCATEGORY: 4,
-      ACCOUNT: 8,
-      DESCRIPTION: 9,
-      DISCOUNT_APPLIED: 0
-    }
-  }
-}
-
-const ACCOUNTS = {
-  ACCOUNT_1: "Itaú",
-  ACCOUNT_2: "BROU",
-  ACCOUNT_3: "Cuenta de Papá",
-  ACCOUNT_4: "Itaú Alimentos"
-}
-
-
 const YES = "Si"
 
 const RECURRENT_SPENDS = [

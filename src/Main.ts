@@ -6,12 +6,12 @@ function processMainForm() {
 
   // Normally active range contains one row (last inserted row)
   for (let i = 1; i <= numRows; i++) {
-    const date = range.getCell(i, FORMS.MAIN.COLUMNS.DATE).getValue()
-    const category = range.getCell(i, FORMS.MAIN.COLUMNS.CATEGORY).getValue()
-    const value = range.getCell(i, FORMS.MAIN.COLUMNS.VALUE).getValue()
-    const account = range.getCell(i, FORMS.MAIN.COLUMNS.ACCOUNT).getValue()
-    const description = range.getCell(i, FORMS.MAIN.COLUMNS.DESCRIPTION).getValue()
-    const subCategory = range.getCell(i, FORMS.MAIN.COLUMNS.SUBCATEGORY).getValue()
+    const date = range.getCell(i, forms.main.columns.date).getValue()
+    const category = range.getCell(i, forms.main.columns.category).getValue()
+    const value = range.getCell(i, forms.main.columns.value).getValue()
+    const account = range.getCell(i, forms.main.columns.account).getValue()
+    const description = range.getCell(i, forms.main.columns.description).getValue()
+    const subCategory = range.getCell(i, forms.main.columns.subCategory).getValue()
 
     const newSpend: Spend = { date, category, value, account, description, subCategory }
 

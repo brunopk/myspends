@@ -1,3 +1,17 @@
+const forms = {
+  main: {
+    name: "Principal",
+    columns: {
+      category: 3,
+      date: 2,
+      value: 9,
+      subCategory: 4,
+      account: 8,
+      description: 9
+    }
+  }
+}
+
 const categories: {[name: string]: CategoryConfig } = {
   category_1: {
     name: "Comida",
