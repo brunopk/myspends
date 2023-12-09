@@ -1,3 +1,5 @@
+// TODO: hacer un metodo que valide que las cantidades en todas las celdas de todas las hojas estén bien
+
 abstract class BaseSpreadSheetHandler {
   private sheetHandlers: BaseSheetHandler[]
 
