@@ -1,4 +1,7 @@
-enum MONTHLY_SHEET_TYPES { CATEGORY, ACCOUNT }
+const MONTHLY_SHEET_TYPES = { 
+  CATEGORY: 0,
+  ACCOUNT: 1
+}
 
 const YES = "Si"
 
