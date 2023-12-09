@@ -63,6 +63,15 @@ function getTotalColumnForCategorySheet(sheetName: string) {
   }
 }
 
+function getSheetConfiguration(spreadSheetConfig: SpreadSheetConfig, sheetName: string): SheetConfig {
+  for (let key in spreadSheetConfig.sheets) {
+    if (spreadSheetConfig.sheets[key].name === sheetName) {
+      return spreadSheetConfig.sheets[key]
+    }
+  }
+  throw new Error(`Configuration for sheet "${sheetName}" of spreadsheet "${spreadSheetConfig.name}" not found `)
+}
+
 function updateSheet(
   spreadSheetId: string,
   sheetName: string,

@@ -21,6 +21,8 @@ function processMainForm() {
   }
 }
 
+// TODO: volver a correr este metodo 
+
 function processRecurrentSpends() {
   const today = new Date()
   for (let i = 0; i < RECURRENT_SPENDS.length; i++) {

@@ -67,6 +67,17 @@ const categories: {[name: string]: CategoryConfig } = {
   }
 }
 
+const accounts: {[name: string]: string } = {
+  account_1: "",
+  account_2: "",
+  account_3: ""
+}
+
+const monthlySheetType = {
+  category: 0,
+  account: 1
+}
+
 const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
   main: {
     id: "1r93R3hKOCV6St4sac_88YZRM6OuYO9LxaxwMa2gWomE",
@@ -86,11 +97,23 @@ const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
       },
       category_1: {
         name: categories.category_1.name,
-        type: MONTHLY_SHEET_TYPES.CATEGORY
+        type: monthlySheetType.category
       },
       category_2: {
         name: categories.category_2.name,
-        type: MONTHLY_SHEET_TYPES.CATEGORY
+        type: monthlySheetType.category
+      },
+      account_1: {
+        name: accounts.account_1,
+        type: monthlySheetType.account
+      },
+      account_2: {
+        name: accounts.account_2,
+        type: monthlySheetType.account
+      },
+      account_3: {
+        name: accounts.account_2,
+        type: monthlySheetType.account
       }
     }
   }
