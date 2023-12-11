@@ -3,6 +3,7 @@ const spreadSheetHandlers: BaseSpreadSheetHandler[] = []
 function processMainForm() {
   const range = SpreadsheetApp.getActiveRange()
   const numRows = range.getNumRows()
+  const origin = spendOrigin.mainForm
 
   // Normally active range contains one row (last inserted row)
   for (let i = 1; i <= numRows; i++) {
@@ -13,7 +14,7 @@ function processMainForm() {
     const description = range.getCell(i, forms.main.columns.description).getValue()
     const subCategory = range.getCell(i, forms.main.columns.subCategory).getValue()
 
-    const newSpend: Spend = { date, category, value, account, description, subCategory }
+    const newSpend: Spend = { date, category, value, account, description, subCategory, origin }
 
     spreadSheetHandlers.forEach((handler) => {
       handler.processSpend(newSpend)

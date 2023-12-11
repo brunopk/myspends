@@ -53,7 +53,8 @@ class Category extends BaseSheetHandler {
   processSpend(spend: Spend) {
     if (spend.category === this.sheetConfig.name) {
       const subcategoryColumn = getColumnForSubcategory(spend.category, spend.subCategory)
-      const totalColum = getTotalColumnForCategorySheet(this.sheetConfig.name)
+      const categoryConfig = getCategoryConfiguration(spend.category)
+      const totalColum = categoryConfig.totalColumn
       const monthRow = this.getRowForMonth(spend.date.getMonth())
       if (!monthRow) {
         const newRowAux = Array(getNumberOfSubcategories(spend.category) + 1).fill(0)
@@ -137,10 +138,10 @@ class Monthly extends BaseSpreadSheetHandler {
     sheetNames.forEach((sheetName) => {
       const sheetConfig = getSheetConfiguration(spreadSheetConfig, sheetName)
       switch (sheetConfig.type) {
-        case monthlySheetType.category:
+        case sheetType.category:
           sheetHandlers.push(new Category(spreadSheetConfig, sheetConfig))
           break
-        case monthlySheetType.account:
+        case sheetType.account:
           sheetHandlers.push(new Account(spreadSheetConfig, sheetConfig))
           break
         default:
@@ -153,4 +154,4 @@ class Monthly extends BaseSpreadSheetHandler {
 
 spreadSheetHandlers.push(new Monthly(spreadSheetConfig.monthly))
 
-console.info(`Class to process spreadsheet "${spreadSheetConfig.monthly.name}" loaded.`)
+console.info("Class Monthly from src/spreadsheets/Monthly.ts loaded.")

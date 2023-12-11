@@ -1,3 +1,8 @@
+const SPEND_ORIGIN = {
+  FORM: 0,
+  RECURRENT_SPEND: 1
+}
+
 const YES = "Si"
 
 const RECURRENT_SPENDS = [

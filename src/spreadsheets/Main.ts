@@ -5,7 +5,7 @@ class MainSheet extends BaseSheetHandler {
     const newRow = [
       new Date(),
       spend.date,
-      spend.formName,
+      spend.origin,
       spend.category,
       spend.subCategory,
       spend.description,
@@ -26,4 +26,4 @@ class Main extends BaseSpreadSheetHandler {
 
 spreadSheetHandlers.push(new Main(spreadSheetConfig.main))
 
-console.info(`Class to process spreadsheet "${spreadSheetConfig.main.name}" loaded.`)
+console.info("Class Main from src/spreadsheets/Main.ts loaded.")

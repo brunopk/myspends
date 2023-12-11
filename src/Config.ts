@@ -12,70 +12,77 @@ const forms = {
   }
 }
 
-const categories: {[name: string]: CategoryConfig } = {
-  category_1: {
+const categories: { [name: string]: CategoryConfig } = {
+  category1: {
     name: "Comida",
     column: 3,
+    totalColumn: 0,
     subCategories: {
-      subcategory_1: {
+      subCategory1: {
         name: "Mercado Pago (70% OFF)",
         column: 2
       },
-      subcategory_2: {
+      subCategory2: {
         name: "VISA Alimentos",
         column: 3
       }
     }
   },
-  category_2: {
+  category2: {
     name: "Transporte",
     column: 6,
+    totalColumn: 0,
     subCategories: {
-      subcategory_1: {
+      subCategory1: {
         name: "Bus",
         column: 2
       },
-      subcategory_2: {
+      subCategory2: {
         name: "Nafta",
         column: 3
       },
-      subcategory_3: {
+      subCategory3: {
         name: "Taxi",
         column: 4
       },
-      subcategory_4: {
+      subCategory4: {
         name: "Uber",
         column: 5
       }
     }
   },
-  category_3: {
+  category3: {
     name: "Psicólogo",
     column: 4
   },
-  category_4: {
+  category4: {
     name: "Celular",
     column: 2
   },
-  category_5: {
+  category5: {
     name: "Otros",
     column: 7
   },
-  category_6: {
+  category6: {
     name: "Salud",
     column: 5
   }
 }
 
-const accounts: {[name: string]: string } = {
-  account_1: "",
-  account_2: "",
-  account_3: ""
+const accounts: { [name: string]: string } = {
+  account1: "",
+  account2: "",
+  account3: ""
 }
 
-const monthlySheetType = {
+const sheetType = {
   category: 0,
   account: 1
+}
+
+const spendOrigin: SpendOrigin = {
+  mainForm: "Formulario Principal",
+  recurrentSpend: "Gasto recurrente"
 }
 
 const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
@@ -95,25 +102,25 @@ const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
       all_categories: {
         name: "Categorías"
       },
-      category_1: {
-        name: categories.category_1.name,
-        type: monthlySheetType.category
+      category1: {
+        name: categories.category1.name,
+        type: sheetType.category
       },
-      category_2: {
-        name: categories.category_2.name,
-        type: monthlySheetType.category
+      category2: {
+        name: categories.category2.name,
+        type: sheetType.category
       },
-      account_1: {
-        name: accounts.account_1,
-        type: monthlySheetType.account
+      account1: {
+        name: accounts.account1,
+        type: sheetType.account
       },
-      account_2: {
-        name: accounts.account_2,
-        type: monthlySheetType.account
+      account2: {
+        name: accounts.account2,
+        type: sheetType.account
       },
-      account_3: {
-        name: accounts.account_2,
-        type: monthlySheetType.account
+      account3: {
+        name: accounts.account2,
+        type: sheetType.account
       }
     }
   }

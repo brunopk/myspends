@@ -12,7 +12,6 @@ abstract class BaseSpreadSheetHandler {
 
   processSpend(spend: Spend): void {
     this.sheetHandlers.forEach((sheetHandler) => {
-      // TODO: ver porque logea Updating sheet "undefined" on "Principal" ... creo que sheetHandler no es un objeto
       console.info(`Updating sheet "${sheetHandler.sheetConfig.name}" of "${this.config.name}" ...`)
       sheetHandler.processSpend(spend)
     })
