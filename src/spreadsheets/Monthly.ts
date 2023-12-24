@@ -154,4 +154,4 @@ class Monthly extends BaseSpreadSheetHandler {
 
 spreadSheetHandlers.push(new Monthly(spreadSheetConfig.monthly))
 
-console.info("Class Monthly from src/spreadsheets/Monthly.ts loaded.")
+console.info(`Handler for spreadsheet '${spreadSheetConfig.monthly.name}' loaded correctly`)

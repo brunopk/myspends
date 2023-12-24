@@ -26,4 +26,4 @@ class Main extends BaseSpreadSheetHandler {
 
 spreadSheetHandlers.push(new Main(spreadSheetConfig.main))
 
-console.info("Class Main from src/spreadsheets/Main.ts loaded.")
+console.info(`Handler for spreadsheet '${spreadSheetConfig.main.name}' loaded correctly`)
