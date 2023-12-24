@@ -21,6 +21,7 @@ function getValue(spreadSheetId: string, sheetName: string, row: number, column:
 }
 
 function setValue(spreadSheetId: string, sheetName: string, row: number, column: number, newValue: any) {
+  console.info(`Updating cell on row ${row} and column ${column} of sheet "${sheetName}"`)
   const spreadSheet = SpreadsheetApp.openById(spreadSheetId)
   const sheet = spreadSheet.getSheetByName(sheetName)
   const dataRange = sheet?.getDataRange()

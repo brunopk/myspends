@@ -1,4 +1,6 @@
-/* Sheets */
+/*************************************************************************************************/
+/*                                         SHEETS                                                */
+/*************************************************************************************************/
 
 class MainSheet extends BaseSheetHandler {
   processSpend(spend: Spend) {
@@ -16,7 +18,9 @@ class MainSheet extends BaseSheetHandler {
   }
 }
 
-/* Spreadsheet */
+/*************************************************************************************************/
+/*                                         SPREAD SHEETS                                         */
+/*************************************************************************************************/
 
 class Main extends BaseSpreadSheetHandler {
   constructor(spreadSheetConfig: SpreadSheetConfig) {
