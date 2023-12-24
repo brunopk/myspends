@@ -30,17 +30,11 @@ function getColumnForSubcategory(categoryName: string, subCategory: string): num
   return getSubcategoryConfiguration(categoryConfig, subCategory).column
 }
 
-// TODO: corregir linea 35 (Capaz que esta funcion se puede borrar) , seguir probando con alimentos (con descuento de mercado pago y sin descuento)
 function getNumberOfSubcategories(categoryName: string): number {
-  if (categoryName === categories.category_1.name) {
-    return 2
-  } else {
-    const categoryConfig = getCategoryConfiguration(categoryName)
-    if (typeof categoryConfig.subCategories === "undefined") {
-      throw new Error(`No subcategories defined for "${categoryName}"`)
-    }
-    return Object.keys(categoryConfig.subCategories).length
-  }
+  const categoryConfig = getCategoryConfiguration(categoryName)
+  if (typeof categoryConfig.subCategories === "undefined")
+    throw new Error(`No subcategories defined for category '${categoryName}'.`)
+  return Object.keys(categoryConfig.subCategories).length
 }
 
 function getNumberOfCategories(): number {
