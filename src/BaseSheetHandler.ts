@@ -10,8 +10,10 @@ abstract class BaseSheetHandler {
 
   abstract processSpend(spend: Spend): void
 
+  abstract validate(): void
+
   /**
-   * Get row for date.
+   * Get the corresponding row for the given month.
    * @param date date from 0 to 11
    * @returns index of the row or undefined
    */
