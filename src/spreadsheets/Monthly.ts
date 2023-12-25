@@ -51,8 +51,6 @@ class AllCategories extends BaseSheetHandler {
   }
 }
 
-// TODO: Check why it's writing more than expected columns: 24/12/2023,	0,	1,	0,		1
-
 class Category extends BaseSheetHandler {
   processSpend(spend: Spend) {
     if (spend.category === this.sheetConfig.name) {
