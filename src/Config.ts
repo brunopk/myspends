@@ -1,4 +1,6 @@
-// TODO: actualizar la config que guarde en Drive
+// TODO: (1) actualizar la config que guarde en Drive: actualizar forms
+// TODO: (2) actualizar la config que guarde en Drive: actualizar categories.*
+// TODO: (2) actualizar la config que guarde en Drive: actualizar spreadSheetConfig.sheets.* (agregar spreadSheetConfig.sheets.*.columns.*)
 
 const forms:  { [name: string]: FormConfig } = {
   main: {
