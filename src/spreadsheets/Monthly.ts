@@ -137,11 +137,11 @@ class Monthly extends BaseSpreadSheetHandler {
     ]
 
     const sheetNames = Object.keys(spreadSheetConfig.sheets)
-      .filter((key) => typeof spreadSheetConfig.sheets[key].type !== "undefined")
+      .filter((key) => typeof spreadSheetConfig.sheets[key].extra.type !== "undefined")
       .map((key) => spreadSheetConfig.sheets[key].name)
     sheetNames.forEach((sheetName) => {
       const sheetConfig = getSheetConfiguration(spreadSheetConfig, sheetName)
-      switch (sheetConfig.type) {
+      switch (sheetConfig.extra.type) {
         case sheetType.category:
           sheetHandlers.push(new Category(spreadSheetConfig, sheetConfig))
           break
@@ -149,7 +149,7 @@ class Monthly extends BaseSpreadSheetHandler {
           sheetHandlers.push(new Account(spreadSheetConfig, sheetConfig))
           break
         default:
-          throw new Error(`Unknown sheet type "${sheetConfig.type}"`)
+          throw new Error(`Unknown sheet type "${sheetConfig.extra.type}"`)
       }
     })
     super(spreadSheetConfig, sheetHandlers)

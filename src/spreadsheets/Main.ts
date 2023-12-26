@@ -16,6 +16,15 @@ class MainSheet extends BaseSheetHandler {
     ]
     addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
   }
+
+  validate(): void {
+    const formData = readAllRows(forms.main.spreadSheet.id, forms.main.spreadSheet.sheetName)
+    const sheetData = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)?.filter((row) => {
+      // TODO: SEGUIR ACA
+      row[this.sheetConfig.columns.]
+    })
+
+  }
 }
 
 /*************************************************************************************************/

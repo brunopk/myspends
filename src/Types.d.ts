@@ -24,13 +24,13 @@ declare global {
   type CategoryConfig = {
     readonly name: string
     readonly column: number
-    readonly totalColumn: number
+    readonly totalColumn: number // TODO: total column no debería ir aca
     readonly subCategories?: { [name: string]: SubCategoryConfig }
   }
 
   type SheetConfig = {
     readonly name: string
-    readonly [property: string]: string | number | boolean,
+    readonly columns?: { [name: string]: number }
     readonly extra?: any
   }
 
@@ -39,5 +39,14 @@ declare global {
     readonly name: string
     readonly sheets: { [name: string]: SheetConfig }
     readonly extra?: any
+  }
+
+  type FormConfig = {
+    readonly spreadSheet: {
+      readonly id: string
+      readonly sheetName: string
+      readonly columns: { [name: string]: number }
+    }
+    readonly name: string
   }
 }

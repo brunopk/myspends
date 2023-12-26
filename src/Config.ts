@@ -1,13 +1,19 @@
-const forms = {
+// TODO: actualizar la config que guarde en Drive
+
+const forms:  { [name: string]: FormConfig } = {
   main: {
     name: "Principal",
-    columns: {
-      category: 3,
-      date: 2,
-      value: 9,
-      subCategory: 4,
-      account: 8,
-      description: 9
+    spreadSheet: {
+      id: '1r93R3hKOCV6St4sac_88YZRM6OuYO9LxaxwMa2gWomE',
+      sheetName: 'Principal',
+      columns: {
+        category: 3,
+        date: 2,
+        value: 9,
+        subCategory: 4,
+        account: 8,
+        description: 9
+      }
     }
   }
 }
@@ -104,23 +110,33 @@ const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
       },
       category1: {
         name: categories.category1.name,
-        type: sheetType.category
+        extra: {
+          type: sheetType.category
+        }
       },
       category2: {
         name: categories.category2.name,
-        type: sheetType.category
+        extra: {
+          type: sheetType.category
+        }
       },
       account1: {
         name: accounts.account1,
-        type: sheetType.account
+        extra: {
+          type: sheetType.account
+        }
       },
       account2: {
         name: accounts.account2,
-        type: sheetType.account
+        extra: {
+          type: sheetType.account
+        }
       },
       account3: {
         name: accounts.account2,
-        type: sheetType.account
+        extra: {
+          type: sheetType.account
+        }
       }
     }
   }

@@ -1,5 +1,3 @@
-// TODO: hacer un metodo que valide que las cantidades en todas las celdas de todas las hojas estén bien
-
 abstract class BaseSpreadSheetHandler {
   private sheetHandlers: BaseSheetHandler[]
 
@@ -17,4 +15,13 @@ abstract class BaseSpreadSheetHandler {
       sheetHandler.processSpend(spend)
     })
   }
+
+  validate() {
+    console.log(`Validating spreadsheet '${this.config.name}' ...`)
+    this.sheetHandlers.forEach((sheetHandler) => {
+      console.log(`Validating sheet '${sheetHandler.sheetConfig.name}'...`)
+      sheetHandler.validate()
+    })
+  }
+
 }
