@@ -50,6 +50,13 @@ function getSheetConfiguration(spreadSheetConfig: SpreadSheetConfig, sheetName: 
   throw new Error(`Configuration for sheet "${sheetName}" of spreadsheet "${spreadSheetConfig.name}" not found `)
 }
 
+function findSpreadSheetHandlerByName(
+  spreadSheetHandlers: BaseSpreadSheetHandler[],
+  spreadSheetName: string
+): BaseSpreadSheetHandler | undefined {
+  return spreadSheetHandlers.find((spreadSheetHandler) => spreadSheetHandler.config.name == spreadSheetName)
+}
+
 function formatDate(date: Date): string {
   const year = date.getFullYear()
   const month = (date.getMonth() + 1).toString().padStart(2, "0")

@@ -96,7 +96,10 @@ function processRecurrentSpends() {
   }
 }
 
-function validate() {
-  const spreadSheetHandler = spreadSheetHandlers[0]
+function validate(spreadSheetName: string, sheetName: string, month: number) {
+  const spreadSheetHandler = findSpreadSheetHandlerByName(spreadSheetHandlers, spreadSheetName)
+  if (typeof spreadSheetHandler === "undefined") throw new Error(`Spreadsheet '${spreadSheetName}' not found.`)
+
+  // TODO: SEGUIR ACÁ (buscar sheet y empezar a validar todas las columnas)
   spreadSheetHandler.validate()
 }

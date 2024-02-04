@@ -1,7 +1,7 @@
 abstract class BaseSpreadSheetHandler {
-  private sheetHandlers: BaseSheetHandler[]
+  public config: SpreadSheetConfig
 
-  private config: SpreadSheetConfig
+  private sheetHandlers: BaseSheetHandler[]
 
   constructor(config: SpreadSheetConfig, sheetHandlers: BaseSheetHandler[]) {
     this.sheetHandlers = sheetHandlers
