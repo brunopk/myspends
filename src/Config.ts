@@ -88,11 +88,6 @@ const sheetType = {
   account: 1
 }
 
-const spendOrigin: SpendOrigin = {
-  mainForm: "Formulario Principal",
-  recurrentSpend: "Gasto recurrente"
-}
-
 const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
   main: {
     id: "1r93R3hKOCV6St4sac_88YZRM6OuYO9LxaxwMa2gWomE",
@@ -143,3 +138,24 @@ const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
     }
   }
 }
+
+const recurrentSpendsMailRecipient = "asd@asd.com"
+
+const recurrentSpendsTaskList = "xxx"
+
+const recurrentSpends: RecurrentSpendConfig[] = [
+  {
+    value: 1,
+    category: "Category x",
+    subCategory: "Subcategory x",
+    account: "Account x",
+    date: new Date(),
+    description: "X",
+    origin: "Recurrent spend",
+    dayOfMonth: 4,
+    taskTitle: "Check ...",
+    taskDescription: "Check ... ...",
+    mailSubject: "Check ...",
+    mailBody: "Check ... ..."
+  }
+]

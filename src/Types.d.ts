@@ -3,9 +3,6 @@ import { tasks_v1 } from 'googleapis'
 declare global {
   type ExtendedTask = tasks_v1.Schema$Task & { taskList: tasks_v1.Schema$TaskList }
 
-  type SpendOrigin = {
-    readonly [property: string]: string
-  }
   type Spend = {
     date: Date
     category: string
@@ -48,5 +45,13 @@ declare global {
       readonly columns: { [name: string]: number }
     }
     readonly name: string
+  }
+
+  type RecurrentSpendConfig = Spend & {
+    dayOfMonth: number
+    taskTitle: string
+    taskDescription: string
+    mailSubject: string
+    mailBody: string
   }
 }
