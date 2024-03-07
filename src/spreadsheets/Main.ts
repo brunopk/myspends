@@ -21,9 +21,8 @@ class MainSheet extends BaseSheetHandler {
     const formData = readAllRows(forms.main.spreadSheet.id, forms.main.spreadSheet.sheetName)
     const sheetData = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)?.filter((row) => {
       // TODO: esto tiene que validar en base a todas las columnas
-      row[this.sheetConfig.columns.]
+      // row[this.sheetConfig.columns.]
     })
-
   }
 }
 
