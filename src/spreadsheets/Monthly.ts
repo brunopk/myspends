@@ -137,7 +137,11 @@ class Monthly extends BaseSpreadSheetHandler {
     ]
 
     const sheetNames = Object.keys(spreadSheetConfig.sheets)
-      .filter((key) => typeof spreadSheetConfig.sheets[key].extra.type !== "undefined")
+      .filter(
+        (key) =>
+          typeof spreadSheetConfig.sheets[key].extra !== "undefined" &&
+          typeof spreadSheetConfig.sheets[key].extra.type !== "undefined"
+      )
       .map((key) => spreadSheetConfig.sheets[key].name)
     sheetNames.forEach((sheetName) => {
       const sheetConfig = getSheetConfiguration(spreadSheetConfig, sheetName)
