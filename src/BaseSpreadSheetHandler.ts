@@ -9,9 +9,7 @@ abstract class BaseSpreadSheetHandler {
   }
 
   processSpend(spend: Spend): void {
-    console.log(`Updating spreadsheet '${this.config.name}'.`)
     this.sheetHandlers.forEach((sheetHandler) => {
-      console.info(`Updating sheet "${sheetHandler.sheetConfig.name}" of "${this.config.name}" ...`)
       sheetHandler.processSpend(spend)
     })
   }

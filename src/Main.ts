@@ -3,7 +3,7 @@ const spreadSheetHandlers: BaseSpreadSheetHandler[] = []
 function processMainForm() {
   const range = SpreadsheetApp.getActiveRange()
   const numRows = range.getNumRows()
-  const origin = "Google Forms"
+  const origin = "Forms"
 
   // Normally active range contains one row (last inserted row)
   for (let i = 1; i <= numRows; i++) {

@@ -16,7 +16,7 @@ function getSubcategoryConfiguration(categoryConfig: CategoryConfig, subCategory
         categoryConfig.subCategories[key].name === subCategoryName
     )
     .at(0)
-  if (typeof subcategoryKey === "undefined") throw new Error(`Unknown sub category "${subCategoryName}"`)
+  if (typeof subcategoryKey === "undefined") throw new Error(`Unknown sub category "${subCategoryName}" for category "${categoryConfig.name}"`)
   return categoryConfig.subCategories[subcategoryKey]
 }
 
