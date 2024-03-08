@@ -22,7 +22,7 @@ function processMainForm() {
   }
 }
 
-// TODO: SEGUIR CONTINUE HERE TEST THIS
+// TODO: SEGUIR CON LA VALIDACIÓN DE PLANILLAS
 
 function processRecurrentSpends() {
   const today = new Date()
