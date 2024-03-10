@@ -1,9 +1,6 @@
 const forms:  { [name: string]: FormConfig } = {
   main: {
-    name: "Principal",
     spreadSheet: {
-      id: '1r93R3hKOCV6St4sac_88YZRM6OuYO9LxaxwMa2gWomE',
-      sheetName: 'Principal',
       columns: {
         category: 3,
         date: 2,
@@ -90,7 +87,12 @@ const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
     name: "Principal",
     sheets: {
       main: {
-        name: "Principal"
+        name: "Principal",
+        extra: {
+          categoryColumn: 1,
+          dateColumn: 1,
+          amountColumn: 1
+        }
       }
     }
   },

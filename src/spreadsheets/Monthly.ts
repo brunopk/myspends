@@ -40,6 +40,18 @@ class AllCategories extends BaseSheetHandler {
     }
   }
 
+  validate(): void {
+    const actualRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
+    if (typeof actualRows === "undefined") throw new Error("No rows found to validate")
+
+    const allCategories = getAllCategories()
+    const categoriesInCurrentSheet = actualRows[0].filter((categoryName) => allCategories.indexOf(categoryName) != -1)
+    const filteredSpends = filterSpends(categoriesInCurrentSheet)
+    console.log(groupSumSpendsByDateAndCategory(filteredSpends))
+
+    // TODO: SEGUIR ACA
+  }
+
   private getNumberOfExtraColumns(): number {
     // total column
     return 1

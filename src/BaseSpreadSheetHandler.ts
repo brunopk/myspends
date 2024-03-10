@@ -18,7 +18,11 @@ abstract class BaseSpreadSheetHandler {
     console.log(`Validating spreadsheet '${this.config.name}' ...`)
     this.sheetHandlers.forEach((sheetHandler) => {
       console.log(`Validating sheet '${sheetHandler.sheetConfig.name}'...`)
-      sheetHandler.validate()
+      try {
+        sheetHandler.validate()
+      } catch (ex) {
+        console.error((ex as Error).stack)
+      }
     })
   }
 

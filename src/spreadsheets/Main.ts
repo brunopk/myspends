@@ -18,11 +18,7 @@ class MainSheet extends BaseSheetHandler {
   }
 
   validate(): void {
-    const formData = readAllRows(forms.main.spreadSheet.id, forms.main.spreadSheet.sheetName)
-    const sheetData = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)?.filter((row) => {
-      // TODO: esto tiene que validar en base a todas las columnas
-      // row[this.sheetConfig.columns.]
-    })
+    throw new Error("Not implemented")
   }
 }
 

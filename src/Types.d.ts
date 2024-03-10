@@ -40,11 +40,8 @@ declare global {
 
   type FormConfig = {
     readonly spreadSheet: {
-      readonly id: string
-      readonly sheetName: string
       readonly columns: { [name: string]: number }
     }
-    readonly name: string
   }
 
   type RecurrentSpendConfig = Spend & {

@@ -22,8 +22,6 @@ function processMainForm() {
   }
 }
 
-// TODO: SEGUIR CON LA VALIDACIÓN DE PLANILLAS
-
 function processRecurrentSpends() {
   const today = new Date()
   for (let i = 0; i < recurrentSpends.length; i++) {
@@ -39,10 +37,16 @@ function processRecurrentSpends() {
   }
 }
 
-function validate(spreadSheetName: string, sheetName: string, month: number) {
-  const spreadSheetHandler = findSpreadSheetHandlerByName(spreadSheetHandlers, spreadSheetName)
-  if (typeof spreadSheetHandler === "undefined") throw new Error(`Spreadsheet '${spreadSheetName}' not found.`)
-
-  // TODO: seguir aca (buscar sheet y empezar a validar todas las columnas)
-  spreadSheetHandler.validate()
+/**
+ * Validate all amounts in all spreadsheets for the current month.
+ * @param spreadSheetName .
+ */
+function validateAllSpreadSheets() {
+  spreadSheetHandlers.forEach((spreadSheetHandler) => {
+    try {
+      spreadSheetHandler.validate()
+    } catch (ex) {
+      console.error((ex as Error).stack)
+    }
+  })
 }

@@ -41,6 +41,10 @@ function getNumberOfCategories(): number {
   return Object.keys(categories).length
 }
 
+function getAllCategories(): string[] {
+  return Object.keys(categories).map((key) => categories[key].name)
+}
+
 function getSheetConfiguration(spreadSheetConfig: SpreadSheetConfig, sheetName: string): SheetConfig {
   for (const key in spreadSheetConfig.sheets) {
     if (spreadSheetConfig.sheets[key].name === sheetName) {
@@ -50,6 +54,39 @@ function getSheetConfiguration(spreadSheetConfig: SpreadSheetConfig, sheetName: 
   throw new Error(`Configuration for sheet "${sheetName}" of spreadsheet "${spreadSheetConfig.name}" not found `)
 }
 
+/**
+ * Filters spends on the main sheet based on the provided filter criteria passed as a parameter
+ * @param categoryNames category names
+ * @returns returns all rows matching the indicated criteria
+ */
+function filterSpends(categoryNames: string[]): any[] {
+  const rows = readAllRows(spreadSheetConfig.main.id, spreadSheetConfig.main.sheets.main.name)
+  if (typeof rows === "undefined")
+    throw new Error(
+      `Undefined array after reading rows from sheet '${spreadSheetConfig.main.id}' spreadsheet '${spreadSheetConfig.main.sheets.main.name}'`
+    )
+  return rows.filter((row) => categoryNames.indexOf(row[spreadSheetConfig.main.sheets.main.extra.categoryColumn]) !== -1)
+}
+
+// TODO: SEGUIR ACA PERO HACER QUE AGRUPE CON UNAS FECHAS ESPECIFICAS (PASADO COMO PARAMETRO) TENIENDO EN CUENTA SOLO MES/ANO , ESAS FECHAS VIENEN DE LAS PLANILLAS QUE SE VAN A VALIDAR
+function groupSumSpendsByDatesAndCategory(rows: any[][]): object {
+  return rows.reduce((acc, row: any[]) => {
+    const formattedDate = formatDate(row[spreadSheetConfig.main.sheets.main.extra.dateColumn])
+    if (!acc[formattedDate]) {
+      acc[formattedDate] = {}
+    }
+
+    const category = row[spreadSheetConfig.main.sheets.main.extra.categoryColumn]
+    if (!acc[formattedDate][category]) {
+      acc[formattedDate][category] = row[spreadSheetConfig.main.sheets.main.extra.amountColumn]
+    } else {
+      acc[formattedDate][category] =
+        acc[formattedDate][category] + row[spreadSheetConfig.main.sheets.main.extra.amountColumn]
+    }
+    return acc
+  }, {})
+}
+
 function findSpreadSheetHandlerByName(
   spreadSheetHandlers: BaseSpreadSheetHandler[],
   spreadSheetName: string
@@ -57,6 +94,11 @@ function findSpreadSheetHandlerByName(
   return spreadSheetHandlers.find((spreadSheetHandler) => spreadSheetHandler.config.name == spreadSheetName)
 }
 
+/**
+ * Formats a {@code Date} object into an string with the pattern DD/MM/YYYY
+ * @param date Form
+ * @returns formatted string
+ */
 function formatDate(date: Date): string {
   const year = date.getFullYear()
   const month = (date.getMonth() + 1).toString().padStart(2, "0")
