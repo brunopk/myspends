@@ -40,16 +40,51 @@ class AllCategories extends BaseSheetHandler {
     }
   }
 
+  // TODO: SEGUIR CON LA VALIDACION DE LAS DEMAS PLANILLAS
+
   validate(): void {
-    const actualRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
-    if (typeof actualRows === "undefined") throw new Error("No rows found to validate")
+    let rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
+    if (typeof rows === "undefined")
+      throw new Error(
+        `Undefined reading rows from sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}'`
+      )
+    const categoriesInCurrentSheet = rows[0].slice(1, rows[0].length - 1)
 
-    const allCategories = getAllCategories()
-    const categoriesInCurrentSheet = actualRows[0].filter((categoryName) => allCategories.indexOf(categoryName) != -1)
-    const filteredSpends = filterSpends(categoriesInCurrentSheet)
-    console.log(groupSumSpendsByDateAndCategory(filteredSpends))
+    rows = rows.slice(1)
 
-    // TODO: SEGUIR ACA
+    const datesInCurrentSheet = rows.map((row) => row[0])
+    const allSpends = getAllSpends()
+    const groupedSpends = groupSpendsByDatesAndCategories(allSpends, datesInCurrentSheet, categoriesInCurrentSheet)
+
+    let mismatchFound = false
+    rows.forEach((row) => {
+      let printRows = false
+      let expectedMonthAmount = 0
+      const date = row[0]
+      const expectedRow = [date, ...Array(categoriesInCurrentSheet.length).fill(0), expectedMonthAmount]
+      const formattedDate = formatDate(date, 2)
+      categoriesInCurrentSheet.forEach((category) => {
+        const categoryColumn = getColumnForCategory(category) - 1
+        if (Object.keys(groupedSpends[formattedDate]).includes(category)) {
+          const expectedCategoryAmount = groupedSpends[formattedDate][category]
+          const actualCategoryAmount = row[categoryColumn]
+          printRows = printRows || expectedCategoryAmount != actualCategoryAmount
+          mismatchFound = mismatchFound || expectedCategoryAmount != actualCategoryAmount
+          expectedMonthAmount += expectedCategoryAmount
+          expectedRow[categoryColumn] = expectedCategoryAmount
+        }
+      })
+      expectedRow[expectedRow.length - 1] = expectedMonthAmount
+      if (printRows) {
+        console.error(`Expected row : ${expectedRow}\nActual row : ${row}\n`)
+      }
+    })
+    if (mismatchFound) {
+      console.error("Check amounts for each category")
+      console.error(
+        `Check if the first row in sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}' contains valid categories names`
+      )
+    }
   }
 
   private getNumberOfExtraColumns(): number {

@@ -20,6 +20,8 @@ function getSubcategoryConfiguration(categoryConfig: CategoryConfig, subCategory
   return categoryConfig.subCategories[subcategoryKey]
 }
 
+// TODO: column number should be obtained from configuration of each sheet within each spreadsheet
+
 function getColumnForCategory(categoryName: string) {
   const categoryConfig = getCategoryConfiguration(categoryName)
   return categoryConfig.column
@@ -41,10 +43,6 @@ function getNumberOfCategories(): number {
   return Object.keys(categories).length
 }
 
-function getAllCategories(): string[] {
-  return Object.keys(categories).map((key) => categories[key].name)
-}
-
 function getSheetConfiguration(spreadSheetConfig: SpreadSheetConfig, sheetName: string): SheetConfig {
   for (const key in spreadSheetConfig.sheets) {
     if (spreadSheetConfig.sheets[key].name === sheetName) {
@@ -55,33 +53,60 @@ function getSheetConfiguration(spreadSheetConfig: SpreadSheetConfig, sheetName: 
 }
 
 /**
- * Filters spends on the main sheet based on the provided filter criteria passed as a parameter
- * @param categoryNames category names
- * @returns returns all rows matching the indicated criteria
+ * Read and returns all rows from the main sheet within the main spreadsheet
  */
-function filterSpends(categoryNames: string[]): any[] {
+function getAllSpends(): any[][] {
   const rows = readAllRows(spreadSheetConfig.main.id, spreadSheetConfig.main.sheets.main.name)
+
   if (typeof rows === "undefined")
     throw new Error(
-      `Undefined array after reading rows from sheet '${spreadSheetConfig.main.id}' spreadsheet '${spreadSheetConfig.main.sheets.main.name}'`
+      `Undefined reading rows from sheet '${spreadSheetConfig.main.sheets.main.name}' within spreadsheet '${spreadSheetConfig.main.name}'`
     )
-  return rows.filter((row) => categoryNames.indexOf(row[spreadSheetConfig.main.sheets.main.extra.categoryColumn]) !== -1)
+
+  return rows.slice(1)
 }
 
-// TODO: SEGUIR ACA PERO HACER QUE AGRUPE CON UNAS FECHAS ESPECIFICAS (PASADO COMO PARAMETRO) TENIENDO EN CUENTA SOLO MES/ANO , ESAS FECHAS VIENEN DE LAS PLANILLAS QUE SE VAN A VALIDAR
-function groupSumSpendsByDatesAndCategory(rows: any[][]): object {
-  return rows.reduce((acc, row: any[]) => {
-    const formattedDate = formatDate(row[spreadSheetConfig.main.sheets.main.extra.dateColumn])
-    if (!acc[formattedDate]) {
-      acc[formattedDate] = {}
-    }
+/**
+ * Groups spends by dates and categories provided in parameters. Only spends with categories included in the `categories` 
+ * array will be considered. The result will be an objects like this :
+ * ```
+ * {
+ *   "4/2024" : {
+ *     "category_1" : 1
+ *     "category_2" : 1
+ *   },
+ *   "5/2024" : {
+ *     "category_1" : 1,
+ *     "category_2" : 1
+ *   },
+ * }
+ * ```
+ * Notice only date and month of spends are considered for the first level keys. For example, if there are two spends one
+ * in 3/4/2024" and another in "4/4/2024", both will account for the same date "4/2024" ignoring day number.
+ *
+ * @param rows rows with spends from the main spreadsheet
+ * @param dates dates to filter and group spends as described above
+ * @param categories categories to filter and group as described above
+ * @returns an object as described above
+ */
+function groupSpendsByDatesAndCategories(rows: any[][], dates: Date[], categories: string[]): object {
+  const formattedDates = dates.map((date) => formatDate(date, 2))
 
-    const category = row[spreadSheetConfig.main.sheets.main.extra.categoryColumn]
-    if (!acc[formattedDate][category]) {
-      acc[formattedDate][category] = row[spreadSheetConfig.main.sheets.main.extra.amountColumn]
-    } else {
-      acc[formattedDate][category] =
-        acc[formattedDate][category] + row[spreadSheetConfig.main.sheets.main.extra.amountColumn]
+  return rows.reduce((acc, row: any[]) => {
+    const currentFormattedDate = formatDate(row[spreadSheetConfig.main.sheets.main.extra.dateColumn], 2)
+    const currentCategory = row[spreadSheetConfig.mai.sheets.main.extra.categoryColumn]
+
+    if (formattedDates.includes(currentFormattedDate) && categories.includes(currentCategory)) {
+      if (!acc[currentFormattedDate]) {
+        acc[currentFormattedDate] = {}
+      }
+
+      if (!acc[currentFormattedDate][currentCategory]) {
+        acc[currentFormattedDate][currentCategory] = row[spreadSheetConfig.main.sheets.main.extra.amountColumn]
+      } else {
+        acc[currentFormattedDate][currentCategory] =
+          acc[currentFormattedDate][currentCategory] + row[spreadSheetConfig.main.sheets.main.extra.amountColumn]
+      }
     }
     return acc
   }, {})
@@ -95,15 +120,27 @@ function findSpreadSheetHandlerByName(
 }
 
 /**
- * Formats a {@code Date} object into an string with the pattern DD/MM/YYYY
- * @param date Form
+ * Formats a `Date` object into an string with one of these formats :
+ * 1. DD/MM/YYYY
+ * 2. MM/YYYY
+ * @param date date to be formatted
+ * @param format format to be used (1 or 2)
  * @returns formatted string
  */
-function formatDate(date: Date): string {
+function formatDate(date: Date, format = 1): string {
+  if (format !== 1 && format !== 2) {
+    throw new Error("Invalid format, possible values : 1 or 2")
+  }
+
   const year = date.getFullYear()
   const month = (date.getMonth() + 1).toString().padStart(2, "0")
-  const day = date.getDate().toString().padStart(2, "0")
-  return `${day}/${month}/${year}`
+
+  if (format === 1) {
+    const day = date.getDate().toString().padStart(2, "0")
+    return `${day}/${month}/${year}`
+  } else {
+    return `${month}/${year}`
+  }
 }
 
 function testUpdateSpend() {
