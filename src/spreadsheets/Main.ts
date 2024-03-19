@@ -16,10 +16,6 @@ class MainSheet extends BaseSheetHandler {
     ]
     addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
   }
-
-  validate(): void {
-    throw new Error("Not implemented")
-  }
 }
 
 /*************************************************************************************************/
