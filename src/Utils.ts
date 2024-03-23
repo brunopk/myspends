@@ -67,7 +67,7 @@ function getAllSpends(): any[][] {
 }
 
 /**
- * Groups spends by dates and categories provided in parameters. Only spends with categories included in the `categories` 
+ * Groups spends by dates and categories provided in parameters. Only spends with categories included in the `categories`
  * array will be considered. The result will be an objects like this :
  * ```
  * {
@@ -82,11 +82,12 @@ function getAllSpends(): any[][] {
  * }
  * ```
  * Notice only date and month of spends are considered for the first level keys. For example, if there are two spends one
- * in 3/4/2024" and another in "4/4/2024", both will account for the same date "4/2024" ignoring day number.
+ * in 3/4/2024" and another in "4/4/2024", both will account for the same sub-group "4/2024".
+ *
  *
  * @param rows rows with spends from the main spreadsheet
- * @param dates dates to filter and group spends as described above
- * @param categories categories to filter and group as described above
+ * @param dates list of dates to filter and group spends as described above
+ * @param categories list of categories to filter and group as described above
  * @returns an object as described above
  */
 function groupSpendsByDatesAndCategories(rows: any[][], dates: Date[], categories: string[]): object {
@@ -94,7 +95,7 @@ function groupSpendsByDatesAndCategories(rows: any[][], dates: Date[], categorie
 
   return rows.reduce((acc, row: any[]) => {
     const currentFormattedDate = formatDate(row[spreadSheetConfig.main.sheets.main.extra.dateColumn], 2)
-    const currentCategory = row[spreadSheetConfig.mai.sheets.main.extra.categoryColumn]
+    const currentCategory = row[spreadSheetConfig.main.sheets.main.extra.categoryColumn]
 
     if (formattedDates.includes(currentFormattedDate) && categories.includes(currentCategory)) {
       if (!acc[currentFormattedDate]) {
@@ -106,6 +107,64 @@ function groupSpendsByDatesAndCategories(rows: any[][], dates: Date[], categorie
       } else {
         acc[currentFormattedDate][currentCategory] =
           acc[currentFormattedDate][currentCategory] + row[spreadSheetConfig.main.sheets.main.extra.amountColumn]
+      }
+    }
+    return acc
+  }, {})
+}
+
+/**
+ * Groups spends by dates, category and sub-categories provided in parameters. First filter by dates, then the category and
+ * finally the sub-categories indicated in parameter (sub-categories may correspond to the given category). The result will 
+ * be an objects like this :
+ * ```
+ * {
+ *   "4/2024" : {
+ *     "subcategory_1" : 1
+ *     "subcategory_2" : 1
+ *   },
+ *   "5/2024" : {
+ *     "subcategory_1" : 1,
+ *     "subcategory_2" : 1
+ *   },
+ * }
+ * ```
+ * Notice only date and month of spends are considered for the first level keys. For example, if there are two spends one
+ * in 3/4/2024" and another in "4/4/2024", both will account for the same sub-group "4/2024".
+ *
+ * @param rows rows with spends from the main spreadsheet
+ * @param dates list of dates to filter and group spends as described above
+ * @param category category name to us for filtering and grouping as described above
+ * @param subCategories list of sub-categories to filter and group as described above (sub-categories may correspond to the given category)
+ * @returns an object as described above
+ */
+function groupSpendsByDatesAndSubCategories(
+  rows: any[][],
+  dates: Date[],
+  category: string,
+  subCategories: string[]
+): object {
+  const formattedDates = dates.map((date) => formatDate(date, 2))
+
+  return rows.reduce((acc, row: any[]) => {
+    const currentFormattedDate = formatDate(row[spreadSheetConfig.main.sheets.main.extra.dateColumn], 2)
+    const currentCategory = row[spreadSheetConfig.main.sheets.main.extra.categoryColumn]
+    const currentSubCategory = row[spreadSheetConfig.main.sheets.main.extra.subCategoryColumn]
+
+    if (
+      formattedDates.includes(currentFormattedDate) &&
+      currentCategory === category &&
+      subCategories.includes(currentSubCategory)
+    ) {
+      if (!acc[currentFormattedDate]) {
+        acc[currentFormattedDate] = {}
+      }
+
+      if (!acc[currentFormattedDate][currentSubCategory]) {
+        acc[currentFormattedDate][currentSubCategory] = row[spreadSheetConfig.main.sheets.main.extra.amountColumn]
+      } else {
+        acc[currentFormattedDate][currentSubCategory] =
+          acc[currentFormattedDate][currentSubCategory] + row[spreadSheetConfig.main.sheets.main.extra.amountColumn]
       }
     }
     return acc

@@ -1,3 +1,5 @@
+// Columns numbers starts with 0
+
 const forms:  { [name: string]: FormConfig } = {
   main: {
     spreadSheet: {
@@ -90,6 +92,7 @@ const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
         name: "Principal",
         extra: {
           categoryColumn: 1,
+          subCategoryColumn: 1,
           dateColumn: 1,
           amountColumn: 1
         }
