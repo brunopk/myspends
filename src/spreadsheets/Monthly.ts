@@ -97,9 +97,16 @@ class AllCategories extends BaseSheetHandler {
 }
 
 class Category extends BaseSheetHandler {
+  private category: string
+
+  constructor(spreadSheetConfig: SpreadSheetConfig, sheetConfig: SheetConfig) {
+    super(spreadSheetConfig, sheetConfig)
+    this.category = sheetConfig.name
+  }
+
   processSpend(spend: Spend) {
-    if (spend.category === this.sheetConfig.name) {
-      const subcategoryColumn = getColumnForSubcategory(spend.category, spend.subCategory)
+    if (spend.category === this.category) {
+      const subcategoryColumn = getColumnForSubCategory(spend.category, spend.subCategory)
       const categoryConfig = getCategoryConfiguration(spend.category)
       const totalColum = categoryConfig.totalColumn
       const monthRow = this.getRowForMonth(spend.date.getMonth())
@@ -144,21 +151,24 @@ class Category extends BaseSheetHandler {
 
     const datesInCurrentSheet = rows.map((row) => row[0])
     const allSpends = getAllSpends()
-    const groupedSpends = groupSpendsByDatesAndCategories(allSpends, datesInCurrentSheet, categoriesInCurrentSheet)
-
-    // TODO: SEGUIR ACÁ
+    const groupedSpends = groupSpendsByDatesAndSubCategories(
+      allSpends,
+      datesInCurrentSheet,
+      this.category,
+      subCategoriesInCurrentSheet
+    )
 
     let mismatchFound = false
     rows.forEach((row) => {
       let printRows = false
       let expectedMonthAmount = 0
       const date = row[0]
-      const expectedRow = [date, ...Array(categoriesInCurrentSheet.length).fill(0), expectedMonthAmount]
+      const expectedRow = [date, ...Array(subCategoriesInCurrentSheet.length).fill(0), expectedMonthAmount]
       const formattedDate = formatDate(date, 2)
-      categoriesInCurrentSheet.forEach((category) => {
-        const categoryColumn = getColumnForCategory(category) - 1
-        if (Object.keys(groupedSpends[formattedDate]).includes(category)) {
-          const expectedCategoryAmount = groupedSpends[formattedDate][category]
+      subCategoriesInCurrentSheet.forEach((subCategory) => {
+        const categoryColumn = getColumnForSubCategory(this.category, subCategory) - 1
+        if (Object.keys(groupedSpends[formattedDate]).includes(subCategory)) {
+          const expectedCategoryAmount = groupedSpends[formattedDate][subCategory]
           const actualCategoryAmount = row[categoryColumn]
           printRows = printRows || expectedCategoryAmount != actualCategoryAmount
           mismatchFound = mismatchFound || expectedCategoryAmount != actualCategoryAmount

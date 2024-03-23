@@ -27,7 +27,7 @@ function getColumnForCategory(categoryName: string) {
   return categoryConfig.column
 }
 
-function getColumnForSubcategory(categoryName: string, subCategory: string): number {
+function getColumnForSubCategory(categoryName: string, subCategory: string): number {
   const categoryConfig = getCategoryConfiguration(categoryName)
   return getSubcategoryConfiguration(categoryConfig, subCategory).column
 }
