@@ -41,48 +41,45 @@ class AllCategories extends BaseSheetHandler {
   }
 
   validate(): void {
-    let rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
-    if (typeof rows === "undefined")
+    let currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
+    if (typeof currentSheetRows === "undefined")
       throw new Error(
         `Undefined reading rows from sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}'`
       )
-    const categoriesInCurrentSheet = rows[0].slice(1, rows[0].length - 1)
+    const categoriesInCurrentSheet = currentSheetRows[0].slice(1, currentSheetRows[0].length - 1)
 
-    rows = rows.slice(1)
+    currentSheetRows = currentSheetRows.slice(1)
 
-    const datesInCurrentSheet = rows.map((row) => row[0])
+    const datesInCurrentSheet = currentSheetRows.map((currentSheetRow) => currentSheetRow[0])
     const allSpends = getAllSpends()
-    const groupedSpends = groupSpendsByDatesAndCategories(allSpends, datesInCurrentSheet, categoriesInCurrentSheet)
+    const groupedSpends = groupSpendsByDatesAndCategories(
+      allSpends,
+      datesInCurrentSheet,
+      null,
+      categoriesInCurrentSheet
+    )
 
-    let mismatchFound = false
-    rows.forEach((row) => {
+    currentSheetRows.forEach((currentSheetRow) => {
       let printRows = false
       let expectedMonthAmount = 0
-      const date = row[0]
+      const date = currentSheetRow[0]
       const expectedRow = [date, ...Array(categoriesInCurrentSheet.length).fill(0), expectedMonthAmount]
       const formattedDate = formatDate(date, 2)
       categoriesInCurrentSheet.forEach((category) => {
         const categoryColumn = getColumnForCategory(category) - 1
         if (Object.keys(groupedSpends[formattedDate]).includes(category)) {
           const expectedCategoryAmount = groupedSpends[formattedDate][category]
-          const actualCategoryAmount = row[categoryColumn]
+          const actualCategoryAmount = currentSheetRow[categoryColumn]
           printRows = printRows || expectedCategoryAmount != actualCategoryAmount
-          mismatchFound = mismatchFound || expectedCategoryAmount != actualCategoryAmount
           expectedMonthAmount += expectedCategoryAmount
           expectedRow[categoryColumn] = expectedCategoryAmount
         }
       })
       expectedRow[expectedRow.length - 1] = expectedMonthAmount
       if (printRows) {
-        console.error(`Expected row : ${expectedRow}\nActual row : ${row}\n`)
+        console.error(`Expected row : ${expectedRow}\nActual row : ${currentSheetRow}\n`)
       }
     })
-    if (mismatchFound) {
-      console.error("Check amounts for each category")
-      console.error(
-        `Check if the first row in sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}' contains valid categories names`
-      )
-    }
   }
 
   private getNumberOfExtraColumns(): number {
@@ -137,19 +134,17 @@ class Category extends BaseSheetHandler {
     }
   }
 
-  // TODO: SEGUIR CON LA VALIDACION DE LAS DEMAS PLANILLAS
-
   validate(): void {
-    let rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
-    if (typeof rows === "undefined")
+    let currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
+    if (typeof currentSheetRows === "undefined")
       throw new Error(
         `Undefined reading rows from sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}'`
       )
-    const subCategoriesInCurrentSheet = rows[0].slice(1, rows[0].length - 1)
+    const subCategoriesInCurrentSheet = currentSheetRows[0].slice(1, currentSheetRows[0].length - 1)
 
-    rows = rows.slice(1)
+    currentSheetRows = currentSheetRows.slice(1)
 
-    const datesInCurrentSheet = rows.map((row) => row[0])
+    const datesInCurrentSheet = currentSheetRows.map((row) => row[0])
     const allSpends = getAllSpends()
     const groupedSpends = groupSpendsByDatesAndSubCategories(
       allSpends,
@@ -159,17 +154,17 @@ class Category extends BaseSheetHandler {
     )
 
     let mismatchFound = false
-    rows.forEach((row) => {
+    currentSheetRows.forEach((currentSheetRow) => {
       let printRows = false
       let expectedMonthAmount = 0
-      const date = row[0]
+      const date = currentSheetRow[0]
       const expectedRow = [date, ...Array(subCategoriesInCurrentSheet.length).fill(0), expectedMonthAmount]
       const formattedDate = formatDate(date, 2)
       subCategoriesInCurrentSheet.forEach((subCategory) => {
         const categoryColumn = getColumnForSubCategory(this.category, subCategory) - 1
         if (Object.keys(groupedSpends[formattedDate]).includes(subCategory)) {
           const expectedCategoryAmount = groupedSpends[formattedDate][subCategory]
-          const actualCategoryAmount = row[categoryColumn]
+          const actualCategoryAmount = currentSheetRow[categoryColumn]
           printRows = printRows || expectedCategoryAmount != actualCategoryAmount
           mismatchFound = mismatchFound || expectedCategoryAmount != actualCategoryAmount
           expectedMonthAmount += expectedCategoryAmount
@@ -178,7 +173,7 @@ class Category extends BaseSheetHandler {
       })
       expectedRow[expectedRow.length - 1] = expectedMonthAmount
       if (printRows) {
-        console.error(`Expected row : ${expectedRow}\nActual row : ${row}\n`)
+        console.error(`Expected row : ${expectedRow}\nActual row : ${currentSheetRow}\n`)
       }
     })
     if (mismatchFound) {
@@ -222,6 +217,48 @@ class Account extends BaseSheetHandler {
         setValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColum, currentTotal + spend.value)
       }
     }
+  }
+
+  validate(): void {
+    let currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
+    if (typeof currentSheetRows === "undefined")
+      throw new Error(
+        `Undefined reading rows from sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}'`
+      )
+    const categoriesInCurrentSheet = currentSheetRows[0].slice(1, currentSheetRows[0].length - 1)
+
+    currentSheetRows = currentSheetRows.slice(1)
+
+    const datesInCurrentSheet = currentSheetRows.map((currentSheetRow) => currentSheetRow[0])
+    const allSpends = getAllSpends()
+    const groupedSpends = groupSpendsByDatesAndCategories(
+      allSpends,
+      datesInCurrentSheet,
+      this.sheetConfig.name,
+      categoriesInCurrentSheet
+    )
+
+    currentSheetRows.forEach((currentSheetRow) => {
+      let printRows = false
+      let expectedMonthAmount = 0
+      const date = currentSheetRow[0]
+      const expectedRow = [date, ...Array(categoriesInCurrentSheet.length).fill(0), expectedMonthAmount]
+      const formattedDate = formatDate(date, 2)
+      categoriesInCurrentSheet.forEach((category) => {
+        const categoryColumn = getColumnForCategory(category) - 1
+        if (Object.keys(groupedSpends[formattedDate]).includes(category)) {
+          const expectedCategoryAmount = groupedSpends[formattedDate][category]
+          const actualCategoryAmount = currentSheetRow[categoryColumn]
+          printRows = printRows || expectedCategoryAmount != actualCategoryAmount
+          expectedMonthAmount += expectedCategoryAmount
+          expectedRow[categoryColumn] = expectedCategoryAmount
+        }
+      })
+      expectedRow[expectedRow.length - 1] = expectedMonthAmount
+      if (printRows) {
+        console.error(`Expected row : ${expectedRow}\nActual spend : ${currentSheetRow}\n`)
+      }
+    })
   }
 
   private getColumnForTotal(): number {

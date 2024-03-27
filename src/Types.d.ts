@@ -40,7 +40,9 @@ declare global {
 
   type FormConfig = {
     readonly spreadSheet: {
-      readonly columns: { [name: string]: number }
+      readonly id: string
+      readonly name: string
+      readonly sheet: SheetConfig
     }
   }
 

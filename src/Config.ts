@@ -3,13 +3,18 @@
 const forms:  { [name: string]: FormConfig } = {
   main: {
     spreadSheet: {
-      columns: {
-        category: 3,
-        date: 2,
-        value: 9,
-        subCategory: 4,
-        account: 8,
-        description: 9
+      id: 'xxx',
+      name: 'Form',
+      sheet: {
+        name: 'Name',
+        extra: {
+          categoryColumn: 3,
+          dateColumn: 2,
+          valueColumn: 9,
+          subCategoryColumn: 4,
+          accountColumn: 8,
+          descriptionColumn: 9
+        }
       }
     }
   }
@@ -94,7 +99,8 @@ const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
           categoryColumn: 1,
           subCategoryColumn: 1,
           dateColumn: 1,
-          amountColumn: 1
+          amountColumn: 1,
+          accountColumn: 1
         }
       }
     }

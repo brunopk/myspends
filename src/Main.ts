@@ -1,3 +1,8 @@
+// TODO: Probar ingresar un gasto desde el formulario
+
+// TODO: Probar validar todas las planillas
+
+// TODO: Arreglar lo de las categorias (ver el TODO en src/Utils.ts:23)
 const spreadSheetHandlers: BaseSpreadSheetHandler[] = []
 
 function processMainForm() {
@@ -7,12 +12,12 @@ function processMainForm() {
 
   // Normally active range contains one row (last inserted row)
   for (let i = 1; i <= numRows; i++) {
-    const date = range.getCell(i, forms.main.spreadSheet.columns.date).getValue()
-    const category = range.getCell(i, forms.main.spreadSheet.columns.category).getValue()
-    const value = range.getCell(i, forms.main.spreadSheet.columns.value).getValue()
-    const account = range.getCell(i, forms.main.spreadSheet.columns.account).getValue()
-    const description = range.getCell(i, forms.main.spreadSheet.columns.description).getValue()
-    const subCategory = range.getCell(i, forms.main.spreadSheet.columns.subCategory).getValue()
+    const date = range.getCell(i, forms.main.spreadSheet.sheet.extra.dateColumn).getValue()
+    const category = range.getCell(i, forms.main.spreadSheet.sheet.extra.categoryColumn).getValue()
+    const value = range.getCell(i, forms.main.spreadSheet.sheet.extra.valueColumn).getValue()
+    const account = range.getCell(i, forms.main.spreadSheet.sheet.extra.accountColumn).getValue()
+    const description = range.getCell(i, forms.main.spreadSheet.sheet.extra.descriptionColumn).getValue()
+    const subCategory = range.getCell(i, forms.main.spreadSheet.sheet.extra.subCategoryColumn).getValue()
 
     const newSpend: Spend = { date, category, value, account, description, subCategory, origin }
 
