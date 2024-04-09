@@ -8,23 +8,23 @@ class AllCategories extends BaseSheetHandler {
     if (!monthRow) {
       const newRowAux = Array(getNumberOfCategories() + this.getNumberOfExtraColumns()).fill(0)
       const newRow: (Date | number)[] = [spend.date].concat(newRowAux)
-      newRow[getColumnForCategory(spend.category) - 1] = spend.value
-      newRow[this.getColumnForTotal() - 1] = spend.value
+      newRow[this.sheetConfig.columns![spend.category]] = spend.value
+      // TODO: totalColumn should be a required key in sheet config
+      newRow[this.sheetConfig.extra.totalColum] = spend.value
 
       addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
     } else {
-      const columnForCategory = getColumnForCategory(spend.category)
       const currentCategoryValue = getValue(
         this.spreadSheetConfig.id,
         this.sheetConfig.name,
         monthRow,
-        columnForCategory
+        this.sheetConfig.columns![spend.category]
       )
       setValue(
         this.spreadSheetConfig.id,
         this.sheetConfig.name,
         monthRow,
-        columnForCategory,
+        this.sheetConfig.columns![spend.category],
         currentCategoryValue + spend.value
       )
 
@@ -66,7 +66,7 @@ class AllCategories extends BaseSheetHandler {
       const expectedRow = [date, ...Array(categoriesInCurrentSheet.length).fill(0), expectedMonthAmount]
       const formattedDate = formatDate(date, 2)
       categoriesInCurrentSheet.forEach((category) => {
-        const categoryColumn = getColumnForCategory(category) - 1
+        const categoryColumn = this.sheetConfig.columns![category]
         if (Object.keys(groupedSpends[formattedDate]).includes(category)) {
           const expectedCategoryAmount = groupedSpends[formattedDate][category]
           const actualCategoryAmount = currentSheetRow[categoryColumn]
@@ -105,6 +105,7 @@ class Category extends BaseSheetHandler {
     if (spend.category === this.category) {
       const subcategoryColumn = getColumnForSubCategory(spend.category, spend.subCategory)
       const categoryConfig = getCategoryConfiguration(spend.category)
+      // TODO: totalColumn should be a required key in sheet config
       const totalColum = categoryConfig.totalColumn
       const monthRow = this.getRowForMonth(spend.date.getMonth())
       if (!monthRow) {
@@ -192,12 +193,12 @@ class Account extends BaseSheetHandler {
       if (!monthRow) {
         const newRowAux = Array(getNumberOfCategories() + 1).fill(0)
         const newRow: (Date | number)[] = [spend.date].concat(newRowAux)
-        newRow[getColumnForCategory(spend.category) - 1] = spend.value
+        newRow[this.sheetConfig.columns![spend.category]] = spend.value
         newRow[newRow.length - 1] = spend.value
 
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
-        const columnForCategory = getColumnForCategory(spend.category)
+        const columnForCategory = this.sheetConfig.columns![spend.category]
         const currentCategoryAmount = getValue(
           this.spreadSheetConfig.id,
           this.sheetConfig.name,
@@ -245,7 +246,7 @@ class Account extends BaseSheetHandler {
       const expectedRow = [date, ...Array(categoriesInCurrentSheet.length).fill(0), expectedMonthAmount]
       const formattedDate = formatDate(date, 2)
       categoriesInCurrentSheet.forEach((category) => {
-        const categoryColumn = getColumnForCategory(category) - 1
+        const categoryColumn = this.sheetConfig.columns![category]
         if (Object.keys(groupedSpends[formattedDate]).includes(category)) {
           const expectedCategoryAmount = groupedSpends[formattedDate][category]
           const actualCategoryAmount = currentSheetRow[categoryColumn]
@@ -301,6 +302,6 @@ class Monthly extends BaseSpreadSheetHandler {
   }
 }
 
-spreadSheetHandlers.push(new Monthly(spreadSheetConfig.monthly))
+spreadSheetHandlers.push(new Monthly(sheets.monthly))
 
-console.info(`Handler for spreadsheet '${spreadSheetConfig.monthly.name}' loaded correctly`)
+console.info(`Handler for spreadsheet '${sheets.monthly.name}' loaded correctly`)

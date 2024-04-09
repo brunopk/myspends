@@ -47,6 +47,6 @@ class Main extends BaseSpreadSheetHandler {
   }
 }
 
-spreadSheetHandlers.push(new Main(spreadSheetConfig.main))
+spreadSheetHandlers.push(new Main(sheets.main))
 
-console.info(`Handler for spreadsheet '${spreadSheetConfig.main.name}' loaded correctly`)
+console.info(`Handler for spreadsheet '${sheets.main.name}' loaded correctly`)

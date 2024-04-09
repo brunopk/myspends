@@ -20,12 +20,8 @@ function getSubcategoryConfiguration(categoryConfig: CategoryConfig, subCategory
   return categoryConfig.subCategories[subcategoryKey]
 }
 
-// TODO: column number should be obtained from configuration of each sheet within each spreadsheet
+// TODO: column number for subcategories should be obtained from configuration of each sheet within each spreadsheet
 
-function getColumnForCategory(categoryName: string) {
-  const categoryConfig = getCategoryConfiguration(categoryName)
-  return categoryConfig.column
-}
 
 function getColumnForSubCategory(categoryName: string, subCategory: string): number {
   const categoryConfig = getCategoryConfiguration(categoryName)
@@ -56,11 +52,11 @@ function getSheetConfiguration(spreadSheetConfig: SpreadSheetConfig, sheetName: 
  * Read and returns all rows from the main sheet within the main spreadsheet
  */
 function getAllSpends(): any[][] {
-  const rows = readAllRows(spreadSheetConfig.main.id, spreadSheetConfig.main.sheets.main.name)
+  const rows = readAllRows(sheets.main.id, sheets.main.sheets.main.name)
 
   if (typeof rows === "undefined")
     throw new Error(
-      `Undefined reading rows from sheet '${spreadSheetConfig.main.sheets.main.name}' within spreadsheet '${spreadSheetConfig.main.name}'`
+      `Undefined reading rows from sheet '${sheets.main.sheets.main.name}' within spreadsheet '${sheets.main.name}'`
     )
 
   return rows.slice(1)
@@ -96,12 +92,17 @@ function groupSpendsByDatesAndCategories(
   account: string | null,
   categories: string[]
 ): object {
+  const accountColumn = 6
+  const categoryColumn = 3
+  const amountColumn = 7
+  const dateColumn = 1
+
   const formattedDates = dates.map((date) => formatDate(date, 2))
 
   return rows.reduce((acc, row: any[]) => {
-    const currentFormattedDate = formatDate(row[spreadSheetConfig.main.sheets.main.extra.dateColumn], 2)
-    const currentCategory = row[spreadSheetConfig.main.sheets.main.extra.categoryColumn]
-    const currentAccount = row[spreadSheetConfig.main.sheets.main.extra.accountColumn]
+    const currentFormattedDate = formatDate(row[dateColumn], 2)
+    const currentCategory = row[categoryColumn]
+    const currentAccount = row[accountColumn]
 
     if (
       formattedDates.includes(currentFormattedDate) &&
@@ -113,10 +114,9 @@ function groupSpendsByDatesAndCategories(
       }
 
       if (!acc[currentFormattedDate][currentCategory]) {
-        acc[currentFormattedDate][currentCategory] = row[spreadSheetConfig.main.sheets.main.extra.amountColumn]
+        acc[currentFormattedDate][currentCategory] = row[amountColumn]
       } else {
-        acc[currentFormattedDate][currentCategory] =
-          acc[currentFormattedDate][currentCategory] + row[spreadSheetConfig.main.sheets.main.extra.amountColumn]
+        acc[currentFormattedDate][currentCategory] = acc[currentFormattedDate][currentCategory] + row[amountColumn]
       }
     }
     return acc
@@ -156,12 +156,16 @@ function groupSpendsByDatesAndSubCategories(
   category: string,
   subCategories: string[]
 ): object {
+  const dateColumn = 1
+  const categoryColumn = 3
+  const subCategoryColumn = 4
+  const amountColumn = 7
   const formattedDates = dates.map((date) => formatDate(date, 2))
 
   return rows.reduce((acc, row: any[]) => {
-    const currentFormattedDate = formatDate(row[spreadSheetConfig.main.sheets.main.extra.dateColumn], 2)
-    const currentCategory = row[spreadSheetConfig.main.sheets.main.extra.categoryColumn]
-    const currentSubCategory = row[spreadSheetConfig.main.sheets.main.extra.subCategoryColumn]
+    const currentFormattedDate = formatDate(row[dateColumn], 2)
+    const currentCategory = row[categoryColumn]
+    const currentSubCategory = row[subCategoryColumn]
 
     if (
       formattedDates.includes(currentFormattedDate) &&
@@ -173,10 +177,9 @@ function groupSpendsByDatesAndSubCategories(
       }
 
       if (!acc[currentFormattedDate][currentSubCategory]) {
-        acc[currentFormattedDate][currentSubCategory] = row[spreadSheetConfig.main.sheets.main.extra.amountColumn]
+        acc[currentFormattedDate][currentSubCategory] = row[amountColumn]
       } else {
-        acc[currentFormattedDate][currentSubCategory] =
-          acc[currentFormattedDate][currentSubCategory] + row[spreadSheetConfig.main.sheets.main.extra.amountColumn]
+        acc[currentFormattedDate][currentSubCategory] = acc[currentFormattedDate][currentSubCategory] + row[amountColumn]
       }
     }
     return acc

@@ -10,6 +10,8 @@ function processMainForm() {
   const numRows = range.getNumRows()
   const origin = "Forms"
 
+  // TODO: hardcode column number instead of getting them from config
+
   // Normally active range contains one row (last inserted row)
   for (let i = 1; i <= numRows; i++) {
     const date = range.getCell(i, forms.main.spreadSheet.sheet.extra.dateColumn).getValue()

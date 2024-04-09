@@ -1,25 +1,3 @@
-// Columns numbers starts with 0
-
-const forms:  { [name: string]: FormConfig } = {
-  main: {
-    spreadSheet: {
-      id: 'xxx',
-      name: 'Form',
-      sheet: {
-        name: 'Name',
-        extra: {
-          categoryColumn: 3,
-          dateColumn: 2,
-          valueColumn: 9,
-          subCategoryColumn: 4,
-          accountColumn: 8,
-          descriptionColumn: 9
-        }
-      }
-    }
-  }
-}
-
 const categories: { [name: string]: CategoryConfig } = {
   category1: {
     name: "Comida",
@@ -88,20 +66,27 @@ const sheetType = {
   account: 1
 }
 
-const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
+// Columns numbers starts with 0
+
+const forms:  { [name: string]: FormConfig } = {
+  main: {
+    spreadSheet: {
+      id: "xxx",
+      name: "Form",
+      sheet: {
+        name: "Name"
+      }
+    }
+  }
+}
+
+const sheets : { [name: string]: SpreadSheetConfig } = {
   main: {
     id: "1r93R3hKOCV6St4sac_88YZRM6OuYO9LxaxwMa2gWomE",
     name: "Principal",
     sheets: {
       main: {
-        name: "Principal",
-        extra: {
-          categoryColumn: 1,
-          subCategoryColumn: 1,
-          dateColumn: 1,
-          amountColumn: 1,
-          accountColumn: 1
-        }
+        name: "Principal"
       }
     }
   },
@@ -110,34 +95,58 @@ const spreadSheetConfig : { [name: string]: SpreadSheetConfig } = {
     name: "Mensual",
     sheets: {
       all_categories: {
-        name: "Categorías"
+        name: "Categorías",
+        columns: {
+          "Column A": 0,
+          "Column B": 0
+        }
       },
       category1: {
         name: categories.category1.name,
+        columns: {
+          "Column A": 0,
+          "Column B": 0
+        },
         extra: {
           type: sheetType.category
         }
       },
       category2: {
         name: categories.category2.name,
+        columns: {
+          "Column A": 0,
+          "Column B": 0
+        },
         extra: {
           type: sheetType.category
         }
       },
       account1: {
         name: accounts.account1,
+        columns: {
+          "Column A": 0,
+          "Column B": 0
+        },
         extra: {
           type: sheetType.account
         }
       },
       account2: {
         name: accounts.account2,
+        columns: {
+          "Column A": 0,
+          "Column B": 0
+        },
         extra: {
           type: sheetType.account
         }
       },
       account3: {
         name: accounts.account2,
+        columns: {
+          "Column A": 0,
+          "Column B": 0
+        },
         extra: {
           type: sheetType.account
         }
