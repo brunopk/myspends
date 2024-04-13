@@ -1,44 +1,3 @@
-function getCategoryConfiguration(categoryName: string): CategoryConfig {
-  const categoryKey = Object.keys(categories)
-    .filter((key) => categories[key].name === categoryName)
-    .at(0)
-  if (typeof categoryKey === "undefined") throw new Error(`Configuration for category '${categoryName}' not found.`)
-  return categories[categoryKey]
-}
-
-function getSubcategoryConfiguration(categoryConfig: CategoryConfig, subCategoryName: string) {
-  if (typeof categoryConfig.subCategories === "undefined")
-    throw new Error(`No sub categories defined for category "${categoryConfig.name}"`)
-  const subcategoryKey = Object.keys(categoryConfig.subCategories)
-    .filter(
-      (key) =>
-        typeof categoryConfig.subCategories !== "undefined" &&
-        categoryConfig.subCategories[key].name === subCategoryName
-    )
-    .at(0)
-  if (typeof subcategoryKey === "undefined") throw new Error(`Unknown sub category "${subCategoryName}" for category "${categoryConfig.name}"`)
-  return categoryConfig.subCategories[subcategoryKey]
-}
-
-// TODO: column number for subcategories should be obtained from configuration of each sheet within each spreadsheet
-
-
-function getColumnForSubCategory(categoryName: string, subCategory: string): number {
-  const categoryConfig = getCategoryConfiguration(categoryName)
-  return getSubcategoryConfiguration(categoryConfig, subCategory).column
-}
-
-function getNumberOfSubcategories(categoryName: string): number {
-  const categoryConfig = getCategoryConfiguration(categoryName)
-  if (typeof categoryConfig.subCategories === "undefined")
-    throw new Error(`No subcategories defined for category '${categoryName}'.`)
-  return Object.keys(categoryConfig.subCategories).length
-}
-
-function getNumberOfCategories(): number {
-  return Object.keys(categories).length
-}
-
 function getSheetConfiguration(spreadSheetConfig: SpreadSheetConfig, sheetName: string): SheetConfig {
   for (const key in spreadSheetConfig.sheets) {
     if (spreadSheetConfig.sheets[key].name === sheetName) {
@@ -92,17 +51,13 @@ function groupSpendsByDatesAndCategories(
   account: string | null,
   categories: string[]
 ): object {
-  const accountColumn = 6
-  const categoryColumn = 3
-  const amountColumn = 7
-  const dateColumn = 1
 
   const formattedDates = dates.map((date) => formatDate(date, 2))
 
   return rows.reduce((acc, row: any[]) => {
-    const currentFormattedDate = formatDate(row[dateColumn], 2)
-    const currentCategory = row[categoryColumn]
-    const currentAccount = row[accountColumn]
+    const currentFormattedDate = formatDate(row[sheets.main.sheets.main.columns!.date], 2)
+    const currentCategory = row[sheets.main.sheets.main.columns!.category]
+    const currentAccount = row[sheets.main.sheets.main.columns!.account]
 
     if (
       formattedDates.includes(currentFormattedDate) &&
@@ -114,9 +69,10 @@ function groupSpendsByDatesAndCategories(
       }
 
       if (!acc[currentFormattedDate][currentCategory]) {
-        acc[currentFormattedDate][currentCategory] = row[amountColumn]
+        acc[currentFormattedDate][currentCategory] = row[sheets.main.sheets.main.columns!.amount]
       } else {
-        acc[currentFormattedDate][currentCategory] = acc[currentFormattedDate][currentCategory] + row[amountColumn]
+        acc[currentFormattedDate][currentCategory] =
+          acc[currentFormattedDate][currentCategory] + row[sheets.main.sheets.main.columns!.amount]
       }
     }
     return acc
@@ -156,16 +112,12 @@ function groupSpendsByDatesAndSubCategories(
   category: string,
   subCategories: string[]
 ): object {
-  const dateColumn = 1
-  const categoryColumn = 3
-  const subCategoryColumn = 4
-  const amountColumn = 7
   const formattedDates = dates.map((date) => formatDate(date, 2))
 
   return rows.reduce((acc, row: any[]) => {
-    const currentFormattedDate = formatDate(row[dateColumn], 2)
-    const currentCategory = row[categoryColumn]
-    const currentSubCategory = row[subCategoryColumn]
+    const currentFormattedDate = formatDate(row[sheets.main.sheets.main.columns!.date], 2)
+    const currentCategory = row[sheets.main.sheets.main.columns!.category]
+    const currentSubCategory = row[sheets.main.sheets.main.columns!.subCategory]
 
     if (
       formattedDates.includes(currentFormattedDate) &&
@@ -177,9 +129,10 @@ function groupSpendsByDatesAndSubCategories(
       }
 
       if (!acc[currentFormattedDate][currentSubCategory]) {
-        acc[currentFormattedDate][currentSubCategory] = row[amountColumn]
+        acc[currentFormattedDate][currentSubCategory] = row[sheets.main.sheets.main.columns!.amount]
       } else {
-        acc[currentFormattedDate][currentSubCategory] = acc[currentFormattedDate][currentSubCategory] + row[amountColumn]
+        acc[currentFormattedDate][currentSubCategory] =
+          acc[currentFormattedDate][currentSubCategory] + row[sheets.main.sheets.main.columns!.amount]
       }
     }
     return acc
@@ -215,8 +168,4 @@ function formatDate(date: Date, format = 1): string {
   } else {
     return `${month}/${year}`
   }
-}
-
-function testUpdateSpend() {
-  updateSpend(new Date("2023-08-02"), "Psicólogo", 1000)
 }

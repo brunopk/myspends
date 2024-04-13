@@ -1,64 +1,48 @@
+// Columns are in range 1..n
+
+// TODO: remove this (only used for category tree on Google Site HTML)
+
 const categories: { [name: string]: CategoryConfig } = {
   category1: {
     name: "Comida",
-    column: 3,
-    totalColumn: 0,
     subCategories: {
       subCategory1: {
-        name: "Mercado Pago (70% OFF)",
-        column: 2
+        name: "Mercado Pago (70% OFF)"
       },
       subCategory2: {
-        name: "VISA Alimentos",
-        column: 3
+        name: "VISA Alimentos"
       }
     }
   },
   category2: {
     name: "Transporte",
-    column: 6,
-    totalColumn: 0,
     subCategories: {
       subCategory1: {
-        name: "Bus",
-        column: 2
+        name: "Bus"
       },
       subCategory2: {
-        name: "Nafta",
-        column: 3
+        name: "Nafta"
       },
       subCategory3: {
-        name: "Taxi",
-        column: 4
+        name: "Taxi"
       },
       subCategory4: {
-        name: "Uber",
-        column: 5
+        name: "Uber"
       }
     }
   },
   category3: {
-    name: "Psicólogo",
-    column: 4
+    name: "Psicólogo"
   },
   category4: {
-    name: "Celular",
-    column: 2
+    name: "Celular"
   },
   category5: {
-    name: "Otros",
-    column: 7
+    name: "Otros"
   },
   category6: {
-    name: "Salud",
-    column: 5
+    name: "Salud"
   }
-}
-
-const accounts: { [name: string]: string } = {
-  account1: "",
-  account2: "",
-  account3: ""
 }
 
 const sheetType = {
@@ -71,10 +55,18 @@ const sheetType = {
 const forms:  { [name: string]: FormConfig } = {
   main: {
     spreadSheet: {
-      id: "xxx",
-      name: "Form",
+      id: 'xxx',
+      name: 'Form',
       sheet: {
-        name: "Name"
+        name: 'Name',
+        columns: {
+          category: 3,
+          date: 2,
+          value: 9,
+          subCategory: 4,
+          account: 8,
+          description: 9
+        }
       }
     }
   }
@@ -86,7 +78,14 @@ const sheets : { [name: string]: SpreadSheetConfig } = {
     name: "Principal",
     sheets: {
       main: {
-        name: "Principal"
+        name: "Principal",
+        columns: {
+          category: 1,
+          subCategory: 1,
+          date: 1,
+          amount: 1,
+          account: 1
+        }
       }
     }
   },
@@ -96,6 +95,7 @@ const sheets : { [name: string]: SpreadSheetConfig } = {
     sheets: {
       all_categories: {
         name: "Categorías",
+        totalColumn: 1,
         columns: {
           "Column A": 0,
           "Column B": 0
@@ -103,6 +103,7 @@ const sheets : { [name: string]: SpreadSheetConfig } = {
       },
       category1: {
         name: categories.category1.name,
+        totalColumn: 1,
         columns: {
           "Column A": 0,
           "Column B": 0
@@ -113,6 +114,7 @@ const sheets : { [name: string]: SpreadSheetConfig } = {
       },
       category2: {
         name: categories.category2.name,
+        totalColumn: 1,
         columns: {
           "Column A": 0,
           "Column B": 0
@@ -122,7 +124,8 @@ const sheets : { [name: string]: SpreadSheetConfig } = {
         }
       },
       account1: {
-        name: accounts.account1,
+        name: "Account 1",
+        totalColumn: 1,
         columns: {
           "Column A": 0,
           "Column B": 0
@@ -132,7 +135,8 @@ const sheets : { [name: string]: SpreadSheetConfig } = {
         }
       },
       account2: {
-        name: accounts.account2,
+        name: "Account 2",
+        totalColumn: 1,
         columns: {
           "Column A": 0,
           "Column B": 0
@@ -142,7 +146,8 @@ const sheets : { [name: string]: SpreadSheetConfig } = {
         }
       },
       account3: {
-        name: accounts.account2,
+        name: "Account 3",
+        totalColumn: 1,
         columns: {
           "Column A": 0,
           "Column B": 0

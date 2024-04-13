@@ -4,31 +4,27 @@
 
 class AllCategories extends BaseSheetHandler {
   processSpend(spend: Spend): void {
+    const categoryColumn = this.sheetConfig.columns![spend.category]
+    const totalColumn = this.sheetConfig.totalColumn!
     const monthRow = this.getRowForMonth(spend.date.getMonth())
     if (!monthRow) {
-      const newRowAux = Array(getNumberOfCategories() + this.getNumberOfExtraColumns()).fill(0)
-      const newRow: (Date | number)[] = [spend.date].concat(newRowAux)
-      newRow[this.sheetConfig.columns![spend.category]] = spend.value
-      // TODO: totalColumn should be a required key in sheet config
-      newRow[this.sheetConfig.extra.totalColum] = spend.value
+      const newRow = Array(this.sheetConfig.numberOfColumns).fill(0)
+      newRow[0] = spend.date
+      newRow[categoryColumn - 1] = spend.value
+      newRow[totalColumn - 1] = spend.value
 
       addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
     } else {
-      const currentCategoryValue = getValue(
-        this.spreadSheetConfig.id,
-        this.sheetConfig.name,
-        monthRow,
-        this.sheetConfig.columns![spend.category]
-      )
+      const currentCategoryValue = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, categoryColumn)
       setValue(
         this.spreadSheetConfig.id,
         this.sheetConfig.name,
         monthRow,
-        this.sheetConfig.columns![spend.category],
+        categoryColumn,
         currentCategoryValue + spend.value
       )
 
-      const columnForTotalSpend = this.getColumnForTotal()
+      const columnForTotalSpend = this.sheetConfig.totalColumn!
       const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, columnForTotalSpend)
       setValue(
         this.spreadSheetConfig.id,
@@ -81,17 +77,9 @@ class AllCategories extends BaseSheetHandler {
       }
     })
   }
-
-  private getNumberOfExtraColumns(): number {
-    // total column
-    return 1
-  }
-
-  private getColumnForTotal(): number {
-    // month column + categories  + 1
-    return getNumberOfCategories() + 2
-  }
 }
+
+/*************************************************************************************************/
 
 class Category extends BaseSheetHandler {
   private category: string
@@ -103,16 +91,14 @@ class Category extends BaseSheetHandler {
 
   processSpend(spend: Spend) {
     if (spend.category === this.category) {
-      const subcategoryColumn = getColumnForSubCategory(spend.category, spend.subCategory)
-      const categoryConfig = getCategoryConfiguration(spend.category)
-      // TODO: totalColumn should be a required key in sheet config
-      const totalColum = categoryConfig.totalColumn
+      const subcategoryColumn = this.sheetConfig.columns![spend.subCategory]
+      const totalColumn = this.sheetConfig.totalColumn!
       const monthRow = this.getRowForMonth(spend.date.getMonth())
       if (!monthRow) {
-        const newRowAux = Array(getNumberOfSubcategories(spend.category) + 1).fill(0)
-        const newRow: (Date | number)[] = [spend.date].concat(newRowAux)
+        const newRow = Array(this.sheetConfig.numberOfColumns).fill(0)
+        newRow[0] = spend.date
         newRow[subcategoryColumn - 1] = spend.value
-        newRow[totalColum - 1] = spend.value
+        newRow[totalColumn - 1] = spend.value
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
         const currentSubcategoryTotal = getValue(
@@ -129,8 +115,8 @@ class Category extends BaseSheetHandler {
           currentSubcategoryTotal + spend.value
         )
 
-        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColum)
-        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColum, currentTotal + spend.value)
+        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColumn)
+        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColumn, currentTotal + spend.value)
       }
     }
   }
@@ -162,14 +148,14 @@ class Category extends BaseSheetHandler {
       const expectedRow = [date, ...Array(subCategoriesInCurrentSheet.length).fill(0), expectedMonthAmount]
       const formattedDate = formatDate(date, 2)
       subCategoriesInCurrentSheet.forEach((subCategory) => {
-        const categoryColumn = getColumnForSubCategory(this.category, subCategory) - 1
+        const subCategoryColumn = this.sheetConfig.columns![subCategory]
         if (Object.keys(groupedSpends[formattedDate]).includes(subCategory)) {
-          const expectedCategoryAmount = groupedSpends[formattedDate][subCategory]
-          const actualCategoryAmount = currentSheetRow[categoryColumn]
-          printRows = printRows || expectedCategoryAmount != actualCategoryAmount
-          mismatchFound = mismatchFound || expectedCategoryAmount != actualCategoryAmount
-          expectedMonthAmount += expectedCategoryAmount
-          expectedRow[categoryColumn] = expectedCategoryAmount
+          const expectedSubCategoryAmount = groupedSpends[formattedDate][subCategory]
+          const actualSubCategoryAmount = currentSheetRow[subCategoryColumn]
+          printRows = printRows || expectedSubCategoryAmount != actualSubCategoryAmount
+          mismatchFound = mismatchFound || expectedSubCategoryAmount != actualSubCategoryAmount
+          expectedMonthAmount += expectedSubCategoryAmount
+          expectedRow[subCategoryColumn] = expectedSubCategoryAmount
         }
       })
       expectedRow[expectedRow.length - 1] = expectedMonthAmount
@@ -186,14 +172,16 @@ class Category extends BaseSheetHandler {
   }
 }
 
+/*************************************************************************************************/
+
 class Account extends BaseSheetHandler {
   processSpend(spend: Spend) {
     if (spend.account === this.sheetConfig.name) {
       const monthRow = this.getRowForMonth(spend.date.getMonth())
       if (!monthRow) {
-        const newRowAux = Array(getNumberOfCategories() + 1).fill(0)
-        const newRow: (Date | number)[] = [spend.date].concat(newRowAux)
-        newRow[this.sheetConfig.columns![spend.category]] = spend.value
+        const newRow = Array(this.sheetConfig.numberOfColumns).fill(0)
+        newRow[0] = spend.date
+        newRow[this.sheetConfig.columns![spend.category] - 1] = spend.value
         newRow[newRow.length - 1] = spend.value
 
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
@@ -213,9 +201,9 @@ class Account extends BaseSheetHandler {
           currentCategoryAmount + spend.value
         )
 
-        const totalColum = this.getColumnForTotal()
-        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColum)
-        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColum, currentTotal + spend.value)
+        const totalColumn = this.sheetConfig.totalColumn!
+        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColumn)
+        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColumn, currentTotal + spend.value)
       }
     }
   }
@@ -261,16 +249,11 @@ class Account extends BaseSheetHandler {
       }
     })
   }
-
-  private getColumnForTotal(): number {
-    // month column + categories  + 1
-    return getNumberOfCategories() + 2
-  }
 }
 
-/*************************************************************************************************/
-/*                                         SPREAD SHEETS                                         */
-/*************************************************************************************************/
+/*********************************************************************************************************/
+/*                                         SPREAD SHEET HANDLER                                          */
+/*********************************************************************************************************/
 
 class Monthly extends BaseSpreadSheetHandler {
   constructor(spreadSheetConfig: SpreadSheetConfig) {

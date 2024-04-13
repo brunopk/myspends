@@ -13,6 +13,14 @@ function addRow(spreadSheetId: string, sheetName: string, row: any[]) {
   console.info(`New row added on sheet "${sheetName}" of "${spreadSheetName}"`)
 }
 
+/**
+ * Get value
+ * @param spreadSheetId .
+ * @param sheetName .
+ * @param row row in the range 1..n
+ * @param column column in the range 1..n
+ * @returns .
+ */
 function getValue(spreadSheetId: string, sheetName: string, row: number, column: number): any {
   const spreadSheet = SpreadsheetApp.openById(spreadSheetId)
   const sheet = spreadSheet.getSheetByName(sheetName)
@@ -20,6 +28,14 @@ function getValue(spreadSheetId: string, sheetName: string, row: number, column:
   return dataRange?.getCell(row, column).getValue()
 }
 
+/**
+ * Get value
+ * @param spreadSheetId .
+ * @param sheetName .
+ * @param row row in the range 1..n
+ * @param column column in the range 1..n
+ * @returns .
+ */
 function setValue(spreadSheetId: string, sheetName: string, row: number, column: number, newValue: any) {
   console.info(`Updating cell on row ${row} and column ${column} of sheet "${sheetName}"`)
   const spreadSheet = SpreadsheetApp.openById(spreadSheetId)

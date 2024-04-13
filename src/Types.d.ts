@@ -15,19 +15,18 @@ declare global {
 
   type SubCategoryConfig = {
     readonly name: string
-    readonly column: number
   }
 
   type CategoryConfig = {
     readonly name: string
-    readonly column: number
-    readonly totalColumn: number // TODO: total column no debería ir aca
     readonly subCategories?: { [name: string]: SubCategoryConfig }
   }
 
   type SheetConfig = {
     readonly name: string
     readonly columns?: { [name: string]: number }
+    readonly totalColumn?: number
+    readonly numberOfColumns?: number
     readonly extra?: any
   }
 
