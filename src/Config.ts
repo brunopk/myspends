@@ -72,7 +72,7 @@ const forms:  { [name: string]: FormConfig } = {
   }
 }
 
-const sheets : { [name: string]: SpreadSheetConfig } = {
+const spreadSheets : { [name: string]: SpreadSheetConfig } = {
   main: {
     id: "1r93R3hKOCV6St4sac_88YZRM6OuYO9LxaxwMa2gWomE",
     name: "Principal",

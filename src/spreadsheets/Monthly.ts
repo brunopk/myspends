@@ -1,6 +1,6 @@
-/*************************************************************************************************/
-/*                                         SHEETS                                                */
-/*************************************************************************************************/
+/*********************************************************************************************************/
+/*                                              SHEETS                                                   */
+/*********************************************************************************************************/
 
 class AllCategories extends BaseSheetHandler {
   processSpend(spend: Spend): void {
@@ -79,7 +79,7 @@ class AllCategories extends BaseSheetHandler {
   }
 }
 
-/*************************************************************************************************/
+/**********************************************************************************************************/
 
 class Category extends BaseSheetHandler {
   private category: string
@@ -149,6 +149,9 @@ class Category extends BaseSheetHandler {
       const formattedDate = formatDate(date, 2)
       subCategoriesInCurrentSheet.forEach((subCategory) => {
         const subCategoryColumn = this.sheetConfig.columns![subCategory]
+        // TODO: explota acá porque cambiaron de nombres las subcategorias de alimentos 
+        // TODO: revisar que los indices estén bien, capaz hay que hacer -1
+        // TODO: pensar que pasa si se agregan nuevas categorias/subcategorias
         if (Object.keys(groupedSpends[formattedDate]).includes(subCategory)) {
           const expectedSubCategoryAmount = groupedSpends[formattedDate][subCategory]
           const actualSubCategoryAmount = currentSheetRow[subCategoryColumn]
@@ -172,7 +175,7 @@ class Category extends BaseSheetHandler {
   }
 }
 
-/*************************************************************************************************/
+/*********************************************************************************************************/
 
 class Account extends BaseSheetHandler {
   processSpend(spend: Spend) {
@@ -285,6 +288,6 @@ class Monthly extends BaseSpreadSheetHandler {
   }
 }
 
-spreadSheetHandlers.push(new Monthly(sheets.monthly))
+spreadSheetHandlers.push(new Monthly(spreadSheets.monthly))
 
-console.info(`Handler for spreadsheet '${sheets.monthly.name}' loaded correctly`)
+console.info(`Handler for spreadsheet '${spreadSheets.monthly.name}' loaded correctly`)

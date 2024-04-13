@@ -11,11 +11,11 @@ function getSheetConfiguration(spreadSheetConfig: SpreadSheetConfig, sheetName: 
  * Read and returns all rows from the main sheet within the main spreadsheet
  */
 function getAllSpends(): any[][] {
-  const rows = readAllRows(sheets.main.id, sheets.main.sheets.main.name)
+  const rows = readAllRows(spreadSheets.main.id, spreadSheets.main.sheets.main.name)
 
   if (typeof rows === "undefined")
     throw new Error(
-      `Undefined reading rows from sheet '${sheets.main.sheets.main.name}' within spreadsheet '${sheets.main.name}'`
+      `Undefined reading rows from sheet '${spreadSheets.main.sheets.main.name}' within spreadsheet '${spreadSheets.main.name}'`
     )
 
   return rows.slice(1)
@@ -51,13 +51,12 @@ function groupSpendsByDatesAndCategories(
   account: string | null,
   categories: string[]
 ): object {
-
   const formattedDates = dates.map((date) => formatDate(date, 2))
 
   return rows.reduce((acc, row: any[]) => {
-    const currentFormattedDate = formatDate(row[sheets.main.sheets.main.columns!.date], 2)
-    const currentCategory = row[sheets.main.sheets.main.columns!.category]
-    const currentAccount = row[sheets.main.sheets.main.columns!.account]
+    const currentFormattedDate = formatDate(row[spreadSheets.main.sheets.main.columns!.date - 1], 2)
+    const currentCategory = row[spreadSheets.main.sheets.main.columns!.category - 1]
+    const currentAccount = row[spreadSheets.main.sheets.main.columns!.account - 1]
 
     if (
       formattedDates.includes(currentFormattedDate) &&
@@ -69,10 +68,10 @@ function groupSpendsByDatesAndCategories(
       }
 
       if (!acc[currentFormattedDate][currentCategory]) {
-        acc[currentFormattedDate][currentCategory] = row[sheets.main.sheets.main.columns!.amount]
+        acc[currentFormattedDate][currentCategory] = row[spreadSheets.main.sheets.main.columns!.amount - 1]
       } else {
         acc[currentFormattedDate][currentCategory] =
-          acc[currentFormattedDate][currentCategory] + row[sheets.main.sheets.main.columns!.amount]
+          acc[currentFormattedDate][currentCategory] + row[spreadSheets.main.sheets.main.columns!.amount - 1]
       }
     }
     return acc
@@ -115,9 +114,9 @@ function groupSpendsByDatesAndSubCategories(
   const formattedDates = dates.map((date) => formatDate(date, 2))
 
   return rows.reduce((acc, row: any[]) => {
-    const currentFormattedDate = formatDate(row[sheets.main.sheets.main.columns!.date], 2)
-    const currentCategory = row[sheets.main.sheets.main.columns!.category]
-    const currentSubCategory = row[sheets.main.sheets.main.columns!.subCategory]
+    const currentFormattedDate = formatDate(row[spreadSheets.main.sheets.main.columns!.date - 1], 2)
+    const currentCategory = row[spreadSheets.main.sheets.main.columns!.category - 1]
+    const currentSubCategory = row[spreadSheets.main.sheets.main.columns!.subCategory - 1]
 
     if (
       formattedDates.includes(currentFormattedDate) &&
@@ -129,10 +128,10 @@ function groupSpendsByDatesAndSubCategories(
       }
 
       if (!acc[currentFormattedDate][currentSubCategory]) {
-        acc[currentFormattedDate][currentSubCategory] = row[sheets.main.sheets.main.columns!.amount]
+        acc[currentFormattedDate][currentSubCategory] = row[spreadSheets.main.sheets.main.columns!.amount - 1]
       } else {
         acc[currentFormattedDate][currentSubCategory] =
-          acc[currentFormattedDate][currentSubCategory] + row[sheets.main.sheets.main.columns!.amount]
+          acc[currentFormattedDate][currentSubCategory] + row[spreadSheets.main.sheets.main.columns!.amount - 1]
       }
     }
     return acc

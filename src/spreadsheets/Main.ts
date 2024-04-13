@@ -1,6 +1,6 @@
-/*************************************************************************************************/
-/*                                         SHEETS                                                */
-/*************************************************************************************************/
+/*********************************************************************************************************/
+/*                                         SHEETS                                                        */
+/*********************************************************************************************************/
 
 class MainSheet extends BaseSheetHandler {
   processSpend(spend: Spend) {
@@ -24,7 +24,7 @@ class MainSheet extends BaseSheetHandler {
         `Undefined reading rows from sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}'`
       )
 
-    const allSpends = readAllRows(forms.main.spreadSheet.id, forms.main.spreadSheet.name)
+    const allSpends = readAllRows(forms.main.spreadSheet.id, forms.main.spreadSheet.sheet.name)
     if (typeof allSpends === "undefined")
       throw new Error(
         `Undefined reading rows from sheet '${forms.main.spreadSheet.sheet.name}' within spreadsheet '${forms.main.spreadSheet.name}'`
@@ -47,6 +47,6 @@ class Main extends BaseSpreadSheetHandler {
   }
 }
 
-spreadSheetHandlers.push(new Main(sheets.main))
+spreadSheetHandlers.push(new Main(spreadSheets.main))
 
-console.info(`Handler for spreadsheet '${sheets.main.name}' loaded correctly`)
+console.info(`Handler for spreadsheet '${spreadSheets.main.name}' loaded correctly`)
