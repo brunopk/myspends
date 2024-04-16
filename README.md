@@ -2,7 +2,7 @@
 
 **Node version:** 16.17.0
 
-1. **Copy the correct project id to the .clasp.json before executing.** `clasp push`.
+1. **Copy the correct project id to .clasp.json before executing.** `clasp push`.
 2. Then, after uploading content with `clasp push`:
     - Delete src/Types.gs.d
     - Delete html folder and all its content.
