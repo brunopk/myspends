@@ -1,0 +1,113 @@
+<script>
+  // TODO: populate subcategories and the other fields
+  // TODO: update subcategory field after selecting one category
+  
+  function populateSelectElement(options, selectElement) {
+    options.forEach((value) => {
+      let optionElement = document.createElement("option");
+      optionElement.value= value;
+      optionElement.innerHTML = value;
+      selectElement.appendChild(optionElement);
+    })
+  }
+
+  function selectCategory(selectElement) {
+    console.log(event);
+    console.log(categories)
+  }
+
+  function formatDate(date) {
+    const year = date.getFullYear().toString();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+  
+  function goToGoogleForm() {
+    let elements = null;
+
+    elements = document.getElementsByName("date");
+    const date = elements[0].value;
+    console.log(date);
+    
+    elements = document.getElementsByName("category");
+    const category = elements[0].value
+    console.log(category);
+    
+    elements = document.getElementsByName("subcategory");
+    const subcategory = elements[0].value;
+    console.log(subcategory);
+
+    elements = document.getElementsByName("account");
+    const account = elements[0].value;
+    console.log(account);
+
+    elements = document.getElementsByName("description");
+    const description = elements[0].value;
+    console.log(description);
+
+    elements = document.getElementsByName("value");
+    const value = elements[0].value;
+    console.log(value);
+
+    const url = `https://docs.google.com/forms/d/e/1FAIpQLSevL7ZcgmFDkLUBr_pj-T0bypAjDgq3PRjAvn8Frt9qXk88GQ/viewform?usp=pp_url&entry.33770901=${date}&entry.1700463900=${category}&entry.1045532207=${subcategory}&entry.59325913=${account}&entry.1948022534=${discount}&entry.31627014=${description}&entry.1746868782=${value}`;
+    // console.log(url)
+
+    window.location.href = url;
+  }
+
+  const categoryTree = {
+     "Celular": {},
+     "Comida": {},
+     "Psicólogo": {},
+     "Salud": {},
+     "Transporte": {}
+  };  
+
+  const otherCategory = {
+    "Otros": {}
+  }
+
+  window.onload = () => {
+    let dateInput = document.getElementsByName("date")[0];
+    const today = new Date();
+    dateInput.value = formatDate(today);
+
+    let categorySelect = document.getElementsByName("category")[0];
+    let availableCategories = Object.keys(categoryTree)
+      .sort()
+      .concat(Object.keys(otherCategory))
+    populateSelectElement(availableCategories, categorySelect);
+
+  }
+
+</script>
+<style>
+  input, select {
+    height: 3em; 
+    margin-bottom: 2em;
+    font-size: 1em;
+    width:100%;
+  }
+</style>
+<div style="display:flex;flex-direction:column;">
+  <input type="date" name="date"/>
+  <select name="category" value="Celular" onchange="selectCategory(this)"></select>
+  <select name="subcategory" value="Bus">
+    <option value="Bus">Bus</option>
+    <option value="Nafta">Nafta</option>
+    <option value="Remedios">Remedios</option>
+    <option value="Taxi">Taxi</option>
+    <option value="Uber">Uber</option>
+    <option value="Otros">Otros</option>
+  </select>
+  <select name="account" value="BROU">
+    <option value="BROU">BROU</option>
+    <option value="Cuenta de Papá">Cuenta de Papá</option>
+    <option value="Itaú">Itaú</option>
+    <option value="Itaú Alimentos">Itaú Alimentos</option>
+  </select>
+  <input type="number" name="value" placeholder="Valor"/>
+  <input name="description" placeholder="Descripción"/>
+  <input type="button" onClick="goToGoogleForm()" value="Finalizar">
+<div/>
