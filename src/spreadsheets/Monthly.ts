@@ -123,14 +123,16 @@ class Category extends BaseSheetHandler {
 
   validate(): void {
     let currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
+
+    // TODO: extract headers and the other rows using : const [a1, a2] = [a.slice(0, x), a.slice(x)];
+
     if (typeof currentSheetRows === "undefined")
       throw new Error(
         `Undefined reading rows from sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}'`
       )
+
     const subCategoriesInCurrentSheet = currentSheetRows[0].slice(1, currentSheetRows[0].length - 1)
-
     currentSheetRows = currentSheetRows.slice(1)
-
     const datesInCurrentSheet = currentSheetRows.map((row) => row[0])
     const allSpends = getAllSpends()
     const groupedSpends = groupSpendsByDatesAndSubCategories(
@@ -139,7 +141,6 @@ class Category extends BaseSheetHandler {
       this.category,
       subCategoriesInCurrentSheet
     )
-
     let mismatchFound = false
     currentSheetRows.forEach((currentSheetRow) => {
       let printRows = false
@@ -147,6 +148,10 @@ class Category extends BaseSheetHandler {
       const date = currentSheetRow[0]
       const expectedRow = [date, ...Array(subCategoriesInCurrentSheet.length).fill(0), expectedMonthAmount]
       const formattedDate = formatDate(date, 2)
+
+      // TODO: check if formattedDate is included in groupedSpends keys.
+
+
       subCategoriesInCurrentSheet.forEach((subCategory) => {
         const subCategoryColumn = this.sheetConfig.columns![subCategory]
         // TODO: explota acá porque cambiaron de nombres las subcategorias de alimentos 
