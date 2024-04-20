@@ -1,17 +1,93 @@
-/*********************************************************************************************************/
-/*                                              SHEETS                                                   */
-/*********************************************************************************************************/
+/*************************************************************************************************************************/
+/*                                                     COMMON FUNCTIONS                                                  */
+/*************************************************************************************************************************/
+
+/**
+ * If a `Date` element is found, maps it to the formatted representation using the `formatDate` function in Utils.ts
+ * @param row row to map
+ */
+function mapDates(row: any[]) {
+  return row.map((elem) => (elem instanceof Date ? formatDate(elem, 2) : elem))
+}
+
+/**
+ * Validate sheets like `AllCategories` and `Category` which have the same format.
+ * @param groupedSpends the result of invoking `groupSpendsByDatesAndSubCategories` or `groupSpendsByDatesAndCategories`
+ *  in Utils.ts
+ * @param data data to validate
+ * @param groupingElements categories or subcategories (see `groupSpendsByDatesAndSubCategories` and
+ * `groupSpendsByDatesAndCategories` in Utils.ts)
+ */
+function validateSheet(
+  spreadSheetConfig: SpreadSheetConfig,
+  sheetConfig: SheetConfig,
+  groupedSpends: object,
+  data: any[][],
+  groupingElements: string[]
+) {
+  let currentDate = data![0][0]
+  let rowMismatch = false
+  let quantityMismatch = false
+  data!.forEach((row) => {
+    currentDate = row![0]
+    let printRows = false
+    let expectedMonthAmount = 0
+    const expectedRow = [currentDate, ...Array(groupingElements?.length).fill(0), expectedMonthAmount]
+    const formattedDate = formatDate(currentDate, 2)
+
+    rowMismatch = rowMismatch || !Object.keys(groupedSpends).includes(formattedDate)
+    if (rowMismatch) {
+      console.warn(`There is a row for date ${formatDate(currentDate, 1)} but no spends found for that date.`)
+    } else {
+      groupingElements?.forEach((groupingElement) => {
+        const index = sheetConfig.columns![groupingElement] - 1
+        if (Object.keys(groupedSpends[formattedDate]).includes(groupingElement)) {
+          const expectedAmount = groupedSpends[formattedDate][groupingElement]
+          const actualAmount = row[index]
+          printRows = printRows || expectedAmount != actualAmount
+          quantityMismatch = quantityMismatch || expectedAmount != actualAmount
+          expectedMonthAmount += expectedAmount
+          expectedRow[index] = expectedAmount
+        }
+      })
+    }
+
+    // Hide quantity mismatch errors if there was a row mismatch type error
+    if (!rowMismatch) {
+      expectedRow[expectedRow.length - 1] = expectedMonthAmount
+      if (printRows) {
+        console.warn(`Expected row : ${mapDates(expectedRow)}\nActual row : ${mapDates(row)}\n`)
+      }
+    }
+  })
+
+  const tips: string[] = []
+  if (quantityMismatch) {
+    tips.push("Check amounts for each category")
+  }
+  if (quantityMismatch || rowMismatch) {
+    tips.push(`Check category/subcategory names are correct for all spends.`)
+    tips.push(
+      `Check if the first row in sheet '${sheetConfig.name}' within spreadsheet '${spreadSheetConfig.name}' contains valid category/subcategory names`
+    )
+    console.warn(tips.join("\n"))
+  }
+}
+
+/*************************************************************************************************************************/
+/*                                                         SHEETS                                                        */
+/*************************************************************************************************************************/
 
 class AllCategories extends BaseSheetHandler {
   processSpend(spend: Spend): void {
     const categoryColumn = this.sheetConfig.columns![spend.category]
-    const totalColumn = this.sheetConfig.totalColumn!
+    const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
     const monthRow = this.getRowForMonth(spend.date.getMonth())
     if (!monthRow) {
       const newRow = Array(this.sheetConfig.numberOfColumns).fill(0)
       newRow[0] = spend.date
       newRow[categoryColumn - 1] = spend.value
-      newRow[totalColumn - 1] = spend.value
+      newRow[numberOfColumns - 1] = spend.value
 
       addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
     } else {
@@ -24,62 +100,23 @@ class AllCategories extends BaseSheetHandler {
         currentCategoryValue + spend.value
       )
 
-      const columnForTotalSpend = this.sheetConfig.totalColumn!
-      const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, columnForTotalSpend)
-      setValue(
-        this.spreadSheetConfig.id,
-        this.sheetConfig.name,
-        monthRow,
-        columnForTotalSpend,
-        currentTotal + spend.value
-      )
+      const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, numberOfColumns)
+      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, numberOfColumns, currentTotal + spend.value)
     }
   }
 
   validate(): void {
-    let currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
-    if (typeof currentSheetRows === "undefined")
-      throw new Error(
-        `Undefined reading rows from sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}'`
-      )
-    const categoriesInCurrentSheet = currentSheetRows[0].slice(1, currentSheetRows[0].length - 1)
-
-    currentSheetRows = currentSheetRows.slice(1)
-
-    const datesInCurrentSheet = currentSheetRows.map((currentSheetRow) => currentSheetRow[0])
+    const rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
+    const [headers, data] = [rows?.slice(0, 1)[0], rows?.slice(1)]
+    const categories = headers?.slice(1, headers.length - 1)
+    const dates = data?.map((row) => row[0])
     const allSpends = getAllSpends()
-    const groupedSpends = groupSpendsByDatesAndCategories(
-      allSpends,
-      datesInCurrentSheet,
-      null,
-      categoriesInCurrentSheet
-    )
-
-    currentSheetRows.forEach((currentSheetRow) => {
-      let printRows = false
-      let expectedMonthAmount = 0
-      const date = currentSheetRow[0]
-      const expectedRow = [date, ...Array(categoriesInCurrentSheet.length).fill(0), expectedMonthAmount]
-      const formattedDate = formatDate(date, 2)
-      categoriesInCurrentSheet.forEach((category) => {
-        const categoryColumn = this.sheetConfig.columns![category]
-        if (Object.keys(groupedSpends[formattedDate]).includes(category)) {
-          const expectedCategoryAmount = groupedSpends[formattedDate][category]
-          const actualCategoryAmount = currentSheetRow[categoryColumn]
-          printRows = printRows || expectedCategoryAmount != actualCategoryAmount
-          expectedMonthAmount += expectedCategoryAmount
-          expectedRow[categoryColumn] = expectedCategoryAmount
-        }
-      })
-      expectedRow[expectedRow.length - 1] = expectedMonthAmount
-      if (printRows) {
-        console.error(`Expected row : ${expectedRow}\nActual row : ${currentSheetRow}\n`)
-      }
-    })
+    const groupedSpends = groupSpendsByDatesAndCategories(allSpends, dates!, null, categories!)
+    validateSheet(this.spreadSheetConfig, this.sheetConfig, groupedSpends, data!, categories!)
   }
 }
 
-/**********************************************************************************************************/
+/*************************************************************************************************************************/
 
 class Category extends BaseSheetHandler {
   private category: string
@@ -92,13 +129,13 @@ class Category extends BaseSheetHandler {
   processSpend(spend: Spend) {
     if (spend.category === this.category) {
       const subcategoryColumn = this.sheetConfig.columns![spend.subCategory]
-      const totalColumn = this.sheetConfig.totalColumn!
+      const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
       const monthRow = this.getRowForMonth(spend.date.getMonth())
       if (!monthRow) {
         const newRow = Array(this.sheetConfig.numberOfColumns).fill(0)
         newRow[0] = spend.date
         newRow[subcategoryColumn - 1] = spend.value
-        newRow[totalColumn - 1] = spend.value
+        newRow[numberOfColumns - 1] = spend.value
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
         const currentSubcategoryTotal = getValue(
@@ -115,82 +152,41 @@ class Category extends BaseSheetHandler {
           currentSubcategoryTotal + spend.value
         )
 
-        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColumn)
-        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColumn, currentTotal + spend.value)
+        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, numberOfColumns)
+        setValue(
+          this.spreadSheetConfig.id,
+          this.sheetConfig.name,
+          monthRow,
+          numberOfColumns,
+          currentTotal + spend.value
+        )
       }
     }
   }
 
   validate(): void {
-    let currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
-
-    // TODO: extract headers and the other rows using : const [a1, a2] = [a.slice(0, x), a.slice(x)];
-
-    if (typeof currentSheetRows === "undefined")
-      throw new Error(
-        `Undefined reading rows from sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}'`
-      )
-
-    const subCategoriesInCurrentSheet = currentSheetRows[0].slice(1, currentSheetRows[0].length - 1)
-    currentSheetRows = currentSheetRows.slice(1)
-    const datesInCurrentSheet = currentSheetRows.map((row) => row[0])
+    const rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
+    const [headers, data] = [rows?.slice(0, 1)[0], rows?.slice(1)]
+    const subCategories = headers?.slice(1, headers.length - 1)
+    const dates = data?.map((row) => row[0])
     const allSpends = getAllSpends()
-    const groupedSpends = groupSpendsByDatesAndSubCategories(
-      allSpends,
-      datesInCurrentSheet,
-      this.category,
-      subCategoriesInCurrentSheet
-    )
-    let mismatchFound = false
-    currentSheetRows.forEach((currentSheetRow) => {
-      let printRows = false
-      let expectedMonthAmount = 0
-      const date = currentSheetRow[0]
-      const expectedRow = [date, ...Array(subCategoriesInCurrentSheet.length).fill(0), expectedMonthAmount]
-      const formattedDate = formatDate(date, 2)
-
-      // TODO: check if formattedDate is included in groupedSpends keys.
-
-
-      subCategoriesInCurrentSheet.forEach((subCategory) => {
-        const subCategoryColumn = this.sheetConfig.columns![subCategory]
-        // TODO: explota acá porque cambiaron de nombres las subcategorias de alimentos 
-        // TODO: revisar que los indices estén bien, capaz hay que hacer -1
-        // TODO: pensar que pasa si se agregan nuevas categorias/subcategorias
-        if (Object.keys(groupedSpends[formattedDate]).includes(subCategory)) {
-          const expectedSubCategoryAmount = groupedSpends[formattedDate][subCategory]
-          const actualSubCategoryAmount = currentSheetRow[subCategoryColumn]
-          printRows = printRows || expectedSubCategoryAmount != actualSubCategoryAmount
-          mismatchFound = mismatchFound || expectedSubCategoryAmount != actualSubCategoryAmount
-          expectedMonthAmount += expectedSubCategoryAmount
-          expectedRow[subCategoryColumn] = expectedSubCategoryAmount
-        }
-      })
-      expectedRow[expectedRow.length - 1] = expectedMonthAmount
-      if (printRows) {
-        console.error(`Expected row : ${expectedRow}\nActual row : ${currentSheetRow}\n`)
-      }
-    })
-    if (mismatchFound) {
-      console.error("Check amounts for each category")
-      console.error(
-        `Check if the first row in sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}' contains valid categories names`
-      )
-    }
+    const groupedSpends = groupSpendsByDatesAndSubCategories(allSpends, dates!, this.category, subCategories!)
+    validateSheet(this.spreadSheetConfig, this.sheetConfig, groupedSpends, data!, subCategories!)
   }
 }
 
-/*********************************************************************************************************/
+/*************************************************************************************************************************/
 
 class Account extends BaseSheetHandler {
   processSpend(spend: Spend) {
     if (spend.account === this.sheetConfig.name) {
       const monthRow = this.getRowForMonth(spend.date.getMonth())
+      const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
       if (!monthRow) {
         const newRow = Array(this.sheetConfig.numberOfColumns).fill(0)
         newRow[0] = spend.date
         newRow[this.sheetConfig.columns![spend.category] - 1] = spend.value
-        newRow[newRow.length - 1] = spend.value
+        newRow[numberOfColumns - 1] = spend.value
 
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
@@ -209,59 +205,32 @@ class Account extends BaseSheetHandler {
           currentCategoryAmount + spend.value
         )
 
-        const totalColumn = this.sheetConfig.totalColumn!
-        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColumn)
-        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColumn, currentTotal + spend.value)
+        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, numberOfColumns)
+        setValue(
+          this.spreadSheetConfig.id,
+          this.sheetConfig.name,
+          monthRow,
+          numberOfColumns,
+          currentTotal + spend.value
+        )
       }
     }
   }
 
   validate(): void {
-    let currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
-    if (typeof currentSheetRows === "undefined")
-      throw new Error(
-        `Undefined reading rows from sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}'`
-      )
-    const categoriesInCurrentSheet = currentSheetRows[0].slice(1, currentSheetRows[0].length - 1)
-
-    currentSheetRows = currentSheetRows.slice(1)
-
-    const datesInCurrentSheet = currentSheetRows.map((currentSheetRow) => currentSheetRow[0])
+    const rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
+    const [headers, data] = [rows?.slice(0, 1)[0], rows?.slice(1)]
+    const categories = headers?.slice(1, headers.length - 1)
+    const dates = data?.map((row) => row[0])
     const allSpends = getAllSpends()
-    const groupedSpends = groupSpendsByDatesAndCategories(
-      allSpends,
-      datesInCurrentSheet,
-      this.sheetConfig.name,
-      categoriesInCurrentSheet
-    )
-
-    currentSheetRows.forEach((currentSheetRow) => {
-      let printRows = false
-      let expectedMonthAmount = 0
-      const date = currentSheetRow[0]
-      const expectedRow = [date, ...Array(categoriesInCurrentSheet.length).fill(0), expectedMonthAmount]
-      const formattedDate = formatDate(date, 2)
-      categoriesInCurrentSheet.forEach((category) => {
-        const categoryColumn = this.sheetConfig.columns![category]
-        if (Object.keys(groupedSpends[formattedDate]).includes(category)) {
-          const expectedCategoryAmount = groupedSpends[formattedDate][category]
-          const actualCategoryAmount = currentSheetRow[categoryColumn]
-          printRows = printRows || expectedCategoryAmount != actualCategoryAmount
-          expectedMonthAmount += expectedCategoryAmount
-          expectedRow[categoryColumn] = expectedCategoryAmount
-        }
-      })
-      expectedRow[expectedRow.length - 1] = expectedMonthAmount
-      if (printRows) {
-        console.error(`Expected row : ${expectedRow}\nActual spend : ${currentSheetRow}\n`)
-      }
-    })
+    const groupedSpends = groupSpendsByDatesAndCategories(allSpends, dates!, this.sheetConfig.name, categories!)
+    validateSheet(this.spreadSheetConfig, this.sheetConfig, groupedSpends, data!, categories!)
   }
 }
 
-/*********************************************************************************************************/
-/*                                         SPREAD SHEET HANDLER                                          */
-/*********************************************************************************************************/
+/*************************************************************************************************************************/
+/*                                                    SPREAD SHEET HANDLER                                               */
+/*************************************************************************************************************************/
 
 class Monthly extends BaseSpreadSheetHandler {
   constructor(spreadSheetConfig: SpreadSheetConfig) {

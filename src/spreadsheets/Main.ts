@@ -1,6 +1,6 @@
-/*********************************************************************************************************/
-/*                                         SHEETS                                                        */
-/*********************************************************************************************************/
+/*************************************************************************************************************************/
+/*                                                       SHEETS                                                          */
+/*************************************************************************************************************************/
 
 class MainSheet extends BaseSheetHandler {
   processSpend(spend: Spend) {
@@ -17,29 +17,28 @@ class MainSheet extends BaseSheetHandler {
     addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
   }
 
+  /**
+   * Only validates spends from Google Forms are all included in the main sheet
+   */
   validate(): void {
-    const currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
-    if (typeof currentSheetRows === "undefined")
-      throw new Error(
-        `Undefined reading rows from sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}'`
-      )
+    const rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
+      ?.slice(1)
+      .filter((row) => row[this.sheetConfig.columns!.origin - 1] === originForms)
+    const allSpendsFromForms = readAllRows(forms.main.spreadSheet.id, forms.main.spreadSheet.sheet.name)
 
-    const allSpends = readAllRows(forms.main.spreadSheet.id, forms.main.spreadSheet.sheet.name)
-    if (typeof allSpends === "undefined")
-      throw new Error(
-        `Undefined reading rows from sheet '${forms.main.spreadSheet.sheet.name}' within spreadsheet '${forms.main.spreadSheet.name}'`
+    if (rows?.length !== allSpendsFromForms?.length) {
+      console.warn(
+        `There are ${allSpendsFromForms?.length} rows in sheet '${forms.main.spreadSheet.sheet.name}' within \\
+        '${forms.main.spreadSheet.name}' but there are ${rows?.length} rows in sheet '${this.sheetConfig.name}' \\
+        within '${this.spreadSheetConfig.name}' with origin "Google Forms".`
       )
-
-    if (currentSheetRows.length !== allSpends.length)
-      console.error(
-        `Expected number of rows on sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}': ${allSpends.length}\nActual number of rows on sheet '${this.sheetConfig.name}' within spreadsheet '${this.spreadSheetConfig.name}': ${currentSheetRows.length}`
-      )
+    }
   }
 }
 
-/*********************************************************************************************************/
-/*                                         SPREAD SHEET HANDLER                                          */
-/*********************************************************************************************************/
+/*************************************************************************************************************************/
+/*                                                SPREAD SHEET HANDLER                                                   */
+/*************************************************************************************************************************/
 
 class Main extends BaseSpreadSheetHandler {
   constructor(spreadSheetConfig: SpreadSheetConfig) {

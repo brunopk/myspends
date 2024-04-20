@@ -1,50 +1,5 @@
 // Columns are in range 1..n
 
-// TODO: remove this (only used for category tree on Google Site HTML)
-
-const categories: { [name: string]: CategoryConfig } = {
-  category1: {
-    name: "Comida",
-    subCategories: {
-      subCategory1: {
-        name: "Mercado Pago (70% OFF)"
-      },
-      subCategory2: {
-        name: "VISA Alimentos"
-      }
-    }
-  },
-  category2: {
-    name: "Transporte",
-    subCategories: {
-      subCategory1: {
-        name: "Bus"
-      },
-      subCategory2: {
-        name: "Nafta"
-      },
-      subCategory3: {
-        name: "Taxi"
-      },
-      subCategory4: {
-        name: "Uber"
-      }
-    }
-  },
-  category3: {
-    name: "Psicólogo"
-  },
-  category4: {
-    name: "Celular"
-  },
-  category5: {
-    name: "Otros"
-  },
-  category6: {
-    name: "Salud"
-  }
-}
-
 const sheetType = {
   category: 0,
   account: 1
@@ -84,7 +39,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
           subCategory: 1,
           date: 1,
           amount: 1,
-          account: 1
+          account: 1,
+          origin: 1
         }
       }
     }
@@ -95,7 +51,6 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
     sheets: {
       all_categories: {
         name: "Categorías",
-        totalColumn: 1,
         columns: {
           "Column A": 0,
           "Column B": 0
@@ -103,7 +58,6 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
       },
       category1: {
         name: categories.category1.name,
-        totalColumn: 1,
         columns: {
           "Column A": 0,
           "Column B": 0
@@ -114,7 +68,6 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
       },
       category2: {
         name: categories.category2.name,
-        totalColumn: 1,
         columns: {
           "Column A": 0,
           "Column B": 0
@@ -125,7 +78,6 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
       },
       account1: {
         name: "Account 1",
-        totalColumn: 1,
         columns: {
           "Column A": 0,
           "Column B": 0
@@ -136,7 +88,6 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
       },
       account2: {
         name: "Account 2",
-        totalColumn: 1,
         columns: {
           "Column A": 0,
           "Column B": 0
@@ -147,7 +98,6 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
       },
       account3: {
         name: "Account 3",
-        totalColumn: 1,
         columns: {
           "Column A": 0,
           "Column B": 0

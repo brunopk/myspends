@@ -25,7 +25,6 @@ declare global {
   type SheetConfig = {
     readonly name: string
     readonly columns?: { [name: string]: number }
-    readonly totalColumn?: number
     readonly numberOfColumns?: number
     readonly extra?: any
   }

@@ -1,11 +1,10 @@
-// TODO: Probar validar todas las planillas
-
 const spreadSheetHandlers: BaseSpreadSheetHandler[] = []
+
+const originForms = "Google Forms"
 
 function processMainForm() {
   const range = SpreadsheetApp.getActiveRange()
   const numRows = range.getNumRows()
-  const origin = "Forms"
 
   // Normally active range contains one row (last inserted row)
   for (let i = 1; i <= numRows; i++) {
@@ -16,7 +15,7 @@ function processMainForm() {
     const description = range.getCell(i, forms.main.spreadSheet.sheet.columns!.description).getValue()
     const subCategory = range.getCell(i, forms.main.spreadSheet.sheet.columns!.subCategory).getValue()
 
-    const newSpend: Spend = { date, category, value, account, description, subCategory, origin }
+    const newSpend: Spend = { date, category, value, account, description, subCategory, origin: originForms }
 
     spreadSheetHandlers.forEach((handler) => {
       handler.processSpend(newSpend)
