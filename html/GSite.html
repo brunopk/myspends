@@ -2,18 +2,19 @@
   // TODO: populate subcategories and the other fields
   // TODO: update subcategory field after selecting one category
   
-  function populateSelectElement(options, selectElement) {
+  function populateSelect(selectElement, options, defaultOption) {
     options.forEach((value) => {
       let optionElement = document.createElement("option");
       optionElement.value= value;
       optionElement.innerHTML = value;
       selectElement.appendChild(optionElement);
-    })
+    });
+    selectElement.value = defaultOption;
   }
 
   function selectCategory(selectElement) {
     console.log(event);
-    console.log(categories)
+    console.log(selectElement.value)
   }
 
   function formatDate(date) {
@@ -62,22 +63,34 @@
      "Psicólogo": {},
      "Salud": {},
      "Transporte": {}
-  };  
+  }; 
 
-  const otherCategory = {
-    "Otros": {}
-  }
+  const defaultAccountList = ["Itaú", "BROU"];
 
   window.onload = () => {
-    let dateInput = document.getElementsByName("date")[0];
+    const dateInput = document.getElementsByName("date")[0];
     const today = new Date();
     dateInput.value = formatDate(today);
 
-    let categorySelect = document.getElementsByName("category")[0];
-    let availableCategories = Object.keys(categoryTree)
-      .sort()
-      .concat(Object.keys(otherCategory))
-    populateSelectElement(availableCategories, categorySelect);
+    const categorySelect = document.getElementsByName("category")[0];
+    const categoryList = Object.keys(categoryTree).sort();
+    const defaultCategory =  categoryList[0];
+    populateSelect(categorySelect, categoryList, defaultCategory);
+
+    const subcategorySelect = document.getElementsByName("subcategory")[0];
+    const subcategoryList = Object.keys(categoryTree[defaultCategory]).sort();
+    let accountList = defaultAccountList;
+    if (subcategoryList.length === 0) {
+      subcategorySelect.disabled = true;
+    } else {
+      const defaultSubcategory = subcategoryList[0];
+      accountList = categoryTree[defaultCategory][defaultSubcategory];
+      populateSelect(subcategorySelect, subcategoryList, defaultSubcategory);
+    }
+
+    const accountSelect = document.getElementsByName("account")[0];
+    const defaultAccount = accountList[0];
+    populateSelect(accountSelect, accountList, defaultAccount);
 
   }
 
@@ -92,21 +105,9 @@
 </style>
 <div style="display:flex;flex-direction:column;">
   <input type="date" name="date"/>
-  <select name="category" value="Celular" onchange="selectCategory(this)"></select>
-  <select name="subcategory" value="Bus">
-    <option value="Bus">Bus</option>
-    <option value="Nafta">Nafta</option>
-    <option value="Remedios">Remedios</option>
-    <option value="Taxi">Taxi</option>
-    <option value="Uber">Uber</option>
-    <option value="Otros">Otros</option>
-  </select>
-  <select name="account" value="BROU">
-    <option value="BROU">BROU</option>
-    <option value="Cuenta de Papá">Cuenta de Papá</option>
-    <option value="Itaú">Itaú</option>
-    <option value="Itaú Alimentos">Itaú Alimentos</option>
-  </select>
+  <select name="category" onchange="selectCategory(this)"></select>
+  <select name="subcategory" onchange="selectSubcategory(this)"></select>
+  <select name="account" onchange="selectAccount(this)"></select>
   <input type="number" name="value" placeholder="Valor"/>
   <input name="description" placeholder="Descripción"/>
   <input type="button" onClick="goToGoogleForm()" value="Finalizar">
