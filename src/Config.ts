@@ -114,8 +114,6 @@ const recurrentSpendsMailRecipient = "asd@asd.com"
 
 const recurrentSpendsTaskList = "xxx"
 
-const recurrentSpendsOrigin = "Apps Script"
-
 const recurrentSpends: RecurrentSpendConfig[] = [
   {
     value: 1,
@@ -124,11 +122,12 @@ const recurrentSpends: RecurrentSpendConfig[] = [
     account: "Account x",
     date: new Date(),
     description: "X",
-    origin: recurrentSpendsOrigin,
+    origin: "App Script",
     dayOfMonth: 4,
     taskTitle: "Check ...",
     taskDescription: "Check ... ...",
     mailSubject: "Check ...",
-    mailBody: "Check ... ..."
+    mailBody: "Check ... ...",
+    mode: "Reminder"
   }
 ]

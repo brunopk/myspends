@@ -24,6 +24,7 @@ function processMainForm() {
 }
 
 function processRecurrentSpends() {
+  // TODO: continue here
   const today = new Date()
   for (let i = 0; i < recurrentSpends.length; i++) {
     const recurrentSpend = recurrentSpends[i]
