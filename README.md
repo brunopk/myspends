@@ -8,10 +8,10 @@
    - For `RecurrentSpendConfig` elements, value for `value` **must be** *Automatic* or *Manual* (strings).
    - Category and subcategory names should match with names in spreadsheets as described below.
    - `spreadSheets` configuration within *src/Config.gs* **must have** two keys: `main` and `monthly` for the main and monthly spreadsheets respectively.
-   - The object in `main.sheets` **must have** two keys: `main` and `pending` one which correspond to the main sheet and the other for recurrent spends pending confirmation.
+   - The object in `main.sheets` **must have** two keys: `main` and `pending`, one which correspond to the main sheet and the other for recurrent spends pending confirmation.
    - The object in `main.sheets.main.columns` **must have** the following keys :
      - `category`,
-     - `subCategory`,
+     - `subCategory`
      - `date`
      - `amount`
      - `account`
