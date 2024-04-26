@@ -2,6 +2,12 @@ const spreadSheetHandlers: BaseSpreadSheetHandler[] = []
 
 const originForms = "Google Forms"
 
+const originAppScript = "App Script"
+
+const automaticRecurrentSpend = "Automatic"
+
+const manualRecurrentSpend = "Manual"
+
 function processMainForm() {
   const range = SpreadsheetApp.getActiveRange()
   const numRows = range.getNumRows()
@@ -24,15 +30,33 @@ function processMainForm() {
 }
 
 function processRecurrentSpends() {
-  // TODO: continue here
-  const today = new Date()
+  const now = new Date()
   for (let i = 0; i < recurrentSpends.length; i++) {
     const recurrentSpend = recurrentSpends[i]
-    if (today.getDate() == recurrentSpend.dayOfMonth) {
-      createTask(recurrentSpendsTaskList, recurrentSpend.taskTitle, recurrentSpend.taskDescription, today)
-      spreadSheetHandlers.forEach((handler) => {
-        handler.processSpend(recurrentSpend)
-      })
+    if (now.getDate() == recurrentSpend.dayOfMonth) {
+      if (![manualRecurrentSpend, automaticRecurrentSpend].includes(recurrentSpend.type)) {
+        throw new Error(`Invalid recurrent spend type "${recurrentSpend.type}"`)
+      }
+      const taskId = createTask(recurrentSpendsTaskList, recurrentSpend.taskTitle, recurrentSpend.taskDescription, now)
+      if (recurrentSpend.type === automaticRecurrentSpend) {
+        const spend: Spend = {
+          date: now,
+          category: recurrentSpend.category,
+          account: recurrentSpend.account,
+          value: recurrentSpend.value,
+          description: recurrentSpend.description,
+          subCategory: recurrentSpend.subCategory,
+          origin: originAppScript
+        }
+        spreadSheetHandlers.forEach((handler) => {
+          handler.processSpend(spend)
+        })
+      } else {
+        const row = Array(Object.keys(spreadSheets.main.sheets.pending.columns!).length).fill(0)
+        // TODO: CONTINUE
+        // TODO: make function to confirm spends after completing its corresponding task
+        // addRow(recurrentSpendSpreadSheetId, recurrentSpendSheetName, [now, ])
+      }
       console.info(`Sending mail to ${recurrentSpendsMailRecipient} ...`)
       MailApp.sendEmail(recurrentSpendsMailRecipient, "", recurrentSpend.mailSubject, recurrentSpend.mailBody)
     }
@@ -43,7 +67,7 @@ function processRecurrentSpends() {
  * Validate all amounts in all spreadsheets for the current month.
  * @param spreadSheetName .
  */
-function validateAllSpreadSheets() {
+function validateSpreadSheets() {
   spreadSheetHandlers.forEach((spreadSheetHandler) => {
     try {
       spreadSheetHandler.validate()

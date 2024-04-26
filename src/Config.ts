@@ -42,6 +42,19 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
           account: 1,
           origin: 1
         }
+      },
+      pending: {
+        name: "Pendientes",
+        columns: {
+          timestamp: 1,
+          taskId: 1,
+          category: 1,
+          subCategory: 1,
+          description: 1,
+          account: 1,
+          value: 1,
+          completed: 1
+        }
       }
     }
   },
@@ -114,20 +127,20 @@ const recurrentSpendsMailRecipient = "asd@asd.com"
 
 const recurrentSpendsTaskList = "xxx"
 
+const recurrentSpendSpreadSheetId = "xxx"
+
 const recurrentSpends: RecurrentSpendConfig[] = [
   {
     value: 1,
     category: "Category x",
     subCategory: "Subcategory x",
     account: "Account x",
-    date: new Date(),
     description: "X",
-    origin: "App Script",
     dayOfMonth: 4,
     taskTitle: "Check ...",
     taskDescription: "Check ... ...",
     mailSubject: "Check ...",
     mailBody: "Check ... ...",
-    mode: "Reminder"
+    type: "Automatic"
   }
 ]

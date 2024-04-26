@@ -43,11 +43,16 @@ type FormConfig = {
   }
 }
 
-type RecurrentSpendConfig = Spend & {
+type RecurrentSpendConfig = {
+  type: string
   dayOfMonth: number
   taskTitle: string
   taskDescription: string
   mailSubject: string
   mailBody: string
-  mode: string
+  category: string
+  subCategory: string
+  account: string
+  description: string
+  value: number
 }

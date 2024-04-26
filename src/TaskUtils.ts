@@ -41,15 +41,17 @@ function listAllTasks(taskListId: string): tasks_v1.Schema$Tasks[] {
 }
 
 /**
- * Instantiate and add a new task to Google Taks
+ * Instantiate and add a new task to Google Task
  * @param taskListId task list to which add the new task
  * @param title task title for the new task
  * @param description description for the new task (`note`)
  * @param date due date for the new task (not allowed to set hour, minutes, etc, only date part)
+ * @readonly task id
  */
-function createTask(taskListId: string, title: string, description: string, date: Date) {
+function createTask(taskListId: string, title: string, description: string, date: Date): string {
   console.info(`Adding task on tasklist '${taskListId}'`)
-  Tasks.Tasks?.insert({ due: date.toISOString(), title, notes: description }, taskListId)
+  const task = Tasks.Tasks?.insert({ due: date.toISOString(), title, notes: description }, taskListId)
+  return task!.id!
 }
 
 function completeTask(taskListId: string, taskId: string) {
