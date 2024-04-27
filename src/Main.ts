@@ -8,6 +8,8 @@ const automaticRecurrentSpend = "Automatic"
 
 const manualRecurrentSpend = "Manual"
 
+/*************************************************************************************************************************/
+
 function processMainForm() {
   const range = SpreadsheetApp.getActiveRange()
   const numRows = range.getNumRows()
@@ -51,7 +53,6 @@ function processRecurrentSpends() {
         spreadSheetHandlers.forEach((handler) => {
           handler.processSpend(spend)
         })
-        // TODO: make function to confirm spends after completing its corresponding task
       } else {
         const row = Array(Object.keys(spreadSheets.main.sheets.pending.columns!).length).fill(0)
         row[spreadSheets.main.sheets.pending.columns!.category - 1] = recurrentSpend.category
@@ -68,6 +69,11 @@ function processRecurrentSpends() {
       MailApp.sendEmail(recurrentSpendsMailRecipient, "", recurrentSpend.mailSubject, recurrentSpend.mailBody)
     }
   }
+}
+
+function processPendingSpends() {
+  const rows = readAllRows(spreadSheets.main.id, spreadSheets.main.sheets.pending.name)
+  // TODO: CONTINUE
 }
 
 /**

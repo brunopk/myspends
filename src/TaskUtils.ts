@@ -19,6 +19,8 @@ function listTaskLists() {
   console.log(allTaskListIds)
 }
 
+// TODO: verify if its listing all task correctly, if its using correctly the pageToken
+
 /**
  * List all tasks until now for a given task list
  * @param taskList
