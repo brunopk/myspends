@@ -23,7 +23,7 @@
      - `subCategory`
      - `description`
      - `account`
-     - `value`
+     - `amount`
      - `completed`
 3. Copy the content of *html/GSite.html* to the corresponding part of the Google Site in order to edit the web interface.
 

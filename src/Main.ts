@@ -43,7 +43,7 @@ function processRecurrentSpends() {
           date: now,
           category: recurrentSpend.category,
           account: recurrentSpend.account,
-          value: recurrentSpend.value,
+          value: recurrentSpend.amount,
           description: recurrentSpend.description,
           subCategory: recurrentSpend.subCategory,
           origin: originAppScript
@@ -51,11 +51,18 @@ function processRecurrentSpends() {
         spreadSheetHandlers.forEach((handler) => {
           handler.processSpend(spend)
         })
+        // TODO: make function to confirm spends after completing its corresponding task
       } else {
         const row = Array(Object.keys(spreadSheets.main.sheets.pending.columns!).length).fill(0)
-        // TODO: CONTINUE
-        // TODO: make function to confirm spends after completing its corresponding task
-        // addRow(recurrentSpendSpreadSheetId, recurrentSpendSheetName, [now, ])
+        row[spreadSheets.main.sheets.pending.columns!.category - 1] = recurrentSpend.category
+        row[spreadSheets.main.sheets.pending.columns!.subCategory - 1] = recurrentSpend.subCategory
+        row[spreadSheets.main.sheets.pending.columns!.timestamp - 1] = now
+        row[spreadSheets.main.sheets.pending.columns!.amount - 1] = recurrentSpend.amount
+        row[spreadSheets.main.sheets.pending.columns!.account - 1] = recurrentSpend.account
+        row[spreadSheets.main.sheets.pending.columns!.taskId - 1] = taskId
+        row[spreadSheets.main.sheets.pending.columns!.description - 1] = recurrentSpend.description
+        row[spreadSheets.main.sheets.pending.columns!.completed - 1] = false
+        addRow(spreadSheets.main.id, spreadSheets.main.sheets.main.name, row)
       }
       console.info(`Sending mail to ${recurrentSpendsMailRecipient} ...`)
       MailApp.sendEmail(recurrentSpendsMailRecipient, "", recurrentSpend.mailSubject, recurrentSpend.mailBody)

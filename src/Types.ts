@@ -54,5 +54,5 @@ type RecurrentSpendConfig = {
   subCategory: string
   account: string
   description: string
-  value: number
+  amount: number
 }

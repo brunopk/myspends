@@ -52,7 +52,7 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
           subCategory: 1,
           description: 1,
           account: 1,
-          value: 1,
+          amount: 1,
           completed: 1
         }
       }
@@ -127,11 +127,9 @@ const recurrentSpendsMailRecipient = "asd@asd.com"
 
 const recurrentSpendsTaskList = "xxx"
 
-const recurrentSpendSpreadSheetId = "xxx"
-
 const recurrentSpends: RecurrentSpendConfig[] = [
   {
-    value: 1,
+    amount: 1,
     category: "Category x",
     subCategory: "Subcategory x",
     account: "Account x",
