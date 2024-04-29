@@ -1,6 +1,10 @@
+import { tasks_v1 } from "googleapis"
+
 const spreadSheetHandlers: BaseSpreadSheetHandler[] = []
 
 const originForms = "Google Forms"
+
+const originTasks = "Google Tasks"
 
 const originAppScript = "App Script"
 
@@ -30,6 +34,8 @@ function processMainForm() {
     })
   }
 }
+
+// TODO: test this
 
 function processRecurrentSpends() {
   const now = new Date()
@@ -71,9 +77,39 @@ function processRecurrentSpends() {
   }
 }
 
+// TODO: test this
+
 function processPendingSpends() {
   const rows = readAllRows(spreadSheets.main.id, spreadSheets.main.sheets.pending.name)
-  // TODO: CONTINUE
+  const tasks = listAllTasks(recurrentSpendsTaskList) as tasks_v1.Schema$Task[]
+
+  for (let i = 1; i < rows!.length; i++) {
+    const taskId = rows![i][spreadSheets.main.sheets.pending.columns!.taskId - 1]
+    const task = tasks.find((task) => task.id === taskId)
+    let newSpend: Spend | undefined
+
+    if (typeof task === "undefined") {
+      throw new Error(`Cannot find task "${taskId}" within task list "${recurrentSpendsTaskList}"`)
+    } else if (rows![i][spreadSheets.main.sheets.pending.columns!.completed - 1] && !task.completed) {
+      completeTask(recurrentSpendsTaskList, taskId)
+      newSpend = mapPendingSpendToSpend(rows![i])
+    } else if (!rows![i][spreadSheets.main.sheets.pending.columns!.completed - 1] && task.completed) {
+      setValue(
+        spreadSheets.main.id,
+        spreadSheets.main.sheets.pending.name,
+        i,
+        spreadSheets.main.sheets.pending.columns!.completed,
+        true
+      )
+      newSpend = mapPendingSpendToSpend(rows![i])
+    }
+
+    if (typeof newSpend !== "undefined") {
+      spreadSheetHandlers.forEach((handler) => {
+        handler.processSpend(newSpend)
+      })
+    }
+  }
 }
 
 /**

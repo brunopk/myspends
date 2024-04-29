@@ -145,6 +145,18 @@ function findSpreadSheetHandlerByName(
   return spreadSheetHandlers.find((spreadSheetHandler) => spreadSheetHandler.config.name == spreadSheetName)
 }
 
+function mapPendingSpendToSpend(row: any[]): Spend {
+  return {
+    account: row[spreadSheets.main.sheets.pending.columns!.account - 1],
+    category: row[spreadSheets.main.sheets.pending.columns!.category - 1],
+    date: new Date(),
+    description: row[spreadSheets.main.sheets.pending.columns!.description - 1],
+    origin: originTasks,
+    value: row[spreadSheets.main.sheets.pending.columns!.amount - 1],
+    subCategory: row[spreadSheets.main.sheets.pending.columns!.subCategory - 1]
+  }
+}
+
 /**
  * Formats a `Date` object into an string with one of these formats :
  * 1. DD/MM/YYYY

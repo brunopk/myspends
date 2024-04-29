@@ -1,5 +1,3 @@
-import { tasks_v1 } from "googleapis"
-
 /**
  * Logs the ids of all task list
  */
@@ -25,7 +23,7 @@ function listTaskLists() {
  * List all tasks until now for a given task list
  * @param taskList
  */
-function listAllTasks(taskListId: string): tasks_v1.Schema$Tasks[] {
+function listAllTasks(taskListId: string): tasks_v1.Schema$Task[] {
   const now = new Date().toISOString()
   const allTasks: tasks_v1.Schema$Tasks[] = []
   let pageToken: string | null | undefined = null
