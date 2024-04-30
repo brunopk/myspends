@@ -86,8 +86,8 @@ class AllCategories extends BaseSheetHandler {
     if (!monthRow) {
       const newRow = Array(this.sheetConfig.numberOfColumns).fill(0)
       newRow[0] = spend.date
-      newRow[categoryColumn - 1] = spend.value
-      newRow[numberOfColumns - 1] = spend.value
+      newRow[categoryColumn - 1] = spend.amount
+      newRow[numberOfColumns - 1] = spend.amount
 
       addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
     } else {
@@ -97,11 +97,11 @@ class AllCategories extends BaseSheetHandler {
         this.sheetConfig.name,
         monthRow,
         categoryColumn,
-        currentCategoryValue + spend.value
+        currentCategoryValue + spend.amount
       )
 
       const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, numberOfColumns)
-      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, numberOfColumns, currentTotal + spend.value)
+      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, numberOfColumns, currentTotal + spend.amount)
     }
   }
 
@@ -128,14 +128,14 @@ class Category extends BaseSheetHandler {
 
   processSpend(spend: Spend) {
     if (spend.category === this.category) {
-      const subcategoryColumn = this.sheetConfig.columns![spend.subCategory]
+      const subcategoryColumn = this.sheetConfig.columns![spend.subCategory!]
       const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
       const monthRow = this.getRowForMonth(spend.date.getMonth())
       if (!monthRow) {
         const newRow = Array(this.sheetConfig.numberOfColumns).fill(0)
         newRow[0] = spend.date
-        newRow[subcategoryColumn - 1] = spend.value
-        newRow[numberOfColumns - 1] = spend.value
+        newRow[subcategoryColumn - 1] = spend.amount
+        newRow[numberOfColumns - 1] = spend.amount
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
         const currentSubcategoryTotal = getValue(
@@ -149,7 +149,7 @@ class Category extends BaseSheetHandler {
           this.sheetConfig.name,
           monthRow,
           subcategoryColumn,
-          currentSubcategoryTotal + spend.value
+          currentSubcategoryTotal + spend.amount
         )
 
         const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, numberOfColumns)
@@ -158,7 +158,7 @@ class Category extends BaseSheetHandler {
           this.sheetConfig.name,
           monthRow,
           numberOfColumns,
-          currentTotal + spend.value
+          currentTotal + spend.amount
         )
       }
     }
@@ -185,8 +185,8 @@ class Account extends BaseSheetHandler {
       if (!monthRow) {
         const newRow = Array(this.sheetConfig.numberOfColumns).fill(0)
         newRow[0] = spend.date
-        newRow[this.sheetConfig.columns![spend.category] - 1] = spend.value
-        newRow[numberOfColumns - 1] = spend.value
+        newRow[this.sheetConfig.columns![spend.category] - 1] = spend.amount
+        newRow[numberOfColumns - 1] = spend.amount
 
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
@@ -202,7 +202,7 @@ class Account extends BaseSheetHandler {
           this.sheetConfig.name,
           monthRow,
           columnForCategory,
-          currentCategoryAmount + spend.value
+          currentCategoryAmount + spend.amount
         )
 
         const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, numberOfColumns)
@@ -211,7 +211,7 @@ class Account extends BaseSheetHandler {
           this.sheetConfig.name,
           monthRow,
           numberOfColumns,
-          currentTotal + spend.value
+          currentTotal + spend.amount
         )
       }
     }

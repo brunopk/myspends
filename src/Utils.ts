@@ -145,16 +145,33 @@ function findSpreadSheetHandlerByName(
   return spreadSheetHandlers.find((spreadSheetHandler) => spreadSheetHandler.config.name == spreadSheetName)
 }
 
+function buildPendingSpendRow(recurrentSpend: RecurrentSpendConfig, now: Date, taskId: string): any[] {
+  const row = Array(Object.keys(spreadSheets.main.sheets.pending.columns!).length).fill(0)
+  row[spreadSheets.main.sheets.pending.columns!.category - 1] = recurrentSpend.category
+  row[spreadSheets.main.sheets.pending.columns!.subCategory - 1] =
+    typeof recurrentSpend.subCategory !== "undefined" ? recurrentSpend.subCategory : ""
+  row[spreadSheets.main.sheets.pending.columns!.timestamp - 1] = now
+  row[spreadSheets.main.sheets.pending.columns!.amount - 1] = recurrentSpend.amount
+  row[spreadSheets.main.sheets.pending.columns!.account - 1] = recurrentSpend.account
+  row[spreadSheets.main.sheets.pending.columns!.taskId - 1] = taskId
+  row[spreadSheets.main.sheets.pending.columns!.description - 1] = recurrentSpend.description
+  row[spreadSheets.main.sheets.pending.columns!.completed - 1] = false
+  return row
+}
+
 function mapPendingSpendToSpend(row: any[]): Spend {
-  return {
+  const spend: Spend = {
     account: row[spreadSheets.main.sheets.pending.columns!.account - 1],
     category: row[spreadSheets.main.sheets.pending.columns!.category - 1],
     date: new Date(),
     description: row[spreadSheets.main.sheets.pending.columns!.description - 1],
     origin: originTasks,
-    value: row[spreadSheets.main.sheets.pending.columns!.amount - 1],
-    subCategory: row[spreadSheets.main.sheets.pending.columns!.subCategory - 1]
+    amount: row[spreadSheets.main.sheets.pending.columns!.amount - 1]
   }
+  if (row[spreadSheets.main.sheets.pending.columns!.subCategory - 1] !== "") {
+    spend.subCategory = row[spreadSheets.main.sheets.pending.columns!.subCategory - 1]
+  }
+  return spend
 }
 
 /**

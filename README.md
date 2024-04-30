@@ -22,11 +22,12 @@
      - `timestamp`
      - `taskId`
      - `category`
-     - `subCategory`
      - `description`
      - `account`
      - `amount`
      - `completed`
+   - The following keys are optional in `main.sheets.pending.columns`:
+     - `subCategory`
 3. Copy the content of *html/GSite.html* to the corresponding part of the Google Site in order to edit the web interface.
 
 ---

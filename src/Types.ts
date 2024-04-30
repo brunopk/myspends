@@ -5,11 +5,11 @@ enum RecurrentSpendMode {
 type Spend = {
   date: Date
   category: string
-  value: number
+  amount: number
   account: string
   description: string
-  subCategory: string
   origin: string
+  subCategory?: string
 }
 
 type SubCategoryConfig = {
@@ -51,8 +51,8 @@ type RecurrentSpendConfig = {
   mailSubject: string
   mailBody: string
   category: string
-  subCategory: string
   account: string
   description: string
   amount: number
+  subCategory?: string
 }

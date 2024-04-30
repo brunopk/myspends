@@ -12,7 +12,7 @@ class MainSheet extends BaseSheetHandler {
       spend.subCategory,
       spend.description,
       spend.account,
-      spend.value
+      spend.amount
     ]
     addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
   }
@@ -24,7 +24,7 @@ class MainSheet extends BaseSheetHandler {
     const rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
       ?.slice(1)
       .filter((row) => row[this.sheetConfig.columns!.origin - 1] === originForms)
-    const allSpendsFromForms = readAllRows(forms.main.spreadSheet.id, forms.main.spreadSheet.sheet.name)
+    const allSpendsFromForms = readAllRows(forms.main.spreadSheet.id, forms.main.spreadSheet.sheet.name)?.slice(1)
 
     if (rows?.length !== allSpendsFromForms?.length) {
       console.warn(

@@ -17,7 +17,7 @@ const forms:  { [name: string]: FormConfig } = {
         columns: {
           category: 3,
           date: 2,
-          value: 9,
+          amount: 9,
           subCategory: 4,
           account: 8,
           description: 9

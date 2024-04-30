@@ -22,20 +22,18 @@ function processMainForm() {
   for (let i = 1; i <= numRows; i++) {
     const date = range.getCell(i, forms.main.spreadSheet.sheet.columns!.date).getValue()
     const category = range.getCell(i, forms.main.spreadSheet.sheet.columns!.category).getValue()
-    const value = range.getCell(i, forms.main.spreadSheet.sheet.columns!.value).getValue()
+    const amount = range.getCell(i, forms.main.spreadSheet.sheet.columns!.amount).getValue()
     const account = range.getCell(i, forms.main.spreadSheet.sheet.columns!.account).getValue()
     const description = range.getCell(i, forms.main.spreadSheet.sheet.columns!.description).getValue()
     const subCategory = range.getCell(i, forms.main.spreadSheet.sheet.columns!.subCategory).getValue()
 
-    const newSpend: Spend = { date, category, value, account, description, subCategory, origin: originForms }
+    const newSpend: Spend = { date, category, amount, account, description, subCategory, origin: originForms }
 
     spreadSheetHandlers.forEach((handler) => {
       handler.processSpend(newSpend)
     })
   }
 }
-
-// TODO: test this
 
 function processRecurrentSpends() {
   const now = new Date()
@@ -51,7 +49,7 @@ function processRecurrentSpends() {
           date: now,
           category: recurrentSpend.category,
           account: recurrentSpend.account,
-          value: recurrentSpend.amount,
+          amount: recurrentSpend.amount,
           description: recurrentSpend.description,
           subCategory: recurrentSpend.subCategory,
           origin: originAppScript
@@ -60,24 +58,16 @@ function processRecurrentSpends() {
           handler.processSpend(spend)
         })
       } else {
-        const row = Array(Object.keys(spreadSheets.main.sheets.pending.columns!).length).fill(0)
-        row[spreadSheets.main.sheets.pending.columns!.category - 1] = recurrentSpend.category
-        row[spreadSheets.main.sheets.pending.columns!.subCategory - 1] = recurrentSpend.subCategory
-        row[spreadSheets.main.sheets.pending.columns!.timestamp - 1] = now
-        row[spreadSheets.main.sheets.pending.columns!.amount - 1] = recurrentSpend.amount
-        row[spreadSheets.main.sheets.pending.columns!.account - 1] = recurrentSpend.account
-        row[spreadSheets.main.sheets.pending.columns!.taskId - 1] = taskId
-        row[spreadSheets.main.sheets.pending.columns!.description - 1] = recurrentSpend.description
-        row[spreadSheets.main.sheets.pending.columns!.completed - 1] = false
-        addRow(spreadSheets.main.id, spreadSheets.main.sheets.main.name, row)
+        const row = buildPendingSpendRow(recurrentSpend, now, taskId)
+        addRow(spreadSheets.main.id, spreadSheets.main.sheets.pending.name, row)
       }
-      console.info(`Sending mail to ${recurrentSpendsMailRecipient} ...`)
+      console.info(`Sending mail to "${recurrentSpendsMailRecipient}".`)
       MailApp.sendEmail(recurrentSpendsMailRecipient, "", recurrentSpend.mailSubject, recurrentSpend.mailBody)
     }
   }
 }
 
-// TODO: test this
+// TODO: test all in "prod"
 
 function processPendingSpends() {
   const rows = readAllRows(spreadSheets.main.id, spreadSheets.main.sheets.pending.name)
@@ -90,14 +80,14 @@ function processPendingSpends() {
 
     if (typeof task === "undefined") {
       throw new Error(`Cannot find task "${taskId}" within task list "${recurrentSpendsTaskList}"`)
-    } else if (rows![i][spreadSheets.main.sheets.pending.columns!.completed - 1] && !task.completed) {
+    } else if (rows[i][spreadSheets.main.sheets.pending.columns!.completed - 1] && !task.completed) {
       completeTask(recurrentSpendsTaskList, taskId)
       newSpend = mapPendingSpendToSpend(rows![i])
-    } else if (!rows![i][spreadSheets.main.sheets.pending.columns!.completed - 1] && task.completed) {
+    } else if (!rows[i][spreadSheets.main.sheets.pending.columns!.completed - 1] && task.completed) {
       setValue(
         spreadSheets.main.id,
         spreadSheets.main.sheets.pending.name,
-        i,
+        i + 1,
         spreadSheets.main.sheets.pending.columns!.completed,
         true
       )
@@ -110,18 +100,4 @@ function processPendingSpends() {
       })
     }
   }
-}
-
-/**
- * Validate all amounts in all spreadsheets for the current month.
- * @param spreadSheetName .
- */
-function validateSpreadSheets() {
-  spreadSheetHandlers.forEach((spreadSheetHandler) => {
-    try {
-      spreadSheetHandler.validate()
-    } catch (ex) {
-      console.error((ex as Error).stack)
-    }
-  })
 }
