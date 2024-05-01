@@ -1,182 +1,199 @@
-function getColumnForCategory(category) {
-  switch (category) {
-    case "Celular":
-      return 2
-    case "Comida":
-      return 3
-    case "Psicólogo":
-      return 4
-    case "Salud":
-      return 5
-    case "Transporte":
-      return 6
-    case "Otros":
-      return 7
-    default:
-      throw new Error(`Unknown category '${category}'`)
-  }
-}
-
-function getColumnForSubcategory(category: string, subCategory: string, discountApplied: boolean): number {
-  const errorMessage = "Cannot obtain column for category '%C' and subcategory '%S'"
-  switch (category) {
-    case CATEGORIES.CATEGORY_1.NAME:
-      return discountApplied ? 2 : 3
-    case CATEGORIES.CATEGORY_2.NAME:
-      switch (subCategory) {
-        case "Bus":
-          return 2
-        case "Nafta":
-          return 3
-        case "Taxi":
-          return 4
-        case "Uber":
-          return 5
-        default:
-          throw new Error(errorMessage.replace("C", category).replace("S", subCategory))
-      }
-    default:
-      throw new Error(errorMessage.replace("%C", category).replace("%S", subCategory))
-  }
-}
-
-function getColumnForTotal(): number {
-  // month column + categories  + 1
-  return getNumberOfCategories() + 2
-}
-
-function getNumberOfSubcategoriesColumns(category: string): number {
-  switch (category) {
-    case CATEGORIES.CATEGORY_1.NAME:
-      return 2
-    case CATEGORIES.CATEGORY_2.NAME:
-      return Object.keys(CATEGORIES.CATEGORY_2.SUBCATEGORIES).length
-    default:
-      throw new Error(`Cannot obtain number of subcategories for category '${category}'`)
-  }
-}
-
-function getNumberOfCategories(): number {
-  return 6
-}
-
-function getNumberOfExtraColumns(): number {
-  // total column
-  return 1
-}
-
-function getRowForCurrentMonth(spreadSheetId: string, sheetName: string, date: Date): number {
-  let rowForCurrentMonth
-  const data = readAllRows(spreadSheetId, sheetName)?.slice(1)
-  for (let i = 0; i < data.length; i++) {
-    if (data[i][0].getMonth() == date.getMonth()) {
-      // 1 (because of header row) + 1 (because first row index is 1)
-      rowForCurrentMonth = i + 2
-      break
+function getSheetConfiguration(spreadSheetConfig: SpreadSheetConfig, sheetName: string): SheetConfig {
+  for (const key in spreadSheetConfig.sheets) {
+    if (spreadSheetConfig.sheets[key].name === sheetName) {
+      return spreadSheetConfig.sheets[key]
     }
   }
-  return rowForCurrentMonth
+  throw new Error(`Configuration for sheet "${sheetName}" of spreadsheet "${spreadSheetConfig.name}" not found `)
 }
 
-function getTotalColumnForCategorySheet(sheetName: string) {
-  switch (sheetName) {
-    case CATEGORIES.CATEGORY_1.NAME:
-      return 4
-    case CATEGORIES.CATEGORY_2.NAME:
-      return Object.keys(CATEGORIES.CATEGORY_2.SUBCATEGORIES).length + 2
-    default:
-      throw new Error(`Cannot obtain total column for sheet '${sheetName}'`)
-  }
+/**
+ * Read and returns all rows from the main sheet within the main spreadsheet
+ */
+function getAllSpends(): any[][] {
+  const rows = readAllRows(spreadSheets.main.id, spreadSheets.main.sheets.main.name)
+
+  if (typeof rows === "undefined")
+    throw new Error(
+      `Undefined reading rows from sheet '${spreadSheets.main.sheets.main.name}' within spreadsheet '${spreadSheets.main.name}'`
+    )
+
+  return rows.slice(1)
 }
 
-function updateSheet(
-  spreadSheetId: string,
-  sheetName: string,
-  formName: string | null,
-  date: Date,
-  value: number,
-  account: string,
-  discountApplied: boolean,
+/**
+ * Groups spends by dates, category and sub-categories provided in parameters. The result will be an object like this :
+ * ```
+ * {
+ *   "4/2024" : {
+ *     "category_1" : 1
+ *     "category_2" : 1
+ *   },
+ *   "5/2024" : {
+ *     "category_1" : 1,
+ *     "category_2" : 1
+ *   },
+ * }
+ * ```
+ * Notice only date and month of spends are considered for the first level keys. For example, if there are two spends one
+ * in 3/4/2024" and another in "4/4/2024", both will account for the same sub-group "4/2024".
+ *
+ *
+ * @param rows rows with spends from the main spreadsheet
+ * @param dates list of dates to filter and group spends as described above
+ * @param account account name to filter spends, or null to return spends made on any account
+ * @param categories list of categories to filter and group as described above
+ * @returns an object as described above
+ */
+function groupSpendsByDatesAndCategories(
+  rows: any[][],
+  dates: Date[],
+  account: string | null,
+  categories: string[]
+): object {
+  const formattedDates = dates.map((date) => formatDate(date, 2))
+
+  return rows.reduce((acc, row: any[]) => {
+    const currentFormattedDate = formatDate(row[spreadSheets.main.sheets.main.columns!.date - 1], 2)
+    const currentCategory = row[spreadSheets.main.sheets.main.columns!.category - 1]
+    const currentAccount = row[spreadSheets.main.sheets.main.columns!.account - 1]
+
+    if (
+      formattedDates.includes(currentFormattedDate) &&
+      categories.includes(currentCategory) &&
+      (account === null || account === currentAccount)
+    ) {
+      if (!acc[currentFormattedDate]) {
+        acc[currentFormattedDate] = {}
+      }
+
+      if (!acc[currentFormattedDate][currentCategory]) {
+        acc[currentFormattedDate][currentCategory] = row[spreadSheets.main.sheets.main.columns!.amount - 1]
+      } else {
+        acc[currentFormattedDate][currentCategory] =
+          acc[currentFormattedDate][currentCategory] + row[spreadSheets.main.sheets.main.columns!.amount - 1]
+      }
+    }
+    return acc
+  }, {})
+}
+
+/**
+ * Groups spends by dates, category and sub-categories provided in parameters. The result will be an object like this :
+ *
+ * ```
+ * {
+ *   "4/2024" : {
+ *     "subcategory_1" : 1
+ *     "subcategory_2" : 1
+ *   },
+ *   "5/2024" : {
+ *     "subcategory_1" : 1,
+ *     "subcategory_2" : 1
+ *   },
+ * }
+ * ```
+ *
+ * Notice only date and month of spends are considered for the first level keys. For example, if there are two spends one
+ * in 3/4/2024" and another in "4/4/2024", both will account for the same sub-group "4/2024".
+ *
+ * Previously check that sub-categories correspond to the given category, otherwise this function will return no results.
+ *
+ * @param rows rows with spends from the main spreadsheet
+ * @param dates list of dates to filter and group spends as described above
+ * @param category category name to filter and group spends as described above
+ * @param subCategories list of sub-categories to filter and group as described above
+ * @returns an object as described above
+ */
+function groupSpendsByDatesAndSubCategories(
+  rows: any[][],
+  dates: Date[],
   category: string,
-  subcategory: string,
-  description: string
-) {
-  const rowForCurrentMonth = getRowForCurrentMonth(spreadSheetId, sheetName, date)
-  const updatingSheetLogMessage = "Updating sheet 'X' on spreadsheet 'Y' ..."
+  subCategories: string[]
+): object {
+  const formattedDates = dates.map((date) => formatDate(date, 2))
 
-  if (spreadSheetId === SPREADSHEETS.MAIN.ID) {
-    console.info(updatingSheetLogMessage.replace("X", sheetName).replace("Y", spreadSheetId))
-    const newRow = [new Date(), date, formName, category, subcategory, description, account, discountApplied, value]
-    addRow(spreadSheetId, sheetName, newRow)
-  } else if (spreadSheetId === SPREADSHEETS.MONTHLY.ID) {
-    if (sheetName === SPREADSHEETS.MONTHLY.CATEGORIES_MAIN_SHEET) {
-      console.info(updatingSheetLogMessage.replace("X", sheetName).replace("Y", spreadSheetId))
-      if (!rowForCurrentMonth) {
-        const newRowAux = Array(getNumberOfCategories() + getNumberOfExtraColumns()).fill(0)
-        const newRow: (Date | number)[] = [date].concat(newRowAux)
-        newRow[getColumnForCategory(category) - 1] = value
-        newRow[getColumnForTotal() - 1] = value
+  return rows.reduce((acc, row: any[]) => {
+    const currentFormattedDate = formatDate(row[spreadSheets.main.sheets.main.columns!.date - 1], 2)
+    const currentCategory = row[spreadSheets.main.sheets.main.columns!.category - 1]
+    const currentSubCategory = row[spreadSheets.main.sheets.main.columns!.subCategory - 1]
 
-        addRow(spreadSheetId, sheetName, newRow)
-      } else {
-        const columnForCategory = getColumnForCategory(category)
-        const currentCategoryAmount = getValue(spreadSheetId, sheetName, rowForCurrentMonth, columnForCategory)
-        setValue(spreadSheetId, sheetName, rowForCurrentMonth, columnForCategory, currentCategoryAmount + value)
-
-        const columnForTotalSpend = getColumnForTotal()
-        const currentTotal = getValue(spreadSheetId, sheetName, rowForCurrentMonth, columnForTotalSpend)
-        setValue(spreadSheetId, sheetName, rowForCurrentMonth, columnForTotalSpend, currentTotal + value)
+    if (
+      formattedDates.includes(currentFormattedDate) &&
+      currentCategory === category &&
+      subCategories.includes(currentSubCategory)
+    ) {
+      if (!acc[currentFormattedDate]) {
+        acc[currentFormattedDate] = {}
       }
-    } else if (SPREADSHEETS.MONTHLY.ACCOUNT_SHEETS.indexOf(sheetName) !== -1) {
-      console.info(updatingSheetLogMessage.replace("X", sheetName).replace("Y", spreadSheetId))
-      if (!rowForCurrentMonth) {
-        const newRowAux = Array(getNumberOfCategories() + 1).fill(0)
-        const newRow: (Date | number)[] = [date].concat(newRowAux)
-        newRow[getColumnForCategory(category) - 1] = value
-        newRow[newRow.length - 1] = value
 
-        addRow(spreadSheetId, sheetName, newRow)
+      if (!acc[currentFormattedDate][currentSubCategory]) {
+        acc[currentFormattedDate][currentSubCategory] = row[spreadSheets.main.sheets.main.columns!.amount - 1]
       } else {
-        const columnForCategory = getColumnForCategory(category)
-        const currentCategoryAmount = getValue(spreadSheetId, sheetName, rowForCurrentMonth, columnForCategory)
-        setValue(spreadSheetId, sheetName, rowForCurrentMonth, columnForCategory, currentCategoryAmount + value)
-
-        const totalColum = getColumnForTotal()
-        const currentTotal = getValue(spreadSheetId, sheetName, rowForCurrentMonth, totalColum)
-        setValue(spreadSheetId, sheetName, rowForCurrentMonth, totalColum, currentTotal + value)
+        acc[currentFormattedDate][currentSubCategory] =
+          acc[currentFormattedDate][currentSubCategory] + row[spreadSheets.main.sheets.main.columns!.amount - 1]
       }
-    } else if (SPREADSHEETS.MONTHLY.CATEGORIES_SHEET.indexOf(sheetName) !== -1) {
-      console.info(updatingSheetLogMessage.replace("X", sheetName).replace("Y", spreadSheetId))
-      const subcategoryColumn = getColumnForSubcategory(category, subcategory, discountApplied)
-      const totalColum = getTotalColumnForCategorySheet(sheetName)
-      if (!rowForCurrentMonth) {
-        const newRowAux = Array(getNumberOfSubcategoriesColumns(category) + 1).fill(0)
-        const newRow: (Date | number)[] = [date].concat(newRowAux)
-        newRow[subcategoryColumn - 1] = value
-        newRow[totalColum - 1] = value
-        addRow(spreadSheetId, sheetName, newRow)
-      } else {
-        const currentSubcategoryTotal = getValue(spreadSheetId, sheetName, rowForCurrentMonth, subcategoryColumn)
-        setValue(spreadSheetId, sheetName, rowForCurrentMonth, subcategoryColumn, currentSubcategoryTotal + value)
-
-        const currentTotal = getValue(spreadSheetId, sheetName, rowForCurrentMonth, totalColum)
-        setValue(spreadSheetId, sheetName, rowForCurrentMonth, totalColum, currentTotal + value)
-      }
-    } else {
-      throw new Error(`Sheet '${sheetName}' not found on spread sheet '${spreadSheetId}'`)
     }
-  } else {
-    throw new Error(`Sheet '${sheetName}' not found on spread sheet '${spreadSheetId}'`)
-  }
+    return acc
+  }, {})
 }
 
-function formatDate(date: Date): string {
+function findSpreadSheetHandlerByName(
+  spreadSheetHandlers: BaseSpreadSheetHandler[],
+  spreadSheetName: string
+): BaseSpreadSheetHandler | undefined {
+  return spreadSheetHandlers.find((spreadSheetHandler) => spreadSheetHandler.config.name == spreadSheetName)
+}
+
+function buildPendingSpendRow(recurrentSpend: RecurrentSpendConfig, now: Date, taskId: string): any[] {
+  const row = Array(Object.keys(spreadSheets.main.sheets.pending.columns!).length).fill(0)
+  row[spreadSheets.main.sheets.pending.columns!.category - 1] = recurrentSpend.category
+  row[spreadSheets.main.sheets.pending.columns!.subCategory - 1] =
+    typeof recurrentSpend.subCategory !== "undefined" ? recurrentSpend.subCategory : ""
+  row[spreadSheets.main.sheets.pending.columns!.timestamp - 1] = now
+  row[spreadSheets.main.sheets.pending.columns!.amount - 1] = recurrentSpend.amount
+  row[spreadSheets.main.sheets.pending.columns!.account - 1] = recurrentSpend.account
+  row[spreadSheets.main.sheets.pending.columns!.taskId - 1] = taskId
+  row[spreadSheets.main.sheets.pending.columns!.description - 1] = recurrentSpend.description
+  row[spreadSheets.main.sheets.pending.columns!.completed - 1] = false
+  return row
+}
+
+function mapPendingSpendToSpend(row: any[]): Spend {
+  const spend: Spend = {
+    account: row[spreadSheets.main.sheets.pending.columns!.account - 1],
+    category: row[spreadSheets.main.sheets.pending.columns!.category - 1],
+    date: new Date(),
+    description: row[spreadSheets.main.sheets.pending.columns!.description - 1],
+    origin: originTasks,
+    amount: row[spreadSheets.main.sheets.pending.columns!.amount - 1]
+  }
+  if (row[spreadSheets.main.sheets.pending.columns!.subCategory - 1] !== "") {
+    spend.subCategory = row[spreadSheets.main.sheets.pending.columns!.subCategory - 1]
+  }
+  return spend
+}
+
+/**
+ * Formats a `Date` object into an string with one of these formats :
+ * 1. DD/MM/YYYY
+ * 2. MM/YYYY
+ * @param date date to be formatted
+ * @param format format to be used (1 or 2)
+ * @returns formatted string
+ */
+function formatDate(date: Date, format = 1): string {
+  if (format !== 1 && format !== 2) {
+    throw new Error("Invalid format, possible values : 1 or 2")
+  }
+
   const year = date.getFullYear()
   const month = (date.getMonth() + 1).toString().padStart(2, "0")
-  const day = date.getDate().toString().padStart(2, "0")
-  return `${day}/${month}/${year}`
-}
 
-function testUpdateSpend() {
-  updateSpend(new Date("2023-08-02"), "Psicólogo", 1000)
+  if (format === 1) {
+    const day = date.getDate().toString().padStart(2, "0")
+    return `${day}/${month}/${year}`
+  } else {
+    return `${month}/${year}`
+  }
 }

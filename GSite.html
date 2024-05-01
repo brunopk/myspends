@@ -1,0 +1,153 @@
+<script>
+  
+  function populateSelect(selectElement, options, defaultOption) {
+    selectElement.innerHTML = "";
+    options.forEach((value) => {
+      let optionElement = document.createElement("option");
+      optionElement.value= value;
+      optionElement.innerHTML = value;
+      selectElement.appendChild(optionElement);
+    });
+    selectElement.value = defaultOption;
+  }
+
+  function populateSubcategorySelect() {
+    const categorySelect = document.getElementsByName("category")[0];
+    const subcategorySelect = document.getElementsByName("subcategory")[0];
+
+    const selectedCategory = categorySelect.value; 
+    const subcategoryList = Object.keys(categoryTree[selectedCategory]).sort();
+
+    if (subcategoryList.length === 0) {
+      subcategorySelect.disabled = true;
+      subcategorySelect.value = "";
+    } else {
+      subcategorySelect.disabled = false;
+      populateSelect(subcategorySelect, subcategoryList, subcategoryList[0]);
+    }
+  }
+
+  function populateAccountSelect() {
+    const categorySelect = document.getElementsByName("category")[0];
+    const subcategorySelect = document.getElementsByName("subcategory")[0];
+    const accountSelect = document.getElementsByName("account")[0]; 
+
+   
+    let accountList = defaultAccountList.sort();
+    if (subcategorySelect.value !== "") {
+      const selectedCategory = categorySelect.value;
+      const selectedSubcategory = subcategorySelect.value;
+      accountList = Object.keys(categoryTree[selectedCategory][selectedSubcategory]).sort();
+    }
+
+    populateSelect(accountSelect, accountList, accountList[0]);
+  }
+
+  function selectCategory() { 
+    populateSubcategorySelect();
+    populateAccountSelect();
+  }
+
+  function selectSubcategory() {
+    populateAccountSelect();
+  }
+
+  function formatDate(date) {
+    const year = date.getFullYear().toString();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+  
+  function goToGoogleForm() {
+    let elements = null;
+
+    elements = document.getElementsByName("date");
+    const date = elements[0].value;
+    
+    elements = document.getElementsByName("category");
+    const category = elements[0].value
+    
+    elements = document.getElementsByName("subcategory");
+    const subcategory = elements[0].value;
+
+    elements = document.getElementsByName("account");
+    const account = elements[0].value;
+
+    elements = document.getElementsByName("description");
+    const description = elements[0].value;
+
+    elements = document.getElementsByName("value");
+    const value = elements[0].value;
+
+    const url = `https://docs.google.com/forms/d/e/1FAIpQLSevL7ZcgmFDkLUBr_pj-T0bypAjDgq3PRjAvn8Frt9qXk88GQ/viewform?usp=pp_url&entry.33770901=${date}&entry.1700463900=${category}&entry.1045532207=${subcategory}&entry.59325913=${account}&entry.31627014=${description}&entry.1746868782=${value}`;
+
+    window.location.href = url;
+  }
+
+  const categoryTree = {
+     "Celular": {},
+     "Psicólogo": {},
+     "Salud": {
+      "Remedios": {},
+      "Otros": {}
+     },
+     "Comida": {
+      "Sin descuento de MP": {
+        "Itaú": {},
+        "BROU": {},
+        "Itaú Alimentos": {}
+      },
+      "Con descuento de MP": {
+        "Itaú": {},
+        "BROU": {}
+      }
+     },
+     "Transporte": {
+      "Taxi": {},
+      "Nafta": {},
+      "Uber": {},
+      "Bus": {
+        "Itaú": {},
+        "BROU": {},
+        "Cuenta de Papá": {}
+      }
+     }
+  }; 
+
+  const defaultAccountList = ["Itaú", "BROU"];
+
+  window.onload = () => {
+    const dateInput = document.getElementsByName("date")[0];
+    const today = new Date();
+    dateInput.value = formatDate(today);
+
+    const categorySelect = document.getElementsByName("category")[0];
+    const categoryList = Object.keys(categoryTree).sort();
+    const defaultCategory =  categoryList[0];
+    populateSelect(categorySelect, categoryList, defaultCategory);
+
+    populateSubcategorySelect();
+
+    populateAccountSelect();
+
+  }
+
+</script>
+<style>
+  input, select {
+    height: 3em; 
+    margin-bottom: 2em;
+    font-size: 1em;
+    width:100%;
+  }
+</style>
+<div style="display:flex;flex-direction:column;">
+  <input type="date" name="date"/>
+  <select name="category" onchange="selectCategory()"></select>
+  <select name="subcategory" onchange="selectSubcategory()"></select>
+  <select name="account" onchange="selectAccount()"></select>
+  <input type="number" name="value" placeholder="Valor"/>
+  <input name="description" placeholder="Descripción"/>
+  <input type="button" onClick="goToGoogleForm()" value="Finalizar">
+<div/>

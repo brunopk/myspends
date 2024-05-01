@@ -1,5 +1,3 @@
-import { tasks_v1 } from "googleapis"
-
 /**
  * Logs the ids of all task list
  */
@@ -19,11 +17,13 @@ function listTaskLists() {
   console.log(allTaskListIds)
 }
 
+// TODO: verify if its listing all task correctly, if its using correctly the pageToken
+
 /**
  * List all tasks until now for a given task list
  * @param taskList
  */
-function listAllTasks(taskListId: string): tasks_v1.Schema$Tasks[] {
+function listAllTasks(taskListId: string): tasks_v1.Schema$Task[] {
   const now = new Date().toISOString()
   const allTasks: tasks_v1.Schema$Tasks[] = []
   let pageToken: string | null | undefined = null
@@ -41,15 +41,17 @@ function listAllTasks(taskListId: string): tasks_v1.Schema$Tasks[] {
 }
 
 /**
- * Instantiate and add a new task to Google Taks
+ * Instantiate and add a new task to Google Task
  * @param taskListId task list to which add the new task
  * @param title task title for the new task
  * @param description description for the new task (`note`)
  * @param date due date for the new task (not allowed to set hour, minutes, etc, only date part)
+ * @readonly task id
  */
-function createTask(taskListId: string, title: string, description: string, date: Date) {
+function createTask(taskListId: string, title: string, description: string, date: Date): string {
   console.info(`Adding task on tasklist '${taskListId}'`)
-  Tasks.Tasks?.insert({ due: date.toISOString(), title, notes: description }, taskListId)
+  const task = Tasks.Tasks?.insert({ due: date.toISOString(), title, notes: description }, taskListId)
+  return task!.id!
 }
 
 function completeTask(taskListId: string, taskId: string) {
