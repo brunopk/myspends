@@ -36,6 +36,7 @@ function validateSheet(
     const formattedDate = formatDate(currentDate, 2)
 
     rowMismatch = rowMismatch || !Object.keys(groupedSpends).includes(formattedDate)
+    // TODO: don't repeteat the same error message twice
     if (rowMismatch) {
       console.warn(`There is a row for date ${formatDate(currentDate, 1)} but no spends found for that date.`)
     } else {
