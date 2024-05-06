@@ -24,16 +24,22 @@ class MainSheet extends BaseSheetHandler {
     const rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
       ?.slice(1)
       .filter((row) => row[this.sheetConfig.columns!.origin - 1] === originForms)
-    const allSpendsFromForms = readAllRows(forms.main.spreadSheet.id, forms.main.spreadSheet.sheet.name)?.slice(1)
-
-    if (rows?.length !== allSpendsFromForms?.length) {
-      console.warn(
-        `There are ${allSpendsFromForms?.length} rows in sheet '${forms.main.spreadSheet.sheet.name}' within \\
-        '${forms.main.spreadSheet.name}' but there are ${rows?.length} rows in sheet '${this.sheetConfig.name}' \\
-        within '${this.spreadSheetConfig.name}' with origin "Google Forms".`
+      .sort((rowA, rowB) => rowA[this.sheetConfig.columns!.date - 1] - rowB[this.sheetConfig.columns!.date - 1])
+    const spendsFromForms = readAllRows(forms.main.spreadSheet.id, forms.main.spreadSheet.sheet.name)
+      ?.slice(1)
+      .sort(
+        (rowA, rowB) =>
+          rowA[forms.main.spreadSheet.sheet.columns!.date - 1] - rowB[forms.main.spreadSheet.sheet.columns!.date - 1]
       )
+
+    for (let i = 0; i < rows!.length; i++) {
+      const currentDateInRows = rows![i][this.sheetConfig.columns!.date - 1]
+      const currentDateInSpendsFromForms = spendsFromForms![i][forms.main.spreadSheet.sheet.columns!.date - 1]
+      if (!sameDates(currentDateInRows, currentDateInSpendsFromForms)) {
+        console.warn(`Row [${formatRow(spendsFromForms![i], 3)}] from sheet "${forms.main.spreadSheet.sheet.name}" within spreadsheet "${forms.main.spreadSheet.name}" not found in sheet "${this.sheetConfig.name}" within spreadsheet "${this.spreadSheetConfig.name}"`)
+        break
+      }
     }
-  }
 }
 
 /*************************************************************************************************************************/

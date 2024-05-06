@@ -3,14 +3,6 @@
 /*************************************************************************************************************************/
 
 /**
- * If a `Date` element is found, maps it to the formatted representation using the `formatDate` function in Utils.ts
- * @param row row to map
- */
-function mapDates(row: any[]) {
-  return row.map((elem) => (elem instanceof Date ? formatDate(elem, 2) : elem))
-}
-
-/**
  * Validate sheets like `AllCategories` and `Category` which have the same format.
  * @param groupedSpends the result of invoking `groupSpendsByDatesAndSubCategories` or `groupSpendsByDatesAndCategories`
  *  in Utils.ts
@@ -52,7 +44,7 @@ function validateSheet(
     // Hide quantity mismatch errors if there was a row mismatch type error
     expectedRow[expectedRow.length - 1] = expectedMonthAmount
     if (printRows) {
-      console.warn(`Expected row : ${mapDates(expectedRow)}\nActual row : ${mapDates(row)}\n`)
+      console.warn(`Expected row : ${formatRow(expectedRow, 2)}\nActual row : ${formatRow(row, 2)}\n`)
     }
   })
 
