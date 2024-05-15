@@ -28,7 +28,7 @@
      - `completed`
    - The following keys are optional in `main.sheets.pending.columns`:
      - `subCategory`
-3. Copy the content of *html/GSite.html* to the corresponding part of the Google Site in order to edit the web interface.
+3. Copy the content of *html/GSite.html* to the corresponding part of the Google Site in order to edit the web interface. Take into account that available options for dropdowns in Google Forms must match with options in the HTML.
 
 ---
 
