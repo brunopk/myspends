@@ -35,8 +35,10 @@ class MainSheet extends BaseSheetHandler {
     for (let i = 0; i < rows!.length; i++) {
       const currentDateInRows = rows![i][this.sheetConfig.columns!.date - 1]
       const currentDateInSpendsFromForms = spendsFromForms![i][forms.main.spreadSheet.sheet.columns!.date - 1]
+      // console.info(`Row [${formatRow(spendsFromForms![i], 3)}] was found on sheet "${forms.main.spreadSheet.sheet.name}" from "${forms.main.spreadSheet.name}", and row [${formatRow(rows![i], 3)}] was found on sheet "${this.sheetConfig.name}" from "${this.spreadSheetConfig.name}" OK`)
       if (!sameDates(currentDateInRows, currentDateInSpendsFromForms)) {
-        console.warn(`Row [${formatRow(spendsFromForms![i], 3)}] from sheet "${forms.main.spreadSheet.sheet.name}" within spreadsheet "${forms.main.spreadSheet.name}" not found in sheet "${this.sheetConfig.name}" within spreadsheet "${this.spreadSheetConfig.name}"`)
+        console.warn(`Mismatch, row [${formatRow(spendsFromForms![i], 3)}] was found on sheet "${forms.main.spreadSheet.sheet.name}" from "${forms.main.spreadSheet.name}", but row [${formatRow(rows![i], 3)}] was found on sheet "${this.sheetConfig.name}" from "${this.spreadSheetConfig.name}"`)
+        console.warn("Uncomment previously commented console.info to debug the mismatch if it's not evident seeing sheets.")
         break
       }
     }
