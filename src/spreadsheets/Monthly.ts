@@ -59,6 +59,8 @@ function validateSheet(
   }
 }
 
+// TODO: pay attention how column for total is obtained (maybe its not the best approach to assume its the last column because there will be another column called "Reimburse")
+
 /*************************************************************************************************************************/
 /*                                                         SHEETS                                                        */
 /*************************************************************************************************************************/

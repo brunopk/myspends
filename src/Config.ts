@@ -27,6 +27,8 @@ const forms:  { [name: string]: FormConfig } = {
   }
 }
 
+// TODO: need some attribute to indicate if there's or not reimburse for each sheet, and what columns is used for that
+
 const spreadSheets : { [name: string]: SpreadSheetConfig } = {
   main: {
     id: "1r93R3hKOCV6St4sac_88YZRM6OuYO9LxaxwMa2gWomE",
