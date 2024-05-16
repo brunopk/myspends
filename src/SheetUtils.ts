@@ -14,7 +14,7 @@ function addRow(spreadSheetId: string, sheetName: string, row: any[]) {
 }
 
 /**
- * Return the number of columns based on the first row
+ * Return the number of columns based on headers of the sheet
  * @param spreadSheetId spread sheet id
  * @param sheetName sheet name within the spreadsheet
  */

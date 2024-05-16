@@ -7,21 +7,32 @@ const sheetType = {
 
 // Columns numbers starts with 0
 
-const forms:  { [name: string]: FormConfig } = {
-  main: {
-    spreadSheet: {
-      id: 'xxx',
-      name: 'Form',
-      sheet: {
-        name: 'Name',
-        columns: {
-          category: 3,
-          date: 2,
-          amount: 9,
-          subCategory: 4,
-          account: 8,
-          description: 9
-        }
+// TODO: fix all places (if necessary) where only one sheet for forms is assumed 
+
+const forms:  FormConfig = {
+  spreadSheetId: "",
+  spreadSheetName: "",
+  formSheet: {
+    main: {
+      name: "",
+      includesReimbursementColumn: false,
+      columns: {
+        category: 3,
+        date: 2,
+        amount: 9,
+        subCategory: 4,
+        account: 8,
+        description: 9
+      }
+    },
+    reimbursements: {
+      name: "",
+      includesReimbursementColumn: false,
+      columns: {
+        date: 1,
+        account: 1,
+        isCash: 1,
+        amount: 1
       }
     }
   }
@@ -72,7 +83,7 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         }
       },
       category1: {
-        name: categories.category1.name,
+        name: "",
         columns: {
           "Column A": 0,
           "Column B": 0
@@ -82,7 +93,7 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         }
       },
       category2: {
-        name: categories.category2.name,
+        name: "",
         columns: {
           "Column A": 0,
           "Column B": 0

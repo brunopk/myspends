@@ -14,24 +14,41 @@ const manualRecurrentSpend = "Manual"
 
 /*************************************************************************************************************************/
 
-function processMainForm() {
+function processGoogleFormInput() {
   const range = SpreadsheetApp.getActiveRange()
+  const sheetName = SpreadsheetApp.getActiveSheet().getName()
   const numRows = range.getNumRows()
+  const validSheetNames = [forms.formSheet.main.name, forms.formSheet.reimbursements.name]
+
+  if (!validSheetNames.includes(sheetName))
+    throw new Error(`Invalid sheet name "${sheetName}", valid sheet names are ${validSheetNames}`)
 
   // Normally active range contains one row (last inserted row)
   for (let i = 1; i <= numRows; i++) {
-    const date = range.getCell(i, forms.main.spreadSheet.sheet.columns!.date).getValue()
-    const category = range.getCell(i, forms.main.spreadSheet.sheet.columns!.category).getValue()
-    const amount = range.getCell(i, forms.main.spreadSheet.sheet.columns!.amount).getValue()
-    const account = range.getCell(i, forms.main.spreadSheet.sheet.columns!.account).getValue()
-    const description = range.getCell(i, forms.main.spreadSheet.sheet.columns!.description).getValue()
-    const subCategory = range.getCell(i, forms.main.spreadSheet.sheet.columns!.subCategory).getValue()
+    if (sheetName === forms.formSheet.main.name) {
+      const date = range.getCell(i, forms.formSheet.main.columns!.date).getValue()
+      const category = range.getCell(i, forms.formSheet.main.columns!.category).getValue()
+      const amount = range.getCell(i, forms.formSheet.main.columns!.amount).getValue()
+      const account = range.getCell(i, forms.formSheet.main.columns!.account).getValue()
+      const description = range.getCell(i, forms.formSheet.main.columns!.description).getValue()
+      const subCategory = range.getCell(i, forms.formSheet.main.columns!.subCategory).getValue()
 
-    const newSpend: Spend = { date, category, amount, account, description, subCategory, origin: originForms }
+      const newSpend: Spend = { date, category, amount, account, description, subCategory, origin: originForms }
 
-    spreadSheetHandlers.forEach((handler) => {
-      handler.processSpend(newSpend)
-    })
+      spreadSheetHandlers.forEach((handler) => {
+        handler.processSpend(newSpend)
+      })
+    } else {
+      const date = range.getCell(i, forms.formSheet.reinbursments.columns!.date).getValue()
+      const account = range.getCell(i, forms.formSheet.reinbursments.columns!.account).getValue()
+      const amount = range.getCell(i, forms.formSheet.reinbursments.columns!.amount).getValue()
+
+      const newReimbursement: Reimbursement = { date, account, amount }
+
+      spreadSheetHandlers.forEach((handler) => {
+        handler.processReimbursement(newReimbursement)
+      })
+    }
   }
 }
 
@@ -66,8 +83,6 @@ function processRecurrentSpends() {
     }
   }
 }
-
-// TODO: test all in "prod"
 
 function processPendingSpends() {
   const rows = readAllRows(spreadSheets.main.id, spreadSheets.main.sheets.pending.name)
