@@ -39,11 +39,14 @@ function processGoogleFormInput() {
         handler.processSpend(newSpend)
       })
     } else {
-      const date = range.getCell(i, forms.formSheet.reinbursments.columns!.date).getValue()
-      const account = range.getCell(i, forms.formSheet.reinbursments.columns!.account).getValue()
-      const amount = range.getCell(i, forms.formSheet.reinbursments.columns!.amount).getValue()
+      const date = range.getCell(i, forms.formSheet.reimbursements.columns!.date).getValue()
+      const account = range.getCell(i, forms.formSheet.reimbursements.columns!.account).getValue()
+      const amount = range.getCell(i, forms.formSheet.reimbursements.columns!.amount).getValue()
+      const isCash = range.getCell(i, forms.formSheet.reimbursements.columns!.isCash).getValue()
 
-      const newReimbursement: Reimbursement = { date, account, amount }
+      // TODO: check if isCash is obtained as boolean or string
+
+      const newReimbursement: Reimbursement = { date, account, amount, isCash }
 
       spreadSheetHandlers.forEach((handler) => {
         handler.processReimbursement(newReimbursement)

@@ -31,7 +31,6 @@ type CategoryConfig = {
 type SheetConfig = {
   readonly name: string
   readonly columns?: { [name: string]: number }
-  readonly includesReimbursementColumn?: boolean
   readonly extra?: any
 }
 

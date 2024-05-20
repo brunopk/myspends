@@ -15,7 +15,6 @@ const forms:  FormConfig = {
   formSheet: {
     main: {
       name: "",
-      includesReimbursementColumn: false,
       columns: {
         category: 3,
         date: 2,
@@ -27,7 +26,6 @@ const forms:  FormConfig = {
     },
     reimbursements: {
       name: "",
-      includesReimbursementColumn: false,
       columns: {
         date: 1,
         account: 1,
@@ -79,14 +77,17 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         name: "Categorías",
         columns: {
           "Column A": 0,
-          "Column B": 0
+          "Column B": 0,
+          Reimbursement: 0,
+          Total: 0
         }
       },
       category1: {
         name: "",
         columns: {
           "Column A": 0,
-          "Column B": 0
+          "Column B": 0,
+          Total: 0
         },
         extra: {
           type: sheetType.category
@@ -96,7 +97,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         name: "",
         columns: {
           "Column A": 0,
-          "Column B": 0
+          "Column B": 0,
+          Total: 0
         },
         extra: {
           type: sheetType.category
@@ -106,7 +108,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         name: "Account 1",
         columns: {
           "Column A": 0,
-          "Column B": 0
+          "Column B": 0,
+          Total: 0
         },
         extra: {
           type: sheetType.account
@@ -116,7 +119,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         name: "Account 2",
         columns: {
           "Column A": 0,
-          "Column B": 0
+          "Column B": 0,
+          Total: 0
         },
         extra: {
           type: sheetType.account
@@ -126,7 +130,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         name: "Account 3",
         columns: {
           "Column A": 0,
-          "Column B": 0
+          "Column B": 0,
+          Total: 0
         },
         extra: {
           type: sheetType.account

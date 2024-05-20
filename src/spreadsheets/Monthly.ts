@@ -1,5 +1,3 @@
-// TODO: SEGUIR ACA
-
 /*************************************************************************************************************************/
 /*                                                     COMMON FUNCTIONS                                                  */
 /*************************************************************************************************************************/
@@ -70,27 +68,66 @@ function validateSheet(
 class AllCategories extends BaseSheetHandler {
   processSpend(spend: Spend): void {
     const categoryColumn = this.sheetConfig.columns![spend.category]
-    const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
-    const monthRow = this.getRowForMonth(spend.date.getMonth())
-    if (!monthRow) {
-      const newRow = Array(this.sheetConfig.numberOfColumns).fill(0)
+    const totalColumn = getTotalColumn(this.sheetConfig)
+    const rowForMonth = this.getRowForMonth(spend.date.getMonth())
+    if (!rowForMonth) {
+      const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
+      const newRow = Array(numberOfColumns).fill(0)
       newRow[0] = spend.date
       newRow[categoryColumn - 1] = spend.amount
-      newRow[numberOfColumns - 1] = spend.amount
+      newRow[totalColumn - 1] = spend.amount
 
       addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
     } else {
-      const currentCategoryValue = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, categoryColumn)
+      const currentCategoryValue = getValue(
+        this.spreadSheetConfig.id,
+        this.sheetConfig.name,
+        rowForMonth,
+        categoryColumn
+      )
       setValue(
         this.spreadSheetConfig.id,
         this.sheetConfig.name,
-        monthRow,
+        rowForMonth,
         categoryColumn,
         currentCategoryValue + spend.amount
       )
 
-      const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, numberOfColumns)
-      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, numberOfColumns, currentTotal + spend.amount)
+      const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, totalColumn)
+      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, totalColumn, currentTotal + spend.amount)
+    }
+  }
+
+  processReimbursement(reimbursement: Reimbursement): void {
+    const reimbursementColumn = getReimbursementColumn(this.sheetConfig)
+    const totalColumn = getTotalColumn(this.sheetConfig)
+    const rowForMonth = this.getRowForMonth(reimbursement.date.getMonth())
+    if (!rowForMonth) {
+      const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
+      const newRow = Array(numberOfColumns).fill(0)
+      newRow[0] = reimbursement.date
+      newRow[reimbursementColumn - 1] = reimbursement.amount
+      newRow[totalColumn - 1] = -reimbursement.amount
+
+      addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
+    } else {
+      const currentValue = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, reimbursementColumn)
+      setValue(
+        this.spreadSheetConfig.id,
+        this.sheetConfig.name,
+        rowForMonth,
+        reimbursementColumn,
+        currentValue + reimbursement.amount
+      )
+
+      const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, totalColumn)
+      setValue(
+        this.spreadSheetConfig.id,
+        this.sheetConfig.name,
+        rowForMonth,
+        totalColumn,
+        currentTotal - reimbursement.amount
+      )
     }
   }
 
@@ -106,6 +143,8 @@ class AllCategories extends BaseSheetHandler {
 }
 
 /*************************************************************************************************************************/
+
+// TODO: CONTINUE: similar logic to AllCategories class for processSpend and processReimbursement methods
 
 class Category extends BaseSheetHandler {
   private category: string

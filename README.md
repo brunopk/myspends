@@ -16,6 +16,7 @@
        - `account`
        - `amount`
    - `spreadSheets` within *src/Config.gs* **must have** two keys: `main` and `monthly` for the main and monthly spreadsheets respectively.
+     - `*.sheets.*.columns` **must have** `Total` for the total column.
      - `main.sheets` **must have** two keys: `main` and `pending`, one which correspond to the main sheet and the other for recurrent spends pending confirmation.
      - `main.sheets.main.columns` **must have** the following keys to indicate column numbers:
        - `category`,
@@ -34,7 +35,15 @@
        - `completed`
      - The following keys are optional in `main.sheets.pending.columns`:
        - `subCategory`
+     - `monthly.sheets.*.columns` may include (optional) `Reimbursement` (or `Devolución`) column to indicate if there is a reimbursement column included or not.
 3. Copy the content of *html/GSite.html* to the corresponding part of the Google Site in order to edit the web interface. Take into account that available options for dropdowns in Google Forms must match with options in the HTML.
+4. Upload the content :
+
+   ```shell
+   clasp push
+   ```
+
+4. Set the corresponding triggers for Google Apps Script (function `processGoogleFormInput`).
 
 ---
 

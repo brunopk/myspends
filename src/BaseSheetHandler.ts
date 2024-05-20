@@ -10,7 +10,7 @@ abstract class BaseSheetHandler {
 
   abstract processSpend(spend: Spend): void
 
-  abstract processReimbursement(spend: Reimbursement): void
+  abstract processReimbursement(reimbursement: Reimbursement): void
 
   abstract validate(): void
 
