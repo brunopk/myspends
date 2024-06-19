@@ -25,16 +25,14 @@ function getNumberOfColumns(spreadSheetId: string, sheetName: string): number {
 
 function getTotalColumn(sheetConfig: SheetConfig): number {
   const columnNumber = sheetConfig.columns!["Total"]
-  if (typeof columnNumber === "undefined") throw new Error(`Cannot find total column for sheet "${sheetConfig.name}"`)
+  if (typeof columnNumber === "undefined") throw new Error(`Total column not configured for sheet "${sheetConfig.name}"`)
   return columnNumber
 }
 
-function getReimbursementColumn(sheetConfig: SheetConfig): number {
+function getReimbursementColumn(sheetConfig: SheetConfig): number | undefined {
   let columnNumber = sheetConfig.columns!["Reimbursement"]
   if (typeof columnNumber === "undefined") {
     columnNumber = sheetConfig.columns!["Devolución"]
-    if (typeof columnNumber === "undefined")
-      throw new Error(`Cannot find reimbursement column for sheet "${sheetConfig.name}"`)
   }
   return columnNumber
 }

@@ -10,9 +10,47 @@ abstract class BaseSheetHandler {
 
   abstract processSpend(spend: Spend): void
 
-  abstract processReimbursement(reimbursement: Reimbursement): void
-
   abstract validate(): void
+  
+  // TODO: ESTA MAL NO TIENE QUE RESTAR SIEMPRE , POR EJEMPLO SI ES UN GASTO EN LA CUENTA ITAU NO TIENE QUE RESTAR EN BROU
+  
+  processReimbursement(reimbursement: Reimbursement): void {
+    const reimbursementColumn = getReimbursementColumn(this.sheetConfig)
+    if (typeof reimbursementColumn === 'undefined') {
+      console.info(`No reimbursement column on sheet '${this.sheetConfig.name}' of '${this.spreadSheetConfig.name}'`)
+      return
+    }
+    
+    const totalColumn = getTotalColumn(this.sheetConfig)
+    const rowForMonth = this.getRowForMonth(reimbursement.date.getMonth())
+    if (!rowForMonth) {
+      const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
+      const newRow = Array(numberOfColumns).fill(0)
+      newRow[0] = reimbursement.date
+      newRow[reimbursementColumn - 1] = reimbursement.amount
+      newRow[totalColumn - 1] = -reimbursement.amount
+
+      addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
+    } else {
+      const currentValue = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, reimbursementColumn)
+      setValue(
+        this.spreadSheetConfig.id,
+        this.sheetConfig.name,
+        rowForMonth,
+        reimbursementColumn,
+        currentValue + reimbursement.amount
+      )
+
+      const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, totalColumn)
+      setValue(
+        this.spreadSheetConfig.id,
+        this.sheetConfig.name,
+        rowForMonth,
+        totalColumn,
+        currentTotal - reimbursement.amount
+      )
+    }
+  }
 
   /**
    * Get the corresponding row for the given month.

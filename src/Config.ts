@@ -78,8 +78,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         columns: {
           "Column A": 0,
           "Column B": 0,
-          Reimbursement: 0,
-          Total: 0
+          "Reimbursement": 0,
+          "Total": 0
         }
       },
       category1: {
@@ -87,7 +87,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         columns: {
           "Column A": 0,
           "Column B": 0,
-          Total: 0
+          "Reimbursement": 0,
+          "Total": 0
         },
         extra: {
           type: sheetType.category
@@ -98,7 +99,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         columns: {
           "Column A": 0,
           "Column B": 0,
-          Total: 0
+          "Reimbursement": 0,
+          "Total": 0
         },
         extra: {
           type: sheetType.category
@@ -109,7 +111,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         columns: {
           "Column A": 0,
           "Column B": 0,
-          Total: 0
+          "Reimbursement": 0,
+          "Total": 0
         },
         extra: {
           type: sheetType.account
@@ -120,7 +123,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         columns: {
           "Column A": 0,
           "Column B": 0,
-          Total: 0
+          "Reimbursement": 0,
+          "Total": 0
         },
         extra: {
           type: sheetType.account
@@ -131,7 +135,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         columns: {
           "Column A": 0,
           "Column B": 0,
-          Total: 0
+          "Reimbursement": 0,
+          "Total": 0
         },
         extra: {
           type: sheetType.account

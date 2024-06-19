@@ -17,9 +17,6 @@ class MainSheet extends BaseSheetHandler {
     addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
   }
 
-  processReimbursement(spend: Reimbursement) {
-  }
-
   /**
    * Only validates spends from Google Forms are all included in the main sheet
    */

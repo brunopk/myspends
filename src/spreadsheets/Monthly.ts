@@ -4,9 +4,10 @@
 
 /**
  * Validate sheets like `AllCategories` and `Category` which have the same format.
- * @param groupedSpends result of invoking `groupSpendsByDatesAndSubCategories` or `groupSpendsByDatesAndCategories`
- *  in Utils.ts
- * @param data data to validate
+ * @param groupedSpends result of invoking `groupSpendsByDatesAndSubCategories` or 
+ * `groupSpendsByDatesAndCategories` in Utils.ts
+ * @param data 
+ * data to validate
  * @param groupingElements categories or subcategories (see `groupSpendsByDatesAndSubCategories` and
  * `groupSpendsByDatesAndCategories` in Utils.ts)
  */
@@ -96,39 +97,6 @@ class AllCategories extends BaseSheetHandler {
     }
   }
 
-  processReimbursement(reimbursement: Reimbursement): void {
-    const reimbursementColumn = getReimbursementColumn(this.sheetConfig)
-    const totalColumn = getTotalColumn(this.sheetConfig)
-    const rowForMonth = this.getRowForMonth(reimbursement.date.getMonth())
-    if (!rowForMonth) {
-      const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
-      const newRow = Array(numberOfColumns).fill(0)
-      newRow[0] = reimbursement.date
-      newRow[reimbursementColumn - 1] = reimbursement.amount
-      newRow[totalColumn - 1] = -reimbursement.amount
-
-      addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
-    } else {
-      const currentValue = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, reimbursementColumn)
-      setValue(
-        this.spreadSheetConfig.id,
-        this.sheetConfig.name,
-        rowForMonth,
-        reimbursementColumn,
-        currentValue + reimbursement.amount
-      )
-
-      const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, totalColumn)
-      setValue(
-        this.spreadSheetConfig.id,
-        this.sheetConfig.name,
-        rowForMonth,
-        totalColumn,
-        currentTotal - reimbursement.amount
-      )
-    }
-  }
-
   validate(): void {
     const rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
     const [headers, data] = [rows?.slice(0, 1)[0], rows?.slice(1)]
@@ -212,11 +180,12 @@ class Account extends BaseSheetHandler {
     if (spend.account === this.sheetConfig.name) {
       const monthRow = this.getRowForMonth(spend.date.getMonth())
       const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
+      const totalColumn = getTotalColumn(this.sheetConfig)
       if (!monthRow) {
-        const newRow = Array(this.sheetConfig.numberOfColumns).fill(0)
+        const newRow = Array(numberOfColumns).fill(0)
         newRow[0] = spend.date
         newRow[this.sheetConfig.columns![spend.category] - 1] = spend.amount
-        newRow[numberOfColumns - 1] = spend.amount
+        newRow[totalColumn - 1] = spend.amount
 
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
@@ -235,12 +204,12 @@ class Account extends BaseSheetHandler {
           currentCategoryAmount + spend.amount
         )
 
-        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, numberOfColumns)
+        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColumn)
         setValue(
           this.spreadSheetConfig.id,
           this.sheetConfig.name,
           monthRow,
-          numberOfColumns,
+          totalColumn,
           currentTotal + spend.amount
         )
       }

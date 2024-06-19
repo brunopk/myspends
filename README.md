@@ -35,7 +35,9 @@
        - `completed`
      - The following keys are optional in `main.sheets.pending.columns`:
        - `subCategory`
-     - `monthly.sheets.*.columns` may include (optional) `Reimbursement` (or `Devolución`) column to indicate if there is a reimbursement column included or not.
+     - `monthly.sheets.*.columns` **must** include the following columns:
+       - `Total`
+       - `Reimbursement` (`Devolución`)
 3. Copy the content of *html/GSite.html* to the corresponding part of the Google Site in order to edit the web interface. Take into account that available options for dropdowns in Google Forms must match with options in the HTML.
 4. Upload the content :
 
@@ -43,7 +45,7 @@
    clasp push
    ```
 
-4. Set the corresponding triggers for Google Apps Script (function `processGoogleFormInput`).
+5. Set the corresponding triggers for Google Apps Script (function `processGoogleFormInput`).
 
 ---
 
