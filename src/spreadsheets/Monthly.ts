@@ -12,7 +12,7 @@ function mapDates(row: any[]) {
 
 /**
  * Validate sheets like `AllCategories` and `Category` which have the same format.
- * @param groupedSpends the result of invoking `groupSpendsByDatesAndSubCategories` or `groupSpendsByDatesAndCategories`
+ * @param groupedSpends result of invoking `groupSpendsByDatesAndSubCategories` or `groupSpendsByDatesAndCategories`
  *  in Utils.ts
  * @param data data to validate
  * @param groupingElements categories or subcategories (see `groupSpendsByDatesAndSubCategories` and
@@ -26,7 +26,6 @@ function validateSheet(
   groupingElements: string[]
 ) {
   let currentDate = data![0][0]
-  let rowMismatch = false
   let quantityMismatch = false
   data!.forEach((row) => {
     currentDate = row![0]
@@ -35,37 +34,35 @@ function validateSheet(
     const expectedRow = [currentDate, ...Array(groupingElements?.length).fill(0), expectedMonthAmount]
     const formattedDate = formatDate(currentDate, 2)
 
-    rowMismatch = rowMismatch || !Object.keys(groupedSpends).includes(formattedDate)
-    if (rowMismatch) {
-      console.warn(`There is a row for date ${formatDate(currentDate, 1)} but no spends found for that date.`)
-    } else {
-      groupingElements?.forEach((groupingElement) => {
-        const index = sheetConfig.columns![groupingElement] - 1
-        if (Object.keys(groupedSpends[formattedDate]).includes(groupingElement)) {
-          const expectedAmount = groupedSpends[formattedDate][groupingElement]
-          const actualAmount = row[index]
-          printRows = printRows || expectedAmount != actualAmount
-          quantityMismatch = quantityMismatch || expectedAmount != actualAmount
-          expectedMonthAmount += expectedAmount
-          expectedRow[index] = expectedAmount
-        }
+    groupingElements?.forEach((groupingElement) => {
+      const index = sheetConfig.columns![groupingElement] - 1
+
+      let expectedAmount = 0
+      if (Object.keys(groupedSpends).includes(formattedDate) && Object.keys(groupedSpends[formattedDate]).includes(groupingElement)) {
+        expectedAmount = groupedSpends[formattedDate][groupingElement]
+      }
+
+      const actualAmount = row[index]
+      printRows = printRows || expectedAmount != actualAmount
+      quantityMismatch = quantityMismatch || expectedAmount != actualAmount
+      expectedMonthAmount += expectedAmount
+      expectedRow[index] = expectedAmount
       })
+      })
+    }
+    })
     }
 
     // Hide quantity mismatch errors if there was a row mismatch type error
-    if (!rowMismatch) {
-      expectedRow[expectedRow.length - 1] = expectedMonthAmount
-      if (printRows) {
-        console.warn(`Expected row : ${mapDates(expectedRow)}\nActual row : ${mapDates(row)}\n`)
-      }
+    expectedRow[expectedRow.length - 1] = expectedMonthAmount
+    if (printRows) {
+      console.warn(`Expected row : ${formatRow(expectedRow, 2)}\nActual row : ${formatRow(row, 2)}\n`)
     }
   })
 
   const tips: string[] = []
   if (quantityMismatch) {
     tips.push("Check amounts for each category")
-  }
-  if (quantityMismatch || rowMismatch) {
     tips.push(`Check category/subcategory names are correct for all spends.`)
     tips.push(
       `Check if the first row in sheet '${sheetConfig.name}' within spreadsheet '${spreadSheetConfig.name}' contains valid category/subcategory names`

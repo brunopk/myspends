@@ -178,22 +178,53 @@ function mapPendingSpendToSpend(row: any[]): Spend {
  * Formats a `Date` object into an string with one of these formats :
  * 1. DD/MM/YYYY
  * 2. MM/YYYY
+ * 3. DD/MM/YYYY HH:MM:SS
  * @param date date to be formatted
  * @param format format to be used (1 or 2)
  * @returns formatted string
  */
 function formatDate(date: Date, format = 1): string {
-  if (format !== 1 && format !== 2) {
-    throw new Error("Invalid format, possible values : 1 or 2")
+  if (format !== 1 && format !== 2 && format !== 3) {
+    throw new Error("Invalid format, possible values : 1, 2 or 3")
   }
 
   const year = date.getFullYear()
   const month = (date.getMonth() + 1).toString().padStart(2, "0")
+  const day = date.getDate().toString().padStart(2, "0")
 
   if (format === 1) {
-    const day = date.getDate().toString().padStart(2, "0")
     return `${day}/${month}/${year}`
-  } else {
+  } else if (format === 2) {
     return `${month}/${year}`
+  } else {
+    const hours = date.getHours().toString().padStart(2, "0")
+    const minutes = date.getMinutes().toString().padStart(2, "0")
+    const seconds = date.getSeconds().toString().padStart(2, "0")
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`
   }
+}
+
+/**
+ * If a `Date` element is found, maps it to the formatted representation using the `formatDate` function in Utils.ts
+ * @param row row to map
+ * @param dateFormat see date formats in function `formatDate` from Utils.ts
+ */
+function formatRow(row: any[], dateFormat: number) {
+  return row.map((elem) => (elem instanceof Date ? formatDate(elem, dateFormat) : elem))
+}
+
+/**
+ * Returns `true` if both dates are equal considering up to seconds.
+ * @param a date a
+ * @param b date b
+ */
+function sameDates(a: Date, b: Date): boolean {
+  return (
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate() &&
+    a.getHours() === b.getHours() &&
+    a.getMinutes() === b.getMinutes() &&
+    a.getSeconds() === b.getSeconds()
+  )
 }
