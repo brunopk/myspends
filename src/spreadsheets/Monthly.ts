@@ -40,7 +40,7 @@ function validateSheet(
       expectedMonthAmount += expectedAmount
       expectedRow[index] = expectedAmount
     })
-
+  
     // Hide quantity mismatch errors if there was a row mismatch type error
     expectedRow[expectedRow.length - 1] = expectedMonthAmount
     if (printRows) {
