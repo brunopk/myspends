@@ -4,7 +4,7 @@
 
 /**
  * Validate sheets like `AllCategories` and `Category` which have the same format.
- * @param groupedSpends the result of invoking `groupSpendsByDatesAndSubCategories` or `groupSpendsByDatesAndCategories`
+ * @param groupedSpends result of invoking `groupSpendsByDatesAndSubCategories` or `groupSpendsByDatesAndCategories`
  *  in Utils.ts
  * @param data data to validate
  * @param groupingElements categories or subcategories (see `groupSpendsByDatesAndSubCategories` and
@@ -58,8 +58,6 @@ function validateSheet(
     console.warn(tips.join("\n"))
   }
 }
-
-// TODO: pay attention how column for total is obtained (maybe its not the best approach to assume its the last column because there will be another column called "Reimburse")
 
 /*************************************************************************************************************************/
 /*                                                         SHEETS                                                        */
@@ -144,7 +142,9 @@ class AllCategories extends BaseSheetHandler {
 
 /*************************************************************************************************************************/
 
-// TODO: CONTINUE: similar logic to AllCategories class for processSpend and processReimbursement methods
+// TODO: Check if validation methods should change its code to consider reimbursements.
+ 
+// TODO: CONTINUE: similar logic to AllCategories class for processReimbursement method
 
 class Category extends BaseSheetHandler {
   private category: string
@@ -157,13 +157,15 @@ class Category extends BaseSheetHandler {
   processSpend(spend: Spend) {
     if (spend.category === this.category) {
       const subcategoryColumn = this.sheetConfig.columns![spend.subCategory!]
-      const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
+      const totalColumn = getTotalColumn(this.sheetConfig)
       const monthRow = this.getRowForMonth(spend.date.getMonth())
       if (!monthRow) {
-        const newRow = Array(this.sheetConfig.numberOfColumns).fill(0)
+        const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
+        const newRow = Array(numberOfColumns).fill(0)
         newRow[0] = spend.date
         newRow[subcategoryColumn - 1] = spend.amount
-        newRow[numberOfColumns - 1] = spend.amount
+        newRow[totalColumn - 1] = spend.amount
+
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
         const currentSubcategoryTotal = getValue(
@@ -180,12 +182,12 @@ class Category extends BaseSheetHandler {
           currentSubcategoryTotal + spend.amount
         )
 
-        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, numberOfColumns)
+        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColumn)
         setValue(
           this.spreadSheetConfig.id,
           this.sheetConfig.name,
           monthRow,
-          numberOfColumns,
+          totalColumn,
           currentTotal + spend.amount
         )
       }
