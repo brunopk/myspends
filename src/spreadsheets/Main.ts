@@ -24,14 +24,23 @@ class MainSheet extends BaseSheetHandler {
     const rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
       ?.slice(1)
       .filter((row) => row[this.sheetConfig.columns!.origin - 1] === originForms)
-    const allSpendsFromForms = readAllRows(forms.main.spreadSheet.id, forms.main.spreadSheet.sheet.name)?.slice(1)
-
-    if (rows?.length !== allSpendsFromForms?.length) {
-      console.warn(
-        `There are ${allSpendsFromForms?.length} rows in sheet '${forms.main.spreadSheet.sheet.name}' within \\
-        '${forms.main.spreadSheet.name}' but there are ${rows?.length} rows in sheet '${this.sheetConfig.name}' \\
-        within '${this.spreadSheetConfig.name}' with origin "Google Forms".`
+      .sort((rowA, rowB) => rowA[this.sheetConfig.columns!.date - 1] - rowB[this.sheetConfig.columns!.date - 1])
+    const spendsFromForms = readAllRows(forms.spreadSheetId, forms.formSheet.main.name)
+      ?.slice(1)
+      .sort(
+        (rowA, rowB) =>
+          rowA[forms.formSheet.main.columns!.date - 1] - rowB[forms.formSheet.main.columns!.date - 1]
       )
+
+    for (let i = 0; i < rows!.length; i++) {
+      const currentDateInRows = rows![i][this.sheetConfig.columns!.date - 1]
+      const currentDateInSpendsFromForms = spendsFromForms![i][forms.formSheet.main.columns!.date - 1]
+      // console.info(`Row [${formatRow(spendsFromForms![i], 3)}] was found on sheet "${forms.main.spreadSheet.sheet.name}" from "${forms.main.spreadSheet.name}", and row [${formatRow(rows![i], 3)}] was found on sheet "${this.sheetConfig.name}" from "${this.spreadSheetConfig.name}" OK`)
+      if (!sameDates(currentDateInRows, currentDateInSpendsFromForms)) {
+        console.warn(`Mismatch, row [${formatRow(spendsFromForms![i], 3)}] was found on sheet "${forms.formSheet.main.name}" from "${forms.spreadSheetName}", but row [${formatRow(rows![i], 3)}] was found on sheet "${this.sheetConfig.name}" from "${this.spreadSheetConfig.name}"`)
+        console.warn("Uncomment previously commented console.info to debug the mismatch if it's not evident seeing sheets.")
+        break
+      }
     }
   }
 }
