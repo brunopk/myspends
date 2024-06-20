@@ -36,8 +36,6 @@ const forms:  FormConfig = {
   }
 }
 
-// TODO: need some attribute to indicate if there's or not reimburse for each sheet, and what columns is used for that
-
 const spreadSheets : { [name: string]: SpreadSheetConfig } = {
   main: {
     id: "1r93R3hKOCV6St4sac_88YZRM6OuYO9LxaxwMa2gWomE",
@@ -78,7 +76,6 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         columns: {
           "Column A": 0,
           "Column B": 0,
-          "Reimbursement": 0,
           "Total": 0
         }
       },
@@ -87,7 +84,6 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         columns: {
           "Column A": 0,
           "Column B": 0,
-          "Reimbursement": 0,
           "Total": 0
         },
         extra: {
@@ -99,7 +95,6 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         columns: {
           "Column A": 0,
           "Column B": 0,
-          "Reimbursement": 0,
           "Total": 0
         },
         extra: {
@@ -111,7 +106,6 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         columns: {
           "Column A": 0,
           "Column B": 0,
-          "Reimbursement": 0,
           "Total": 0
         },
         extra: {
@@ -123,7 +117,6 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         columns: {
           "Column A": 0,
           "Column B": 0,
-          "Reimbursement": 0,
           "Total": 0
         },
         extra: {
@@ -135,7 +128,6 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         columns: {
           "Column A": 0,
           "Column B": 0,
-          "Reimbursement": 0,
           "Total": 0
         },
         extra: {

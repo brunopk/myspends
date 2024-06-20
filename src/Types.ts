@@ -12,12 +12,7 @@ type Spend = {
   subCategory?: string
 }
 
-type Reimbursement = {
-  date: Date
-  isCash: boolean
-  account: string
-  amount: number
-}
+type Reimbursement = Spend
 
 type SubCategoryConfig = {
   readonly name: string

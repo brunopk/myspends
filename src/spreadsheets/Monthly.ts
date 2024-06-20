@@ -97,6 +97,10 @@ class AllCategories extends BaseSheetHandler {
     }
   }
 
+  getReimbursementColumn(reimbursement: Reimbursement): number {
+    return this.sheetConfig.columns![reimbursement.category]
+  }
+
   validate(): void {
     const rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
     const [headers, data] = [rows?.slice(0, 1)[0], rows?.slice(1)]
@@ -110,9 +114,8 @@ class AllCategories extends BaseSheetHandler {
 
 /*************************************************************************************************************************/
 
-// TODO: Check if validation methods should change its code to consider reimbursements.
+// TODO: CONTINUE Check if validation methods should change its code to consider reimbursements.
  
-// TODO: CONTINUE: similar logic to AllCategories class for processReimbursement method
 
 class Category extends BaseSheetHandler {
   private category: string
@@ -162,6 +165,10 @@ class Category extends BaseSheetHandler {
     }
   }
 
+  getReimbursementColumn(reimbursement: Reimbursement): number | undefined {
+    return reimbursement.category === this.category ? this.sheetConfig.columns![reimbursement.subCategory!] : undefined
+  }
+
   validate(): void {
     const rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
     const [headers, data] = [rows?.slice(0, 1)[0], rows?.slice(1)]
@@ -176,6 +183,13 @@ class Category extends BaseSheetHandler {
 /*************************************************************************************************************************/
 
 class Account extends BaseSheetHandler {
+  private account: string
+
+  constructor(spreadSheetConfig: SpreadSheetConfig, sheetConfig: SheetConfig) {
+    super(spreadSheetConfig, sheetConfig)
+    this.account = sheetConfig.name
+  }
+
   processSpend(spend: Spend) {
     if (spend.account === this.sheetConfig.name) {
       const monthRow = this.getRowForMonth(spend.date.getMonth())
@@ -214,6 +228,10 @@ class Account extends BaseSheetHandler {
         )
       }
     }
+  }
+
+  getReimbursementColumn(reimbursement: Reimbursement): number | undefined {
+    return reimbursement.account === this.account ? this.sheetConfig.columns![reimbursement.account] : undefined
   }
 
   validate(): void {

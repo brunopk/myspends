@@ -29,14 +29,6 @@ function getTotalColumn(sheetConfig: SheetConfig): number {
   return columnNumber
 }
 
-function getReimbursementColumn(sheetConfig: SheetConfig): number | undefined {
-  let columnNumber = sheetConfig.columns!["Reimbursement"]
-  if (typeof columnNumber === "undefined") {
-    columnNumber = sheetConfig.columns!["Devolución"]
-  }
-  return columnNumber
-}
-
 /**
  * Get value
  * @param spreadSheetId .
