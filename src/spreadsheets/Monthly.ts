@@ -4,17 +4,18 @@
 
 /**
  * Validate sheets like `AllCategories` and `Category` which have the same format.
- * @param groupedSpends result of invoking `groupSpendsByDatesAndSubCategories` or 
+ * @param groupedSpends result of invoking `groupSpendsByDatesAndSubCategories` or
  * `groupSpendsByDatesAndCategories` in Utils.ts
- * @param data 
+ * @param data
  * data to validate
- * @param groupingElements categories or subcategories (see `groupSpendsByDatesAndSubCategories` and
- * `groupSpendsByDatesAndCategories` in Utils.ts)
+ * @param groupingElements categories or subcategories (see `groupRowsByDatesAndSubCategories` and
+ * `groupRowsByDatesAndCategories` in Utils.ts)
  */
 function validateSheet(
   spreadSheetConfig: SpreadSheetConfig,
   sheetConfig: SheetConfig,
   groupedSpends: object,
+  groupedReimbursements: object,
   data: any[][],
   groupingElements: string[]
 ) {
@@ -31,8 +32,17 @@ function validateSheet(
       const index = sheetConfig.columns![groupingElement] - 1
 
       let expectedAmount = 0
-      if (Object.keys(groupedSpends).includes(formattedDate) && Object.keys(groupedSpends[formattedDate]).includes(groupingElement)) {
+      if (
+        Object.keys(groupedSpends).includes(formattedDate) &&
+        Object.keys(groupedSpends[formattedDate]).includes(groupingElement)
+      ) {
         expectedAmount = groupedSpends[formattedDate][groupingElement]
+      }
+      if (
+        Object.keys(groupedReimbursements).includes(formattedDate) &&
+        Object.keys(groupedReimbursements[formattedDate]).includes(groupingElement)
+      ) {
+        expectedAmount = expectedAmount - groupedReimbursements[formattedDate][groupingElement]
       }
 
       const actualAmount = row[index]
@@ -41,7 +51,7 @@ function validateSheet(
       expectedMonthAmount += expectedAmount
       expectedRow[index] = expectedAmount
     })
-  
+
     // Hide quantity mismatch errors if there was a row mismatch type error
     expectedRow[expectedRow.length - 1] = expectedMonthAmount
     if (printRows) {
@@ -102,20 +112,25 @@ class AllCategories extends BaseSheetHandler {
   }
 
   validate(): void {
-    const rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
-    const [headers, data] = [rows?.slice(0, 1)[0], rows?.slice(1)]
+    const currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
+    const [headers, data] = [currentSheetRows?.slice(0, 1)[0], currentSheetRows?.slice(1)]
+
     const categories = headers?.slice(1, headers.length - 1)
+
     const dates = data?.map((row) => row[0])
+
     const allSpends = getAllSpends()
-    const groupedSpends = groupSpendsByDatesAndCategories(allSpends, dates!, null, categories!)
-    validateSheet(this.spreadSheetConfig, this.sheetConfig, groupedSpends, data!, categories!)
+    const groupedSpends = groupRowsByDatesAndCategories(allSpends, dates!, null, categories!)
+
+    const allReimbursements = getAllReimbursements()
+    // TODO: use a new function to group reimbursements
+    const groupedReimbursements = groupRowsByDatesAndCategories(allReimbursements, dates!, null, categories!)
+
+    validateSheet(this.spreadSheetConfig, this.sheetConfig, groupedSpends, groupedReimbursements, data!, categories!)
   }
 }
 
 /*************************************************************************************************************************/
-
-// TODO: CONTINUE Check if validation methods should change its code to consider reimbursements.
- 
 
 class Category extends BaseSheetHandler {
   private category: string
@@ -170,13 +185,26 @@ class Category extends BaseSheetHandler {
   }
 
   validate(): void {
-    const rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
-    const [headers, data] = [rows?.slice(0, 1)[0], rows?.slice(1)]
+    const currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
+    const [headers, data] = [currentSheetRows?.slice(0, 1)[0], currentSheetRows?.slice(1)]
+
     const subCategories = headers?.slice(1, headers.length - 1)
+
     const dates = data?.map((row) => row[0])
+
     const allSpends = getAllSpends()
-    const groupedSpends = groupSpendsByDatesAndSubCategories(allSpends, dates!, this.category, subCategories!)
-    validateSheet(this.spreadSheetConfig, this.sheetConfig, groupedSpends, data!, subCategories!)
+    const groupedSpends = groupRowsByDatesAndSubCategories(allSpends, dates!, this.category, subCategories!)
+
+    const allReimbursements = getAllReimbursements()
+    // TODO: use a new function to group reimbursements
+    const groupedReimbursements = groupRowsByDatesAndSubCategories(
+      allReimbursements,
+      dates!,
+      this.category,
+      subCategories!
+    )
+
+    validateSheet(this.spreadSheetConfig, this.sheetConfig, groupedSpends, groupedReimbursements, data!, subCategories!)
   }
 }
 
@@ -235,13 +263,26 @@ class Account extends BaseSheetHandler {
   }
 
   validate(): void {
-    const rows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
-    const [headers, data] = [rows?.slice(0, 1)[0], rows?.slice(1)]
+    const currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
+    const [headers, data] = [currentSheetRows?.slice(0, 1)[0], currentSheetRows?.slice(1)]
+
     const categories = headers?.slice(1, headers.length - 1)
+
     const dates = data?.map((row) => row[0])
+
     const allSpends = getAllSpends()
-    const groupedSpends = groupSpendsByDatesAndCategories(allSpends, dates!, this.sheetConfig.name, categories!)
-    validateSheet(this.spreadSheetConfig, this.sheetConfig, groupedSpends, data!, categories!)
+    const groupedSpends = groupRowsByDatesAndCategories(allSpends, dates!, this.sheetConfig.name, categories!)
+
+    const allReimbursements = getAllReimbursements()
+    // TODO: use a new function to group reimbursements
+    const groupedReimbursements = groupRowsByDatesAndCategories(
+      allReimbursements,
+      dates!,
+      this.sheetConfig.name,
+      categories!
+    )
+
+    validateSheet(this.spreadSheetConfig, this.sheetConfig, groupedSpends, groupedReimbursements, data!, categories!)
   }
 }
 

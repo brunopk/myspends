@@ -7,12 +7,12 @@ const sheetType = {
 
 // Columns numbers starts with 0
 
-// TODO: fix all places (if necessary) where only one sheet for forms is assumed 
+// TODO: fix all places (if necessary) where only one sheet for forms is assumed
 
 const forms:  FormConfig = {
   spreadSheetId: "",
   spreadSheetName: "",
-  formSheet: {
+  sheets: {
     main: {
       name: "",
       columns: {
@@ -27,10 +27,12 @@ const forms:  FormConfig = {
     reimbursements: {
       name: "",
       columns: {
-        date: 1,
-        account: 1,
-        isCash: 1,
-        amount: 1
+        category: 3,
+        date: 2,
+        amount: 9,
+        subCategory: 4,
+        account: 8,
+        description: 9
       }
     }
   }

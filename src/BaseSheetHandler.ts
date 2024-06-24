@@ -15,13 +15,14 @@ abstract class BaseSheetHandler {
   getReimbursementColumn(reimbursement: Reimbursement): number | undefined {
     return undefined
   }
-  
+
   processReimbursement(reimbursement: Reimbursement): void {
     const reimbursementColumn = this.getReimbursementColumn(reimbursement)
     if (typeof reimbursementColumn === 'undefined') {
+      console.warn(`No column found for reimbursement on sheet "${this.sheetConfig.name}" of "${this.spreadSheetConfig.name}"`)
       return
     }
-    
+
     const totalColumn = getTotalColumn(this.sheetConfig)
     const rowForMonth = this.getRowForMonth(reimbursement.date.getMonth())
     if (!rowForMonth) {

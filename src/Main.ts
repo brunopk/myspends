@@ -18,22 +18,21 @@ function processGoogleFormInput() {
   const range = SpreadsheetApp.getActiveRange()
   const sheetName = SpreadsheetApp.getActiveSheet().getName()
   const numRows = range.getNumRows()
-  const validSheetNames = [forms.formSheet.main.name, forms.formSheet.reimbursements.name]
+  const validSheetNames = [forms.sheets.main.name, forms.sheets.reimbursements.name]
 
   if (!validSheetNames.includes(sheetName))
     throw new Error(`Invalid sheet name "${sheetName}", valid sheet names are ${validSheetNames}`)
 
   // Normally active range contains one row (last inserted row)
   for (let i = 1; i <= numRows; i++) {
-    const date = range.getCell(i, forms.formSheet.main.columns!.date).getValue()
-    const category = range.getCell(i, forms.formSheet.main.columns!.category).getValue()
-    const amount = range.getCell(i, forms.formSheet.main.columns!.amount).getValue()
-    const account = range.getCell(i, forms.formSheet.main.columns!.account).getValue()
-    const description = range.getCell(i, forms.formSheet.main.columns!.description).getValue()
-    const subCategory = range.getCell(i, forms.formSheet.main.columns!.subCategory).getValue()
+    const date = range.getCell(i, forms.sheets.main.columns!.date).getValue()
+    const category = range.getCell(i, forms.sheets.main.columns!.category).getValue()
+    const amount = range.getCell(i, forms.sheets.main.columns!.amount).getValue()
+    const account = range.getCell(i, forms.sheets.main.columns!.account).getValue()
+    const description = range.getCell(i, forms.sheets.main.columns!.description).getValue()
+    const subCategory = range.getCell(i, forms.sheets.main.columns!.subCategory).getValue()
 
     if (sheetName === forms.formSheet.main.name) {
-      
       const newSpend: Spend = { date, category, amount, account, description, subCategory, origin: originForms }
 
       spreadSheetHandlers.forEach((handler) => {

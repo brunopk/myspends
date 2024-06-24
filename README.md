@@ -9,12 +9,15 @@
   
    - For `RecurrentSpendConfig` elements, value for `value` **must be** *Automatic* or *Manual* (strings).
    - Category and subcategory names should match with names in spreadsheets as described below.
-   - `forms.formSheet` within *src/Config.gs* **must have** two keys: `main` and `reimbursements` for main and reimbursements forms respectively.
-     - `main.sheets.main.columns` **must have** the following keys to indicate column numbers:
-       - `date`,
-       - `isCash`
-       - `account`
+   - `forms.sheets` within *src/Config.gs* **must have** two keys: `main` and `reimbursements` for main and reimbursements forms respectively.
+     - `forms.sheets.main.columns` and `forms.sheets.reimbursements.columns` **must have** the following keys to indicate column numbers:
+       - `category`
+       - `date`
        - `amount`
+       - `subCategory`
+       - `account`
+       - `description`
+     - Values for previously mentioned keys of `forms.sheets.main.columns` and `forms.sheets.reimbursements.columns` **must be** the same.
    - `spreadSheets` within *src/Config.gs* **must have** two keys: `main` and `monthly` for the main and monthly spreadsheets respectively.
      - `*.sheets.*.columns` **must have** `Total` for the total column.
      - `main.sheets` **must have** two keys: `main` and `pending`, one which correspond to the main sheet and the other for recurrent spends pending confirmation.

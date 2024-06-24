@@ -8,6 +8,20 @@ function getSheetConfiguration(spreadSheetConfig: SpreadSheetConfig, sheetName: 
 }
 
 /**
+ * Read and returns all rows from the reimbursements form
+ */
+function getAllReimbursements(): any[][] {
+  const rows = readAllRows(forms.spreadSheetId, forms.sheets.reimbursements.name)
+
+  if (typeof rows === "undefined")
+    throw new Error(
+      `Undefined reading rows from sheet '${forms.sheets.reimbursement.name}' within spreadsheet '${forms.spreadSheetName}'`
+    )
+
+  return rows.slice(1)
+}
+
+/**
  * Read and returns all rows from the main sheet within the main spreadsheet
  */
 function getAllSpends(): any[][] {
@@ -22,7 +36,8 @@ function getAllSpends(): any[][] {
 }
 
 /**
- * Groups spends by dates, category and sub-categories provided in parameters. The result will be an object like this :
+ * Groups spends or reimbursements by dates, category and sub-categories provided in parameters. The result will be an object 
+ * like this :
  * ```
  * {
  *   "4/2024" : {
@@ -45,7 +60,7 @@ function getAllSpends(): any[][] {
  * @param categories list of categories to filter and group as described above
  * @returns an object as described above
  */
-function groupSpendsByDatesAndCategories(
+function groupRowsByDatesAndCategories(
   rows: any[][],
   dates: Date[],
   account: string | null,
@@ -79,7 +94,8 @@ function groupSpendsByDatesAndCategories(
 }
 
 /**
- * Groups spends by dates, category and sub-categories provided in parameters. The result will be an object like this :
+ * Groups spends or reimbursements by dates, category and sub-categories provided in parameters. The result will be an object 
+ * like this :
  *
  * ```
  * {
@@ -105,7 +121,7 @@ function groupSpendsByDatesAndCategories(
  * @param subCategories list of sub-categories to filter and group as described above
  * @returns an object as described above
  */
-function groupSpendsByDatesAndSubCategories(
+function groupRowsByDatesAndSubCategories(
   rows: any[][],
   dates: Date[],
   category: string,
