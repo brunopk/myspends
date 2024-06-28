@@ -39,7 +39,7 @@ type SpreadSheetConfig = {
 type FormConfig = {
   readonly spreadSheetId: string
   readonly spreadSheetName: string
-  readonly formSheet: { [name: string]: SheetConfig }
+  readonly sheets: { [name: string]: SheetConfig }
 }
 
 type RecurrentSpendConfig = {

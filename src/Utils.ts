@@ -1,3 +1,5 @@
+import { sheets } from "googleapis/build/src/apis/sheets"
+
 function getSheetConfiguration(spreadSheetConfig: SpreadSheetConfig, sheetName: string): SheetConfig {
   for (const key in spreadSheetConfig.sheets) {
     if (spreadSheetConfig.sheets[key].name === sheetName) {
@@ -36,8 +38,45 @@ function getAllSpends(): any[][] {
 }
 
 /**
- * Groups spends or reimbursements by dates, category and sub-categories provided in parameters. The result will be an object 
- * like this :
+ * Groups spends by dates, category and sub-categories provided in parameters (see groupRowsByDatesAndCategories description).
+ *
+ * @param rows rows with spends from the main spreadsheet
+ * @param dates list of dates to filter and group spends as described above
+ * @param account account name to filter spends, or null to return spends made on any account
+ * @param categories list of categories to filter and group as described above
+ * @returns an object as described above
+ */
+function groupSpendsByDatesAndCategories(
+  rows: any[][],
+  dates: Date[],
+  account: string | null,
+  categories: string[]
+): object {
+  return groupRowsByDatesAndCategories(rows, spreadSheets.main.sheets.main, dates, account, categories)
+}
+
+/**
+ * Groups reimbursements by dates, category and sub-categories provided in parameters (see groupRowsByDatesAndCategories
+ * description).
+ *
+ * @param rows rows with spends from the main spreadsheet
+ * @param dates list of dates to filter and group spends as described above
+ * @param account account name to filter spends, or null to return spends made on any account
+ * @param categories list of categories to filter and group as described above
+ * @returns an object as described above
+ */
+function groupReimbursmentsByDatesAndCategories(
+  rows: any[][],
+  dates: Date[],
+  account: string | null,
+  categories: string[]
+): object {
+  return groupRowsByDatesAndCategories(rows, forms.sheets.reimbursements, dates, account, categories)
+}
+
+/**
+ * Groups rows (spends or reimbursements, both have the same columns) by dates, category and sub-categories provided in parameters. 
+ * The result will be an object like this :
  * ```
  * {
  *   "4/2024" : {
@@ -62,6 +101,7 @@ function getAllSpends(): any[][] {
  */
 function groupRowsByDatesAndCategories(
   rows: any[][],
+  sheetConfig: SheetConfig,
   dates: Date[],
   account: string | null,
   categories: string[]
@@ -69,9 +109,9 @@ function groupRowsByDatesAndCategories(
   const formattedDates = dates.map((date) => formatDate(date, 2))
 
   return rows.reduce((acc, row: any[]) => {
-    const currentFormattedDate = formatDate(row[spreadSheets.main.sheets.main.columns!.date - 1], 2)
-    const currentCategory = row[spreadSheets.main.sheets.main.columns!.category - 1]
-    const currentAccount = row[spreadSheets.main.sheets.main.columns!.account - 1]
+    const currentFormattedDate = formatDate(row[sheetConfig.columns!.date - 1], 2)
+    const currentCategory = row[sheetConfig.columns!.category - 1]
+    const currentAccount = row[sheetConfig.columns!.account - 1]
 
     if (
       formattedDates.includes(currentFormattedDate) &&
@@ -83,10 +123,10 @@ function groupRowsByDatesAndCategories(
       }
 
       if (!acc[currentFormattedDate][currentCategory]) {
-        acc[currentFormattedDate][currentCategory] = row[spreadSheets.main.sheets.main.columns!.amount - 1]
+        acc[currentFormattedDate][currentCategory] = row[sheetConfig.columns!.amount - 1]
       } else {
         acc[currentFormattedDate][currentCategory] =
-          acc[currentFormattedDate][currentCategory] + row[spreadSheets.main.sheets.main.columns!.amount - 1]
+          acc[currentFormattedDate][currentCategory] + row[sheetConfig.columns!.amount - 1]
       }
     }
     return acc
@@ -94,8 +134,46 @@ function groupRowsByDatesAndCategories(
 }
 
 /**
- * Groups spends or reimbursements by dates, category and sub-categories provided in parameters. The result will be an object 
- * like this :
+ * Groups spends by dates, category and sub-categories provided in parameters (see groupRowsByDatesAndSubCategories 
+ * description).
+ *
+ * @param rows rows with spends from the main spreadsheet
+ * @param dates list of dates to filter and group spends as described above
+ * @param category category name to filter and group spends as described above
+ * @param subCategories list of sub-categories to filter and group as described above
+ * @returns an object as described above
+ */
+function groupSpendsByDatesAndSubCategories(
+  rows: any[][],
+  dates: Date[],
+  category: string,
+  subCategories: string[]
+): object {
+  return groupRowsByDatesAndSubCategories(rows, spreadSheets.main.sheets.main, dates, category, subCategories)
+}
+
+/**
+ * Groups reimbursments by dates, category and sub-categories provided in parameters (see groupRowsByDatesAndSubCategories 
+ * description).
+ *
+ * @param rows rows with spends from the main spreadsheet
+ * @param dates list of dates to filter and group spends as described above
+ * @param category category name to filter and group spends as described above
+ * @param subCategories list of sub-categories to filter and group as described above
+ * @returns an object as described above
+ */
+function groupReimbursmentsByDatesAndSubCategories(
+  rows: any[][],
+  dates: Date[],
+  category: string,
+  subCategories: string[]
+): object {
+  return groupRowsByDatesAndSubCategories(rows, forms.sheets.reimbursements, dates, category, subCategories)
+}
+
+/**
+ * Groups rows (spends or reimbursements, both have the same columns) by dates, category and sub-categories provided in
+ * parameters. The result will be an object like this :
  *
  * ```
  * {
@@ -123,6 +201,7 @@ function groupRowsByDatesAndCategories(
  */
 function groupRowsByDatesAndSubCategories(
   rows: any[][],
+  sheetConfig: SheetConfig,
   dates: Date[],
   category: string,
   subCategories: string[]
@@ -130,9 +209,9 @@ function groupRowsByDatesAndSubCategories(
   const formattedDates = dates.map((date) => formatDate(date, 2))
 
   return rows.reduce((acc, row: any[]) => {
-    const currentFormattedDate = formatDate(row[spreadSheets.main.sheets.main.columns!.date - 1], 2)
-    const currentCategory = row[spreadSheets.main.sheets.main.columns!.category - 1]
-    const currentSubCategory = row[spreadSheets.main.sheets.main.columns!.subCategory - 1]
+    const currentFormattedDate = formatDate(row[sheetConfig.columns!.date - 1], 2)
+    const currentCategory = row[sheetConfig.columns!.category - 1]
+    const currentSubCategory = row[sheetConfig.columns!.subCategory - 1]
 
     if (
       formattedDates.includes(currentFormattedDate) &&
@@ -144,10 +223,10 @@ function groupRowsByDatesAndSubCategories(
       }
 
       if (!acc[currentFormattedDate][currentSubCategory]) {
-        acc[currentFormattedDate][currentSubCategory] = row[spreadSheets.main.sheets.main.columns!.amount - 1]
+        acc[currentFormattedDate][currentSubCategory] = row[sheetConfig.columns!.amount - 1]
       } else {
         acc[currentFormattedDate][currentSubCategory] =
-          acc[currentFormattedDate][currentSubCategory] + row[spreadSheets.main.sheets.main.columns!.amount - 1]
+          acc[currentFormattedDate][currentSubCategory] + row[sheetConfig.columns!.amount - 1]
       }
     }
     return acc

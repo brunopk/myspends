@@ -120,11 +120,10 @@ class AllCategories extends BaseSheetHandler {
     const dates = data?.map((row) => row[0])
 
     const allSpends = getAllSpends()
-    const groupedSpends = groupRowsByDatesAndCategories(allSpends, dates!, null, categories!)
+    const groupedSpends = groupSpendsByDatesAndCategories(allSpends, dates!, null, categories!)
 
     const allReimbursements = getAllReimbursements()
-    // TODO: use a new function to group reimbursements
-    const groupedReimbursements = groupRowsByDatesAndCategories(allReimbursements, dates!, null, categories!)
+    const groupedReimbursements = groupReimbursmentsByDatesAndCategories(allReimbursements, dates!, null, categories!)
 
     validateSheet(this.spreadSheetConfig, this.sheetConfig, groupedSpends, groupedReimbursements, data!, categories!)
   }
@@ -193,11 +192,10 @@ class Category extends BaseSheetHandler {
     const dates = data?.map((row) => row[0])
 
     const allSpends = getAllSpends()
-    const groupedSpends = groupRowsByDatesAndSubCategories(allSpends, dates!, this.category, subCategories!)
+    const groupedSpends = groupSpendsByDatesAndSubCategories(allSpends, dates!, this.category, subCategories!)
 
     const allReimbursements = getAllReimbursements()
-    // TODO: use a new function to group reimbursements
-    const groupedReimbursements = groupRowsByDatesAndSubCategories(
+    const groupedReimbursements = groupReimbursmentsByDatesAndSubCategories(
       allReimbursements,
       dates!,
       this.category,
@@ -271,11 +269,10 @@ class Account extends BaseSheetHandler {
     const dates = data?.map((row) => row[0])
 
     const allSpends = getAllSpends()
-    const groupedSpends = groupRowsByDatesAndCategories(allSpends, dates!, this.sheetConfig.name, categories!)
+    const groupedSpends = groupSpendsByDatesAndCategories(allSpends, dates!, this.sheetConfig.name, categories!)
 
     const allReimbursements = getAllReimbursements()
-    // TODO: use a new function to group reimbursements
-    const groupedReimbursements = groupRowsByDatesAndCategories(
+    const groupedReimbursements = groupReimbursmentsByDatesAndCategories(
       allReimbursements,
       dates!,
       this.sheetConfig.name,

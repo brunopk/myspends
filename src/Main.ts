@@ -32,7 +32,7 @@ function processGoogleFormInput() {
     const description = range.getCell(i, forms.sheets.main.columns!.description).getValue()
     const subCategory = range.getCell(i, forms.sheets.main.columns!.subCategory).getValue()
 
-    if (sheetName === forms.formSheet.main.name) {
+    if (sheetName === forms.sheets.main.name) {
       const newSpend: Spend = { date, category, amount, account, description, subCategory, origin: originForms }
 
       spreadSheetHandlers.forEach((handler) => {
@@ -111,4 +111,18 @@ function processPendingSpends() {
       })
     }
   }
+}
+
+/**
+ * Validate all amounts in all spreadsheets for the current month.
+ * @param spreadSheetName .
+ */
+function validateSpreadSheets() {
+  spreadSheetHandlers.forEach((spreadSheetHandler) => {
+    try {
+      spreadSheetHandler.validate()
+    } catch (ex) {
+      console.error((ex as Error).stack)
+    }
+  })
 }
