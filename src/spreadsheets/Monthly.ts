@@ -31,6 +31,10 @@ function validateSheet(
     groupingElements?.forEach((groupingElement) => {
       const index = sheetConfig.columns![groupingElement] - 1
 
+      if (typeof index === "undefined") {
+        throw new Error(`Undefined index for column "${groupingElement}"`)
+      }
+
       let expectedAmount = 0
       if (
         Object.keys(groupedSpends).includes(formattedDate) &&
@@ -45,7 +49,15 @@ function validateSheet(
         expectedAmount = expectedAmount - groupedReimbursements[formattedDate][groupingElement]
       }
 
+      if (typeof expectedAmount === "undefined") throw new Error(`Expected amount undefined`)
+
       const actualAmount = row[index]
+
+      // TODO: revisar esto
+      // TODO: revisar porque los gastos de junio 2024 se agregan como que fueran junio 2023
+
+      if (typeof actualAmount === "undefined") throw new Error(`Actual amount undefined`)
+
       printRows = printRows || expectedAmount != actualAmount
       quantityMismatch = quantityMismatch || expectedAmount != actualAmount
       expectedMonthAmount += expectedAmount

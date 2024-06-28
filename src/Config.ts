@@ -7,8 +7,6 @@ const sheetType = {
 
 // Columns numbers starts with 0
 
-// TODO: fix all places (if necessary) where only one sheet for forms is assumed
-
 const forms:  FormConfig = {
   spreadSheetId: "",
   spreadSheetName: "",
