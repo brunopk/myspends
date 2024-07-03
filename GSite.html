@@ -13,31 +13,27 @@
 
   function populateSubcategorySelect() {
     const categorySelect = document.getElementsByName("category")[0];
+    const selectedCategory = categorySelect.value; 
+    const subCategoryList = Object.keys(categoryTree[selectedCategory]).sort().concat(defaultSubCategoryList);
     const subcategorySelect = document.getElementsByName("subcategory")[0];
 
-    const selectedCategory = categorySelect.value; 
-    const subcategoryList = Object.keys(categoryTree[selectedCategory]).sort();
-
-    if (subcategoryList.length === 0) {
-      subcategorySelect.disabled = true;
-      subcategorySelect.value = "";
-    } else {
-      subcategorySelect.disabled = false;
-      populateSelect(subcategorySelect, subcategoryList, subcategoryList[0]);
-    }
+    populateSelect(subcategorySelect, subCategoryList, subCategoryList[0]);
   }
 
   function populateAccountSelect() {
     const categorySelect = document.getElementsByName("category")[0];
-    const subcategorySelect = document.getElementsByName("subcategory")[0];
-    const accountSelect = document.getElementsByName("account")[0]; 
+    const selectedCategory = categorySelect.value;
 
-   
+    const subcategorySelect = document.getElementsByName("subcategory")[0];
+    const selectedSubcategory = subcategorySelect.value;
+
+    const accountSelect = document.getElementsByName("account")[0]; 
     let accountList = defaultAccountList.sort();
-    if (subcategorySelect.value !== "") {
-      const selectedCategory = categorySelect.value;
-      const selectedSubcategory = subcategorySelect.value;
+    if (!defaultSubCategoryList.includes(selectSubcategory)) {
       accountList = Object.keys(categoryTree[selectedCategory][selectedSubcategory]).sort();
+    }
+    if (accountList.length == 0) {
+      accountList = defaultAccountList.sort();
     }
 
     populateSelect(accountSelect, accountList, accountList[0]);
@@ -58,8 +54,14 @@
     const day = date.getDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
-  
-  function goToGoogleForm() {
+
+  function buildFormUrl(date, category, subCategory, account, description, value) {
+    const googleFormSelect= document.getElementsByName("google-form")[0];
+    const formId = forms[googleFormSelect.value];
+    return `https://docs.google.com/forms/d/e/${formId}/viewform?usp=pp_url&entry.33770901=${date}&entry.1700463900=${category}&entry.1045532207=${subCategory}&entry.59325913=${account}&entry.31627014=${description}&entry.1746868782=${value}`
+  }
+
+  function goToForm() {
     let elements = null;
 
     elements = document.getElementsByName("date");
@@ -69,7 +71,7 @@
     const category = elements[0].value
     
     elements = document.getElementsByName("subcategory");
-    const subcategory = elements[0].value;
+    const subCategory = elements[0].value;
 
     elements = document.getElementsByName("account");
     const account = elements[0].value;
@@ -80,7 +82,7 @@
     elements = document.getElementsByName("value");
     const value = elements[0].value;
 
-    const url = `https://docs.google.com/forms/d/e/1FAIpQLSevL7ZcgmFDkLUBr_pj-T0bypAjDgq3PRjAvn8Frt9qXk88GQ/viewform?usp=pp_url&entry.33770901=${date}&entry.1700463900=${category}&entry.1045532207=${subcategory}&entry.59325913=${account}&entry.31627014=${description}&entry.1746868782=${value}`;
+    const url = buildFormUrl(date, category, subCategory, account, description, value);
 
     window.location.href = url;
   }
@@ -92,15 +94,14 @@
       "Remedios": {},
       "Otros": {}
      },
-     "Comida": {
+     "Alimentos": {
       "Sin descuento de MP": {
         "Itaú": {},
         "BROU": {},
         "Itaú Alimentos": {}
       },
       "Con descuento de MP": {
-        "Itaú": {},
-        "BROU": {}
+        "Itaú": {}
       }
      },
      "Transporte": {
@@ -115,12 +116,24 @@
      }
   }; 
 
-  const defaultAccountList = ["Itaú", "BROU"];
+  const defaultAccountList = ["Itaú", "BROU", "Efectivo"];
+
+  const defaultSubCategoryList = ["Otros"]
+
+  const forms = {
+    "Gasto": "1FAIpQLSdzasTqCfH7JubPji3TOHDkb9fS3v-iC7hgz1HVaddBC9-0lw",
+    "Devolución": "1FAIpQLSctMdytUfUwHGbqNsSUuaJ4nnn5t9S3FWLN0U7OvOXrY7qG9A"
+  };
 
   window.onload = () => {
     const dateInput = document.getElementsByName("date")[0];
     const today = new Date();
     dateInput.value = formatDate(today);
+
+    const googleFormSelect = document.getElementsByName("google-form")[0];
+    const formList = Object.keys(forms);
+    const defaultForm =  formList[0];
+    populateSelect(googleFormSelect, formList, defaultForm);
 
     const categorySelect = document.getElementsByName("category")[0];
     const categoryList = Object.keys(categoryTree).sort();
@@ -144,10 +157,11 @@
 </style>
 <div style="display:flex;flex-direction:column;">
   <input type="date" name="date"/>
+  <select name="google-form"></select>
   <select name="category" onchange="selectCategory()"></select>
   <select name="subcategory" onchange="selectSubcategory()"></select>
   <select name="account" onchange="selectAccount()"></select>
   <input type="number" name="value" placeholder="Valor"/>
   <input name="description" placeholder="Descripción"/>
-  <input type="button" onClick="goToGoogleForm()" value="Finalizar">
+  <input type="button" onClick="goToForm()" value="Finalizar">
 <div/>

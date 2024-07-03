@@ -14,24 +14,37 @@ const manualRecurrentSpend = "Manual"
 
 /*************************************************************************************************************************/
 
-function processMainForm() {
+function processGoogleFormInput() {
   const range = SpreadsheetApp.getActiveRange()
+  const sheetName = SpreadsheetApp.getActiveSheet().getName()
   const numRows = range.getNumRows()
+  const validSheetNames = [forms.sheets.main.name, forms.sheets.reimbursements.name]
+
+  if (!validSheetNames.includes(sheetName))
+    throw new Error(`Invalid sheet name "${sheetName}", valid sheet names are ${validSheetNames}`)
 
   // Normally active range contains one row (last inserted row)
   for (let i = 1; i <= numRows; i++) {
-    const date = range.getCell(i, forms.main.spreadSheet.sheet.columns!.date).getValue()
-    const category = range.getCell(i, forms.main.spreadSheet.sheet.columns!.category).getValue()
-    const amount = range.getCell(i, forms.main.spreadSheet.sheet.columns!.amount).getValue()
-    const account = range.getCell(i, forms.main.spreadSheet.sheet.columns!.account).getValue()
-    const description = range.getCell(i, forms.main.spreadSheet.sheet.columns!.description).getValue()
-    const subCategory = range.getCell(i, forms.main.spreadSheet.sheet.columns!.subCategory).getValue()
+    const date = range.getCell(i, forms.sheets.main.columns!.date).getValue()
+    const category = range.getCell(i, forms.sheets.main.columns!.category).getValue()
+    const amount = range.getCell(i, forms.sheets.main.columns!.amount).getValue()
+    const account = range.getCell(i, forms.sheets.main.columns!.account).getValue()
+    const description = range.getCell(i, forms.sheets.main.columns!.description).getValue()
+    const subCategory = range.getCell(i, forms.sheets.main.columns!.subCategory).getValue()
 
-    const newSpend: Spend = { date, category, amount, account, description, subCategory, origin: originForms }
+    if (sheetName === forms.sheets.main.name) {
+      const newSpend: Spend = { date, category, amount, account, description, subCategory, origin: originForms }
 
-    spreadSheetHandlers.forEach((handler) => {
-      handler.processSpend(newSpend)
-    })
+      spreadSheetHandlers.forEach((handler) => {
+        handler.processSpend(newSpend)
+      })
+    } else {
+      const newReimbursement: Reimbursement = { date, category, amount, account, description, subCategory, origin: originForms }
+
+      spreadSheetHandlers.forEach((handler) => {
+        handler.processReimbursement(newReimbursement)
+      })
+    }
   }
 }
 
@@ -67,8 +80,6 @@ function processRecurrentSpends() {
   }
 }
 
-// TODO: test all in "prod"
-
 function processPendingSpends() {
   const rows = readAllRows(spreadSheets.main.id, spreadSheets.main.sheets.pending.name)
   const tasks = listAllTasks(recurrentSpendsTaskList) as tasks_v1.Schema$Task[]
@@ -100,4 +111,18 @@ function processPendingSpends() {
       })
     }
   }
+}
+
+/**
+ * Validate all amounts in all spreadsheets for the current month.
+ * @param spreadSheetName .
+ */
+function validateSpreadSheets() {
+  spreadSheetHandlers.forEach((spreadSheetHandler) => {
+    try {
+      spreadSheetHandler.validate()
+    } catch (ex) {
+      console.error((ex as Error).stack)
+    }
+  })
 }

@@ -12,6 +12,8 @@ type Spend = {
   subCategory?: string
 }
 
+type Reimbursement = Spend
+
 type SubCategoryConfig = {
   readonly name: string
 }
@@ -24,7 +26,6 @@ type CategoryConfig = {
 type SheetConfig = {
   readonly name: string
   readonly columns?: { [name: string]: number }
-  readonly numberOfColumns?: number
   readonly extra?: any
 }
 
@@ -36,11 +37,9 @@ type SpreadSheetConfig = {
 }
 
 type FormConfig = {
-  readonly spreadSheet: {
-    readonly id: string
-    readonly name: string
-    readonly sheet: SheetConfig
-  }
+  readonly spreadSheetId: string
+  readonly spreadSheetName: string
+  readonly sheets: { [name: string]: SheetConfig }
 }
 
 type RecurrentSpendConfig = {

@@ -14,6 +14,12 @@ abstract class BaseSpreadSheetHandler {
     })
   }
 
+  processReimbursement(spend: Reimbursement): void {
+    this.sheetHandlers.forEach((sheetHandler) => {
+      sheetHandler.processReimbursement(spend)
+    })
+  }
+
   validate() {
     console.log(`Validating spreadsheet '${this.config.name}' ...`)
     this.sheetHandlers.forEach((sheetHandler) => {

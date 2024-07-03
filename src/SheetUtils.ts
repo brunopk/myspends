@@ -14,13 +14,19 @@ function addRow(spreadSheetId: string, sheetName: string, row: any[]) {
 }
 
 /**
- * Return the number of columns based on the first row
+ * Return the number of columns based on headers
  * @param spreadSheetId spread sheet id
  * @param sheetName sheet name within the spreadsheet
  */
 function getNumberOfColumns(spreadSheetId: string, sheetName: string): number {
   const allRows = readAllRows(spreadSheetId, sheetName)
   return allRows![0].length!
+}
+
+function getTotalColumn(sheetConfig: SheetConfig): number {
+  const columnNumber = sheetConfig.columns!["Total"]
+  if (typeof columnNumber === "undefined") throw new Error(`Total column not configured for sheet "${sheetConfig.name}"`)
+  return columnNumber
 }
 
 /**

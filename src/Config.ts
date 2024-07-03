@@ -7,21 +7,30 @@ const sheetType = {
 
 // Columns numbers starts with 0
 
-const forms:  { [name: string]: FormConfig } = {
-  main: {
-    spreadSheet: {
-      id: 'xxx',
-      name: 'Form',
-      sheet: {
-        name: 'Name',
-        columns: {
-          category: 3,
-          date: 2,
-          amount: 9,
-          subCategory: 4,
-          account: 8,
-          description: 9
-        }
+const forms:  FormConfig = {
+  spreadSheetId: "",
+  spreadSheetName: "",
+  sheets: {
+    main: {
+      name: "",
+      columns: {
+        category: 3,
+        date: 2,
+        amount: 9,
+        subCategory: 4,
+        account: 8,
+        description: 9
+      }
+    },
+    reimbursements: {
+      name: "",
+      columns: {
+        category: 3,
+        date: 2,
+        amount: 9,
+        subCategory: 4,
+        account: 8,
+        description: 9
       }
     }
   }
@@ -66,24 +75,27 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         name: "Categorías",
         columns: {
           "Column A": 0,
-          "Column B": 0
+          "Column B": 0,
+          "Total": 0
         }
       },
       category1: {
-        name: categories.category1.name,
+        name: "",
         columns: {
           "Column A": 0,
-          "Column B": 0
+          "Column B": 0,
+          "Total": 0
         },
         extra: {
           type: sheetType.category
         }
       },
       category2: {
-        name: categories.category2.name,
+        name: "",
         columns: {
           "Column A": 0,
-          "Column B": 0
+          "Column B": 0,
+          "Total": 0
         },
         extra: {
           type: sheetType.category
@@ -93,7 +105,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         name: "Account 1",
         columns: {
           "Column A": 0,
-          "Column B": 0
+          "Column B": 0,
+          "Total": 0
         },
         extra: {
           type: sheetType.account
@@ -103,7 +116,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         name: "Account 2",
         columns: {
           "Column A": 0,
-          "Column B": 0
+          "Column B": 0,
+          "Total": 0
         },
         extra: {
           type: sheetType.account
@@ -113,7 +127,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         name: "Account 3",
         columns: {
           "Column A": 0,
-          "Column B": 0
+          "Column B": 0,
+          "Total": 0
         },
         extra: {
           type: sheetType.account
