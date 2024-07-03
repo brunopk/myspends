@@ -90,7 +90,7 @@ class AllCategories extends BaseSheetHandler {
   processSpend(spend: Spend): void {
     const categoryColumn = this.sheetConfig.columns![spend.category]
     const totalColumn = getTotalColumn(this.sheetConfig)
-    const rowForMonth = this.getRowForMonth(spend.date.getMonth())
+    const rowForMonth = this.getRowForMonth(spend.date.getFullYear(), spend.date.getMonth())
     if (!rowForMonth) {
       const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
       const newRow = Array(numberOfColumns).fill(0)
@@ -155,7 +155,7 @@ class Category extends BaseSheetHandler {
     if (spend.category === this.category) {
       const subcategoryColumn = this.sheetConfig.columns![spend.subCategory!]
       const totalColumn = getTotalColumn(this.sheetConfig)
-      const monthRow = this.getRowForMonth(spend.date.getMonth())
+      const monthRow = this.getRowForMonth(spend.date.getFullYear(), spend.date.getMonth())
       if (!monthRow) {
         const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
         const newRow = Array(numberOfColumns).fill(0)
@@ -230,7 +230,7 @@ class Account extends BaseSheetHandler {
 
   processSpend(spend: Spend) {
     if (spend.account === this.sheetConfig.name) {
-      const monthRow = this.getRowForMonth(spend.date.getMonth())
+      const monthRow = this.getRowForMonth(spend.date.getFullYear(), spend.date.getMonth())
       const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
       const totalColumn = getTotalColumn(this.sheetConfig)
       if (!monthRow) {
