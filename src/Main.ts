@@ -113,6 +113,8 @@ function processPendingSpends() {
   }
 }
 
+/*************************************************************************************************************************/
+
 /**
  * Validate all amounts in all spreadsheets for the current month.
  * @param spreadSheetName .
@@ -126,3 +128,21 @@ function validateSpreadSheets() {
     }
   })
 }
+
+/*************************************************************************************************************************/
+
+Object.keys(spreadSheets).forEach((key) => {
+  const spreadSheetConfig = spreadSheets[key]
+  switch (spreadSheetConfig.class) {
+    case "Monthly":
+      spreadSheetHandlers.push(new Monthly(spreadSheetConfig))
+      console.info(`Handler for spreadsheet '${spreadSheetConfig.name}' loaded correctly`)
+      break
+    case "Main":
+      spreadSheetHandlers.push(new Main(spreadSheetConfig))
+      console.info(`Handler for spreadsheet '${spreadSheetConfig.name}' loaded correctly`)
+      break
+    default:
+      throw new Error(`Invalid spread sheet type '${spreadSheetConfig.class}'`)
+  }
+})

@@ -53,9 +53,6 @@ function validateSheet(
 
       const actualAmount = row[index]
 
-      // TODO: revisar esto
-      // TODO: revisar porque los gastos de junio 2024 se agregan como que fueran junio 2023
-
       if (typeof actualAmount === "undefined") throw new Error(`Actual amount undefined`)
 
       printRows = printRows || expectedAmount != actualAmount
@@ -301,6 +298,7 @@ class Account extends BaseSheetHandler {
 
 class Monthly extends BaseSpreadSheetHandler {
   constructor(spreadSheetConfig: SpreadSheetConfig) {
+    // TODO: Refactorear un poco
     const sheetHandlers: BaseSheetHandler[] = [
       new AllCategories(spreadSheetConfig, spreadSheetConfig.sheets.all_categories)
     ]
@@ -328,7 +326,3 @@ class Monthly extends BaseSpreadSheetHandler {
     super(spreadSheetConfig, sheetHandlers)
   }
 }
-
-spreadSheetHandlers.push(new Monthly(spreadSheets.monthly))
-
-console.info(`Handler for spreadsheet '${spreadSheets.monthly.name}' loaded correctly`)

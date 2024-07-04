@@ -32,6 +32,7 @@ type SheetConfig = {
 type SpreadSheetConfig = {
   readonly id: string
   readonly name: string
+  readonly class: string
   readonly sheets: { [name: string]: SheetConfig }
   readonly extra?: any
 }
