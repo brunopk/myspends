@@ -25,6 +25,7 @@ type CategoryConfig = {
 
 type SheetConfig = {
   readonly name: string
+  readonly type: string
   readonly columns?: { [name: string]: number }
   readonly extra?: any
 }
@@ -32,7 +33,7 @@ type SheetConfig = {
 type SpreadSheetConfig = {
   readonly id: string
   readonly name: string
-  readonly class: string
+  readonly type: string
   readonly sheets: { [name: string]: SheetConfig }
   readonly extra?: any
 }

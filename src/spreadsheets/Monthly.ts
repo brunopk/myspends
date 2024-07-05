@@ -97,6 +97,8 @@ class AllCategories extends BaseSheetHandler {
 
       addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
     } else {
+      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, new Date())
+
       const currentCategoryValue = getValue(
         this.spreadSheetConfig.id,
         this.sheetConfig.name,
@@ -152,8 +154,8 @@ class Category extends BaseSheetHandler {
     if (spend.category === this.category) {
       const subcategoryColumn = this.sheetConfig.columns![spend.subCategory!]
       const totalColumn = getTotalColumn(this.sheetConfig)
-      const monthRow = this.getRowForMonth(spend.date.getFullYear(), spend.date.getMonth())
-      if (!monthRow) {
+      const rowForMonth = this.getRowForMonth(spend.date.getFullYear(), spend.date.getMonth())
+      if (!rowForMonth) {
         const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
         const newRow = Array(numberOfColumns).fill(0)
         newRow[0] = spend.date
@@ -162,25 +164,27 @@ class Category extends BaseSheetHandler {
 
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
+        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, new Date())
+
         const currentSubcategoryTotal = getValue(
           this.spreadSheetConfig.id,
           this.sheetConfig.name,
-          monthRow,
+          rowForMonth,
           subcategoryColumn
         )
         setValue(
           this.spreadSheetConfig.id,
           this.sheetConfig.name,
-          monthRow,
+          rowForMonth,
           subcategoryColumn,
           currentSubcategoryTotal + spend.amount
         )
 
-        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColumn)
+        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, totalColumn)
         setValue(
           this.spreadSheetConfig.id,
           this.sheetConfig.name,
-          monthRow,
+          rowForMonth,
           totalColumn,
           currentTotal + spend.amount
         )
@@ -227,10 +231,10 @@ class Account extends BaseSheetHandler {
 
   processSpend(spend: Spend) {
     if (spend.account === this.sheetConfig.name) {
-      const monthRow = this.getRowForMonth(spend.date.getFullYear(), spend.date.getMonth())
+      const rowForMonth = this.getRowForMonth(spend.date.getFullYear(), spend.date.getMonth())
       const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
       const totalColumn = getTotalColumn(this.sheetConfig)
-      if (!monthRow) {
+      if (!rowForMonth) {
         const newRow = Array(numberOfColumns).fill(0)
         newRow[0] = spend.date
         newRow[this.sheetConfig.columns![spend.category] - 1] = spend.amount
@@ -238,26 +242,28 @@ class Account extends BaseSheetHandler {
 
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
+        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, new Date())
+
         const columnForCategory = this.sheetConfig.columns![spend.category]
         const currentCategoryAmount = getValue(
           this.spreadSheetConfig.id,
           this.sheetConfig.name,
-          monthRow,
+          rowForMonth,
           columnForCategory
         )
         setValue(
           this.spreadSheetConfig.id,
           this.sheetConfig.name,
-          monthRow,
+          rowForMonth,
           columnForCategory,
           currentCategoryAmount + spend.amount
         )
 
-        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, monthRow, totalColumn)
+        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, totalColumn)
         setValue(
           this.spreadSheetConfig.id,
           this.sheetConfig.name,
-          monthRow,
+          rowForMonth,
           totalColumn,
           currentTotal + spend.amount
         )
@@ -298,31 +304,39 @@ class Account extends BaseSheetHandler {
 
 class Monthly extends BaseSpreadSheetHandler {
   constructor(spreadSheetConfig: SpreadSheetConfig) {
-    // TODO: Refactorear un poco
-    const sheetHandlers: BaseSheetHandler[] = [
-      new AllCategories(spreadSheetConfig, spreadSheetConfig.sheets.all_categories)
-    ]
-
-    const sheetNames = Object.keys(spreadSheetConfig.sheets)
-      .filter(
-        (key) =>
-          typeof spreadSheetConfig.sheets[key].extra !== "undefined" &&
-          typeof spreadSheetConfig.sheets[key].extra.type !== "undefined"
-      )
-      .map((key) => spreadSheetConfig.sheets[key].name)
-    sheetNames.forEach((sheetName) => {
-      const sheetConfig = getSheetConfiguration(spreadSheetConfig, sheetName)
-      switch (sheetConfig.extra.type) {
-        case sheetType.category:
+    const sheetHandlers: BaseSheetHandler[] = []
+    Object.keys(spreadSheetConfig.sheets).forEach((key) => {
+      const sheetConfig = spreadSheetConfig.sheets[key]
+      switch (sheetConfig.class) {
+        case "AllCategories":
+          sheetHandlers.push(new AllCategories(spreadSheetConfig, sheetConfig))
+          break
+        case "Category":
           sheetHandlers.push(new Category(spreadSheetConfig, sheetConfig))
           break
-        case sheetType.account:
+        case "Account":
           sheetHandlers.push(new Account(spreadSheetConfig, sheetConfig))
           break
         default:
-          throw new Error(`Unknown sheet type "${sheetConfig.extra.type}"`)
+          throw new Error(`Unknown sheet class "${sheetConfig.class}"`)
       }
     })
     super(spreadSheetConfig, sheetHandlers)
   }
 }
+
+Object.keys(spreadSheets).forEach((key) => {
+  const spreadSheetConfig = spreadSheets[key]
+  switch (spreadSheetConfig.class) {
+    case "Monthly":
+      if (Object.keys(spreadSheets).includes(spreadSheetConfig.id))
+        throw new Error(`Duplicated entry for spread sheet "${spreadSheetConfig.id}" in spreadSheetHandlers`)
+      spreadSheetHandlers[spreadSheetConfig.id] = new Monthly(spreadSheetConfig)
+      console.info(`Handler for spreadsheet '${spreadSheetConfig.name}' loaded correctly`)
+      break
+    case "Main":
+      break
+    default:
+      throw new Error(`Invalid spread sheet type '${spreadSheetConfig.class}'`)
+  }
+})

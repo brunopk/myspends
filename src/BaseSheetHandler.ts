@@ -67,6 +67,6 @@ abstract class BaseSheetHandler {
         break
       }
     }
-    return rowForCurrentMonth + 1
+    return data?.length === 0 || rowForCurrentMonth >= data?.length ? undefined : rowForCurrentMonth + 2
   }
 }

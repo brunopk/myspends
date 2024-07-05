@@ -53,3 +53,19 @@ class Main extends BaseSpreadSheetHandler {
     super(spreadSheetConfig, [new MainSheet(spreadSheetConfig, spreadSheetConfig.sheets.main)])
   }
 }
+
+Object.keys(spreadSheets).forEach((key) => {
+  const spreadSheetConfig = spreadSheets[key]
+  switch (spreadSheetConfig.class) {
+    case "Monthly":
+      break
+    case "Main":
+      if (Object.keys(spreadSheets).includes(spreadSheetConfig.id))
+        throw new Error(`Duplicated entry for spread sheet "${spreadSheetConfig.id}" in spreadSheetHandlers`)
+      spreadSheetHandlers[spreadSheetConfig.id] = new Main(spreadSheetConfig)
+      console.info(`Handler for spreadsheet '${spreadSheetConfig.name}' loaded correctly`)
+      break
+    default:
+      throw new Error(`Invalid spread sheet type '${spreadSheetConfig.class}'`)
+  }
+})
