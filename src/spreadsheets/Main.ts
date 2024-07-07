@@ -6,7 +6,7 @@ class MainSheet extends BaseSheetHandler {
   processSpend(spend: Spend) {
     const newRow = [
       new Date(),
-      spend.date,
+      formatDate(spend.date),
       spend.origin,
       spend.category,
       spend.subCategory,

@@ -138,5 +138,4 @@ function validateSpreadSheets() {
   })
 }
 
-
-// TODO: probar devoluciones, processPendingSpends
+// TODO: crear las nuevas planillas (Efectivo, Categorias, etc)
