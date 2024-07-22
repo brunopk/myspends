@@ -14,10 +14,10 @@
   function populateSubcategorySelect() {
     const categorySelect = document.getElementsByName("category")[0];
     const selectedCategory = categorySelect.value; 
-    const subCategoryList = Object.keys(categoryTree[selectedCategory]).sort();
-    const subcategorySelect = document.getElementsByName("subcategory")[0];
+    const subCategoryList = Object.keys(categoryTree[selectedCategory]).sort().concat([defaultSubCategory]);
+    const subCategorySelect = document.getElementsByName("subcategory")[0];
 
-    populateSelect(subcategorySelect, subCategoryList, subCategoryList[0]);
+    populateSelect(subCategorySelect, subCategoryList, subCategoryList[0]);
   }
 
   function populateAccountSelect() {
@@ -29,6 +29,9 @@
 
     const accountSelect = document.getElementsByName("account")[0]; 
     let accountList = defaultAccountList.sort();
+    if (defaultSubCategory !== selectedSubcategory) {
+      accountList = Object.keys(categoryTree[selectedCategory][selectedSubcategory]).sort();
+    }
     if (accountList.length == 0) {
       accountList = defaultAccountList.sort();
     }
@@ -89,7 +92,6 @@
      "Psicólogo": {},
      "Salud": {
       "Remedios": {},
-      "Otros": {}
      },
      "Alimentos": {
       "Sin descuento de MP": {
@@ -114,6 +116,8 @@
   }; 
 
   const defaultAccountList = ["Itaú", "BROU", "Efectivo"];
+
+  const defaultSubCategory = "Otros"
 
   const forms = {
     "Gasto": "",
