@@ -14,7 +14,7 @@
   function populateSubcategorySelect() {
     const categorySelect = document.getElementsByName("category")[0];
     const selectedCategory = categorySelect.value; 
-    const subCategoryList = Object.keys(categoryTree[selectedCategory]).sort().concat(defaultSubCategoryList);
+    const subCategoryList = Object.keys(categoryTree[selectedCategory]).sort();
     const subcategorySelect = document.getElementsByName("subcategory")[0];
 
     populateSelect(subcategorySelect, subCategoryList, subCategoryList[0]);
@@ -29,9 +29,6 @@
 
     const accountSelect = document.getElementsByName("account")[0]; 
     let accountList = defaultAccountList.sort();
-    if (!defaultSubCategoryList.includes(selectSubcategory)) {
-      accountList = Object.keys(categoryTree[selectedCategory][selectedSubcategory]).sort();
-    }
     if (accountList.length == 0) {
       accountList = defaultAccountList.sort();
     }
@@ -118,11 +115,9 @@
 
   const defaultAccountList = ["Itaú", "BROU", "Efectivo"];
 
-  const defaultSubCategoryList = ["Otros"]
-
   const forms = {
-    "Gasto": "1FAIpQLSdzasTqCfH7JubPji3TOHDkb9fS3v-iC7hgz1HVaddBC9-0lw",
-    "Devolución": "1FAIpQLSctMdytUfUwHGbqNsSUuaJ4nnn5t9S3FWLN0U7OvOXrY7qG9A"
+    "Gasto": "",
+    "Devolución": ""
   };
 
   window.onload = () => {
