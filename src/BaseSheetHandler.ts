@@ -24,7 +24,7 @@ abstract class BaseSheetHandler {
     }
 
     const totalColumn = getTotalColumn(this.sheetConfig)
-    const rowForMonth = this.getRowForMonth(reimbursement.date.getMonth())
+    const rowForMonth = this.getRowForMonth(reimbursement.date.getFullYear(), reimbursement.date.getMonth())
     if (!rowForMonth) {
       const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
       const newRow = Array(numberOfColumns).fill(0)
@@ -34,6 +34,8 @@ abstract class BaseSheetHandler {
 
       addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
     } else {
+      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, new Date())
+
       const currentValue = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, reimbursementColumn)
       setValue(
         this.spreadSheetConfig.id,
@@ -67,6 +69,6 @@ abstract class BaseSheetHandler {
         break
       }
     }
-    return rowForCurrentMonth + 1
+    return data?.length === 0 || rowForCurrentMonth >= data?.length ? undefined : rowForCurrentMonth + 2
   }
 }

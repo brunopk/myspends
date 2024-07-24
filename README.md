@@ -18,9 +18,8 @@
        - `account`
        - `description`
      - Values for previously mentioned keys of `forms.sheets.main.columns` and `forms.sheets.reimbursements.columns` **must be** the same.
-   - `spreadSheets` within *src/Config.gs* **must have** two keys: `main` and `monthly` for the main and monthly spreadsheets respectively.
-     - `*.sheets.*.columns` **must have** `Total` for the total column.
-     - `main.sheets` **must have** two keys: `main` and `pending`, one which correspond to the main sheet and the other for recurrent spends pending confirmation.
+   - `spreadSheets` within *src/Config.gs* **must have** one object `main` to configure the main spreadsheet.
+     - `main.sheets` **must have** two objects: `main.sheets.main` and `main.sheets.pending`, one for the main sheet and the other for pending spends.
      - `main.sheets.main.columns` **must have** the following keys to indicate column numbers:
        - `category`,
        - `subCategory`
@@ -38,7 +37,10 @@
        - `completed`
      - The following keys are optional in `main.sheets.pending.columns`:
        - `subCategory`
-     - `monthly.sheets.*.columns` **must** include a `Total`.
+   - `spreadSheets` within *src/Config.gs* may have other objects of type `SpreadSheetConfig` representing other spread sheet with any number of sheets.
+   - `*.sheets.*.columns` **must have** the `Total` key.
+   - Values on `*.class` must match with a spread sheet handler (classes in *src/spreadsheets* that extends from `BaseSpreadSheetHandler`).
+   - Values on `*.sheets.*.class` must match with a sheet handler (classes in *src/spreadsheets* that extends from `BaseSheetHandler`).
 3. Copy the content of *html/GSite.html* to the corresponding part of the Google Site in order to edit the web interface. Take into account that available options for dropdowns in Google Forms must match with options in the HTML.
 4. Upload the content :
 

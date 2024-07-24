@@ -1,14 +1,5 @@
 import { sheets } from "googleapis/build/src/apis/sheets"
 
-function getSheetConfiguration(spreadSheetConfig: SpreadSheetConfig, sheetName: string): SheetConfig {
-  for (const key in spreadSheetConfig.sheets) {
-    if (spreadSheetConfig.sheets[key].name === sheetName) {
-      return spreadSheetConfig.sheets[key]
-    }
-  }
-  throw new Error(`Configuration for sheet "${sheetName}" of spreadsheet "${spreadSheetConfig.name}" not found `)
-}
-
 /**
  * Read and returns all rows from the reimbursements form
  */
@@ -231,13 +222,6 @@ function groupRowsByDatesAndSubCategories(
     }
     return acc
   }, {})
-}
-
-function findSpreadSheetHandlerByName(
-  spreadSheetHandlers: BaseSpreadSheetHandler[],
-  spreadSheetName: string
-): BaseSpreadSheetHandler | undefined {
-  return spreadSheetHandlers.find((spreadSheetHandler) => spreadSheetHandler.config.name == spreadSheetName)
 }
 
 function buildPendingSpendRow(recurrentSpend: RecurrentSpendConfig, now: Date, taskId: string): any[] {

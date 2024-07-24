@@ -1,6 +1,6 @@
 import { tasks_v1 } from "googleapis"
 
-const spreadSheetHandlers: BaseSpreadSheetHandler[] = []
+const spreadSheetHandlers: { [spreadSheetId: string]: BaseSpreadSheetHandler } = {}
 
 const originForms = "Google Forms"
 
@@ -35,14 +35,22 @@ function processGoogleFormInput() {
     if (sheetName === forms.sheets.main.name) {
       const newSpend: Spend = { date, category, amount, account, description, subCategory, origin: originForms }
 
-      spreadSheetHandlers.forEach((handler) => {
-        handler.processSpend(newSpend)
+      Object.keys(spreadSheetHandlers).forEach((spreadSheetId) => {
+        spreadSheetHandlers[spreadSheetId].processSpend(newSpend)
       })
     } else {
-      const newReimbursement: Reimbursement = { date, category, amount, account, description, subCategory, origin: originForms }
+      const newReimbursement: Reimbursement = {
+        date,
+        category,
+        amount,
+        account,
+        description,
+        subCategory,
+        origin: originForms
+      }
 
-      spreadSheetHandlers.forEach((handler) => {
-        handler.processReimbursement(newReimbursement)
+      Object.keys(spreadSheetHandlers).forEach((spreadSheetId) => {
+        spreadSheetHandlers[spreadSheetId].processReimbursement(newReimbursement)
       })
     }
   }
@@ -67,8 +75,8 @@ function processRecurrentSpends() {
           subCategory: recurrentSpend.subCategory,
           origin: originAppScript
         }
-        spreadSheetHandlers.forEach((handler) => {
-          handler.processSpend(spend)
+        Object.keys(spreadSheetHandlers).forEach((spreadSheetId) => {
+          spreadSheetHandlers[spreadSheetId].processSpend(spend)
         })
       } else {
         const row = buildPendingSpendRow(recurrentSpend, now, taskId)
@@ -106,19 +114,22 @@ function processPendingSpends() {
     }
 
     if (typeof newSpend !== "undefined") {
-      spreadSheetHandlers.forEach((handler) => {
-        handler.processSpend(newSpend)
+      Object.keys(spreadSheetHandlers).forEach((spreadSheetId) => {
+        spreadSheetHandlers[spreadSheetId].processSpend(newSpend)
       })
     }
   }
 }
+
+/*************************************************************************************************************************/
 
 /**
  * Validate all amounts in all spreadsheets for the current month.
  * @param spreadSheetName .
  */
 function validateSpreadSheets() {
-  spreadSheetHandlers.forEach((spreadSheetHandler) => {
+  Object.keys(spreadSheetHandlers).forEach((spreadSheetId) => {
+    const spreadSheetHandler = spreadSheetHandlers[spreadSheetId]
     try {
       spreadSheetHandler.validate()
     } catch (ex) {
@@ -126,3 +137,5 @@ function validateSpreadSheets() {
     }
   })
 }
+
+// TODO: crear las nuevas planillas (Efectivo, Categorias, etc)

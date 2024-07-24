@@ -1,11 +1,4 @@
-// Columns are in range 1..n
-
-const sheetType = {
-  category: 0,
-  account: 1
-}
-
-// Columns numbers starts with 0
+// Columns numbers starts with 1
 
 const forms:  FormConfig = {
   spreadSheetId: "",
@@ -13,6 +6,7 @@ const forms:  FormConfig = {
   sheets: {
     main: {
       name: "",
+      type: "",
       columns: {
         category: 3,
         date: 2,
@@ -24,6 +18,7 @@ const forms:  FormConfig = {
     },
     reimbursements: {
       name: "",
+      type: "",
       columns: {
         category: 3,
         date: 2,
@@ -40,9 +35,11 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
   main: {
     id: "1r93R3hKOCV6St4sac_88YZRM6OuYO9LxaxwMa2gWomE",
     name: "Principal",
+    type: "Main",
     sheets: {
       main: {
         name: "Principal",
+        type: "Main",
         columns: {
           category: 1,
           subCategory: 1,
@@ -54,6 +51,7 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
       },
       pending: {
         name: "Pendientes",
+        type: "Main",
         columns: {
           timestamp: 1,
           taskId: 1,
@@ -70,9 +68,11 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
   monthly: {
     id: "1nE0j6lgMZdimaLtO_31OKIpzVNNGBkVGB_xiPeAHoOw",
     name: "Mensual",
+    type: "Monthly",
     sheets: {
       all_categories: {
         name: "Categorías",
+        type: "AllCategories",
         columns: {
           "Column A": 0,
           "Column B": 0,
@@ -81,6 +81,7 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
       },
       category1: {
         name: "",
+        type: "Category",
         columns: {
           "Column A": 0,
           "Column B": 0,
@@ -92,6 +93,7 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
       },
       category2: {
         name: "",
+        type: "Category",
         columns: {
           "Column A": 0,
           "Column B": 0,
@@ -103,6 +105,7 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
       },
       account1: {
         name: "Account 1",
+        type: "Account",
         columns: {
           "Column A": 0,
           "Column B": 0,
@@ -114,6 +117,7 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
       },
       account2: {
         name: "Account 2",
+        type: "Account",
         columns: {
           "Column A": 0,
           "Column B": 0,
@@ -125,6 +129,7 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
       },
       account3: {
         name: "Account 3",
+        type: "Account",
         columns: {
           "Column A": 0,
           "Column B": 0,

@@ -14,10 +14,10 @@
   function populateSubcategorySelect() {
     const categorySelect = document.getElementsByName("category")[0];
     const selectedCategory = categorySelect.value; 
-    const subCategoryList = Object.keys(categoryTree[selectedCategory]).sort().concat(defaultSubCategoryList);
-    const subcategorySelect = document.getElementsByName("subcategory")[0];
+    const subCategoryList = Object.keys(categoryTree[selectedCategory]).sort().concat([defaultSubCategory]);
+    const subCategorySelect = document.getElementsByName("subcategory")[0];
 
-    populateSelect(subcategorySelect, subCategoryList, subCategoryList[0]);
+    populateSelect(subCategorySelect, subCategoryList, subCategoryList[0]);
   }
 
   function populateAccountSelect() {
@@ -29,7 +29,7 @@
 
     const accountSelect = document.getElementsByName("account")[0]; 
     let accountList = defaultAccountList.sort();
-    if (!defaultSubCategoryList.includes(selectSubcategory)) {
+    if (defaultSubCategory !== selectedSubcategory) {
       accountList = Object.keys(categoryTree[selectedCategory][selectedSubcategory]).sort();
     }
     if (accountList.length == 0) {
@@ -84,7 +84,7 @@
 
     const url = buildFormUrl(date, category, subCategory, account, description, value);
 
-    window.location.href = url;
+    window.open(url, "_blank");
   }
 
   const categoryTree = {
@@ -92,7 +92,6 @@
      "Psicólogo": {},
      "Salud": {
       "Remedios": {},
-      "Otros": {}
      },
      "Alimentos": {
       "Sin descuento de MP": {
@@ -118,11 +117,11 @@
 
   const defaultAccountList = ["Itaú", "BROU", "Efectivo"];
 
-  const defaultSubCategoryList = ["Otros"]
+  const defaultSubCategory = "Otros"
 
   const forms = {
-    "Gasto": "1FAIpQLSdzasTqCfH7JubPji3TOHDkb9fS3v-iC7hgz1HVaddBC9-0lw",
-    "Devolución": "1FAIpQLSctMdytUfUwHGbqNsSUuaJ4nnn5t9S3FWLN0U7OvOXrY7qG9A"
+    "Gasto": "",
+    "Devolución": ""
   };
 
   window.onload = () => {
