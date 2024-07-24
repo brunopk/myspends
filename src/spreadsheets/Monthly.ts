@@ -64,7 +64,7 @@ function validateSheet(
     // Hide quantity mismatch errors if there was a row mismatch type error
     expectedRow[expectedRow.length - 1] = expectedMonthAmount
     if (printRows) {
-      console.warn(`Expected row : ${formatRow(expectedRow, 2)}\nActual row : ${formatRow(row, 2)}\n`)
+      console.warn(`Expected row : ${formatRow(expectedRow, 1)}\nActual row : ${formatRow(row, 1)}\n`)
     }
   })
 
@@ -97,7 +97,7 @@ class AllCategories extends BaseSheetHandler {
 
       addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
     } else {
-      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, new Date())
+      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, formatDate(spend.date))
 
       const currentCategoryValue = getValue(
         this.spreadSheetConfig.id,
@@ -164,7 +164,7 @@ class Category extends BaseSheetHandler {
 
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
-        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, new Date())
+        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, formatDate(spend.date))
 
         const currentSubcategoryTotal = getValue(
           this.spreadSheetConfig.id,
@@ -242,7 +242,7 @@ class Account extends BaseSheetHandler {
 
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
-        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, new Date())
+        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, formatDate(spend.date))
 
         const columnForCategory = this.sheetConfig.columns![spend.category]
         const currentCategoryAmount = getValue(
