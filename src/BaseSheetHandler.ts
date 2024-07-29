@@ -34,7 +34,7 @@ abstract class BaseSheetHandler {
 
       addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
     } else {
-      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, new Date())
+      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, formatDate(reimbursement.date))
 
       const currentValue = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, reimbursementColumn)
       setValue(
