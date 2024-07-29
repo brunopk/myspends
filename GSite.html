@@ -84,7 +84,7 @@
 
     const url = buildFormUrl(date, category, subCategory, account, description, value);
 
-    window.open(url, "_blank");
+    window.location = url
   }
 
   const categoryTree = {
@@ -147,16 +147,19 @@
 
 </script>
 <style>
+  select:first-child {
+    margin-top: 3em;
+  }
   input, select {
-    height: 3em; 
-    margin-bottom: 2em;
+    height: 2.5em; 
+    margin-bottom: 1em;
     font-size: 1em;
     width:100%;
   }
 </style>
 <div style="display:flex;flex-direction:column;">
-  <input type="date" name="date"/>
   <select name="google-form"></select>
+  <input type="date" name="date"/>
   <select name="category" onchange="selectCategory()"></select>
   <select name="subcategory" onchange="selectSubcategory()"></select>
   <select name="account" onchange="selectAccount()"></select>
