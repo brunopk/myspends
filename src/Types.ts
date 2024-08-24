@@ -47,6 +47,8 @@ type FormConfig = {
 type RecurrentSpendConfig = {
   type: string
   dayOfMonth: number
+  sendTask: boolean
+  sendMail: boolean
   taskTitle: string
   taskDescription: string
   mailSubject: string

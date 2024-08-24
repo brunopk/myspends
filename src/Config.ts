@@ -155,6 +155,8 @@ const recurrentSpends: RecurrentSpendConfig[] = [
     account: "Account x",
     description: "X",
     dayOfMonth: 4,
+    sendTask: true,
+    sendMail: true,
     taskTitle: "Check ...",
     taskDescription: "Check ... ...",
     mailSubject: "Check ...",

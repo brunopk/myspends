@@ -64,7 +64,14 @@ function processRecurrentSpends() {
       if (![manualRecurrentSpend, automaticRecurrentSpend].includes(recurrentSpend.type)) {
         throw new Error(`Invalid recurrent spend type "${recurrentSpend.type}"`)
       }
-      const taskId = createTask(recurrentSpendsTaskList, recurrentSpend.taskTitle, recurrentSpend.taskDescription, now)
+
+      let taskId: string | undefined
+      if (recurrentSpend.sendTask) {
+        taskId = createTask(recurrentSpendsTaskList, recurrentSpend.taskTitle, recurrentSpend.taskDescription, now)
+      } else {
+        console.log("Not creating task")
+      }
+
       if (recurrentSpend.type === automaticRecurrentSpend) {
         const spend: Spend = {
           date: now,
@@ -79,11 +86,23 @@ function processRecurrentSpends() {
           spreadSheetHandlers[spreadSheetId].processSpend(spend)
         })
       } else {
+        if (recurrentSpend.type === manualRecurrentSpend && typeof taskId === "undefined") {
+          throw new Error(
+            `Task id undefined, if recurrent spend type is "${manualRecurrentSpend}", ensure sendTask is enabled for recurrent spend ${JSON.stringify(
+              recurrentSpend
+            )}"`
+          )
+        }
         const row = buildPendingSpendRow(recurrentSpend, now, taskId)
         addRow(spreadSheets.main.id, spreadSheets.main.sheets.pending.name, row)
       }
-      console.info(`Sending mail to "${recurrentSpendsMailRecipient}".`)
-      MailApp.sendEmail(recurrentSpendsMailRecipient, "", recurrentSpend.mailSubject, recurrentSpend.mailBody)
+
+      if (recurrentSpend.sendMail) {
+        console.info(`Sending mail to "${recurrentSpendsMailRecipient}".`)
+        MailApp.sendEmail(recurrentSpendsMailRecipient, "", recurrentSpend.mailSubject, recurrentSpend.mailBody)
+      } else {
+        console.log("Not sending mails")
+      }
     }
   }
 }
@@ -137,5 +156,3 @@ function validateSpreadSheets() {
     }
   })
 }
-
-// TODO: crear las nuevas planillas (Efectivo, Categorias, etc)
