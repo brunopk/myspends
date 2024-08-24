@@ -14,8 +14,15 @@
   function populateSubcategorySelect() {
     const categorySelect = document.getElementsByName("category")[0];
     const selectedCategory = categorySelect.value; 
-    const subCategoryList = Object.keys(categoryTree[selectedCategory]).sort().concat([defaultSubCategory]);
+    
     const subCategorySelect = document.getElementsByName("subcategory")[0];
+    let subCategoryList = [defaultSubCategory];
+    if (selectedCategory !== defaultCategory) {
+      subCategoryList = Object.keys(categoryTree[selectedCategory]).sort().concat([defaultSubCategory]);
+    }
+    if (subCategoryList.length == 0) {
+      subCategoryList = [defaultSubCategory];
+    }
 
     populateSelect(subCategorySelect, subCategoryList, subCategoryList[0]);
   }
@@ -84,7 +91,7 @@
 
     const url = buildFormUrl(date, category, subCategory, account, description, value);
 
-    window.open(url, "_blank");
+    window.location = url
   }
 
   const categoryTree = {
@@ -115,9 +122,11 @@
      }
   }; 
 
-  const defaultAccountList = ["Itaú", "BROU", "Efectivo"];
+  const defaultCategory = "Otros"
 
   const defaultSubCategory = "Otros"
+
+  const defaultAccountList = ["Account 1", "Account 2"];
 
   const forms = {
     "Gasto": "",
@@ -135,9 +144,9 @@
     populateSelect(googleFormSelect, formList, defaultForm);
 
     const categorySelect = document.getElementsByName("category")[0];
-    const categoryList = Object.keys(categoryTree).sort();
-    const defaultCategory =  categoryList[0];
-    populateSelect(categorySelect, categoryList, defaultCategory);
+    const categoryList = Object.keys(categoryTree).sort().concat([defaultCategory]);
+    const firstCategory =  categoryList[0];
+    populateSelect(categorySelect, categoryList, firstCategory);
 
     populateSubcategorySelect();
 
@@ -147,19 +156,22 @@
 
 </script>
 <style>
+  select:first-child {
+    margin-top: 3em;
+  }
   input, select {
-    height: 3em; 
-    margin-bottom: 2em;
+    height: 2.5em; 
+    margin-bottom: 1em;
     font-size: 1em;
     width:100%;
   }
 </style>
 <div style="display:flex;flex-direction:column;">
-  <input type="date" name="date"/>
   <select name="google-form"></select>
+  <input type="date" name="date"/>
   <select name="category" onchange="selectCategory()"></select>
   <select name="subcategory" onchange="selectSubcategory()"></select>
-  <select name="account" onchange="selectAccount()"></select>
+  <select name="account"></select>
   <input type="number" name="value" placeholder="Valor"/>
   <input name="description" placeholder="Descripción"/>
   <input type="button" onClick="goToForm()" value="Finalizar">
