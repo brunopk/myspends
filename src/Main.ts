@@ -137,5 +137,3 @@ function validateSpreadSheets() {
     }
   })
 }
-
-// TODO: crear las nuevas planillas (Efectivo, Categorias, etc)
