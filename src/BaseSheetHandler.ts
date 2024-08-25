@@ -12,46 +12,44 @@ abstract class BaseSheetHandler {
 
   abstract validate(): void
 
-  getReimbursementColumn(reimbursement: Reimbursement): number | undefined {
-    return undefined
-  }
-
   processReimbursement(reimbursement: Reimbursement): void {
-    const reimbursementColumn = this.getReimbursementColumn(reimbursement)
-    if (typeof reimbursementColumn === 'undefined') {
-      console.warn(`No column found for reimbursement on sheet "${this.sheetConfig.name}" of "${this.spreadSheetConfig.name}"`)
-      return
+    if (this.spreadSheetConfig.class === "Monthly") {
+      const reimbursementColumn = getReimbursementColumn(this.sheetConfig)
+      const totalColumn = getTotalColumn(this.sheetConfig)
+      const rowForMonth = this.getRowForMonth(reimbursement.date.getFullYear(), reimbursement.date.getMonth())
+      if (!rowForMonth) {
+        const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
+        const newRow = Array(numberOfColumns).fill(0)
+        newRow[0] = reimbursement.date
+        newRow[reimbursementColumn - 1] = reimbursement.amount
+        newRow[totalColumn - 1] = -reimbursement.amount
+
+        addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
+      } else {
+        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, formatDate(reimbursement.date))
+
+        const currentValue = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, reimbursementColumn)
+        setValue(
+          this.spreadSheetConfig.id,
+          this.sheetConfig.name,
+          rowForMonth,
+          reimbursementColumn,
+          currentValue + reimbursement.amount
+        )
+
+        const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, totalColumn)
+        setValue(
+          this.spreadSheetConfig.id,
+          this.sheetConfig.name,
+          rowForMonth,
+          totalColumn,
+          currentTotal - reimbursement.amount
+        )
     }
 
-    const totalColumn = getTotalColumn(this.sheetConfig)
-    const rowForMonth = this.getRowForMonth(reimbursement.date.getFullYear(), reimbursement.date.getMonth())
-    if (!rowForMonth) {
-      const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
-      const newRow = Array(numberOfColumns).fill(0)
-      newRow[0] = reimbursement.date
-      newRow[reimbursementColumn - 1] = -reimbursement.amount
-      newRow[totalColumn - 1] = -reimbursement.amount
-
-      addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
     } else {
-      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, formatDate(reimbursement.date))
-
-      const currentValue = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, reimbursementColumn)
-      setValue(
-        this.spreadSheetConfig.id,
-        this.sheetConfig.name,
-        rowForMonth,
-        reimbursementColumn,
-        currentValue - reimbursement.amount
-      )
-
-      const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, totalColumn)
-      setValue(
-        this.spreadSheetConfig.id,
-        this.sheetConfig.name,
-        rowForMonth,
-        totalColumn,
-        currentTotal - reimbursement.amount
+      console.log(
+        `Skipping reimbursement for sheet "${this.sheetConfig.name}" of "${this.spreadSheetConfig.name}" because spread sheet class is "${this.spreadSheetConfig.class}" (reimbursements are only available for spread sheets of class "Monthly")`
       )
     }
   }

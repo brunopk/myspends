@@ -118,10 +118,6 @@ class AllCategories extends BaseSheetHandler {
     }
   }
 
-  getReimbursementColumn(reimbursement: Reimbursement): number {
-    return this.sheetConfig.columns![reimbursement.category]
-  }
-
   validate(): void {
     const currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
     const [headers, data] = [currentSheetRows?.slice(0, 1)[0], currentSheetRows?.slice(1)]
@@ -190,10 +186,6 @@ class Category extends BaseSheetHandler {
         )
       }
     }
-  }
-
-  getReimbursementColumn(reimbursement: Reimbursement): number | undefined {
-    return reimbursement.category === this.category ? this.sheetConfig.columns![reimbursement.subCategory!] : undefined
   }
 
   validate(): void {
@@ -269,10 +261,6 @@ class Account extends BaseSheetHandler {
         )
       }
     }
-  }
-
-  getReimbursementColumn(reimbursement: Reimbursement): number | undefined {
-    return reimbursement.account === this.account ? this.sheetConfig.columns![reimbursement.account] : undefined
   }
 
   validate(): void {
