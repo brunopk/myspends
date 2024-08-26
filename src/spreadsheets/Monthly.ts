@@ -188,6 +188,12 @@ class Category extends BaseSheetHandler {
     }
   }
 
+  processReimbursement(reimbursement: Spend): void {
+    if (reimbursement.category == this.category) {
+      super.processReimbursement(reimbursement)
+    }
+  }
+
   validate(): void {
     const currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
     const [headers, data] = [currentSheetRows?.slice(0, 1)[0], currentSheetRows?.slice(1)]
@@ -219,6 +225,11 @@ class Account extends BaseSheetHandler {
   constructor(spreadSheetConfig: SpreadSheetConfig, sheetConfig: SheetConfig) {
     super(spreadSheetConfig, sheetConfig)
     this.account = sheetConfig.name
+  }
+  processReimbursement(reimbursement: Spend): void {
+    if (reimbursement.account == this.account) {
+      super.processReimbursement(reimbursement)
+    }
   }
 
   processSpend(spend: Spend) {
