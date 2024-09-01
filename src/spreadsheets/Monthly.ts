@@ -6,8 +6,6 @@
  * Validate sheets like `AllCategories` and `Category` which have the same format.
  * @param groupedSpends result of invoking `groupSpendsByDatesAndSubCategories` or
  * `groupSpendsByDatesAndCategories` in Utils.ts
- * @param groupedReimbursements result of invoking `groupReimbursementsByDatesAndSubCategories` or
- * `groupReimbursementsByDatesAndCategories` in Utils.ts
  * @param data
  * data to validate
  * @param groupingElements categories or subcategories (see `groupRowsByDatesAndSubCategories` and
@@ -22,24 +20,18 @@ function validateSheet(
   groupingElements: string[]
 ) {
   let currentDate = data![0][0]
-  let validationPass = true
+  let quantityMismatch = false
   data!.forEach((row) => {
     currentDate = row![0]
     let printRows = false
-    let expectedMonthTotal = 0
-    let expectedMonthReimbursement = 0
-    const numberOfColumns = getNumberOfColumns(spreadSheetConfig.id, sheetConfig.name)
-    const totalColumn = getTotalColumn(sheetConfig)
-    const reimbursementColumn = getReimbursementColumn(sheetConfig)
-    const expectedRow = Array(numberOfColumns).fill(0)
+    let expectedMonthAmount = 0
+    const expectedRow = [currentDate, ...Array(groupingElements?.length).fill(0), expectedMonthAmount]
     const formattedDate = formatDate(currentDate, 2)
 
-    expectedRow[0] = currentDate
-
     groupingElements?.forEach((groupingElement) => {
-      const groupingElementIndex = sheetConfig.columns![groupingElement] - 1
+      const index = sheetConfig.columns![groupingElement] - 1
 
-      if (typeof groupingElementIndex === "undefined") {
+      if (typeof index === "undefined") {
         throw new Error(`Undefined index for column "${groupingElement}"`)
       }
 
@@ -50,47 +42,34 @@ function validateSheet(
       ) {
         expectedAmount = groupedSpends[formattedDate][groupingElement]
       }
-
-      if (typeof expectedAmount === "undefined") throw new Error(`Expected amount undefined`)
-
-      const actualAmount = row[groupingElementIndex]
-
-      if (typeof actualAmount === "undefined") throw new Error(`Actual amount undefined`)
-
-      let expectedReimbursement = 0
       if (
-        typeof reimbursementColumn !== "undefined" &&
         Object.keys(groupedReimbursements).includes(formattedDate) &&
         Object.keys(groupedReimbursements[formattedDate]).includes(groupingElement)
       ) {
-        expectedReimbursement = groupedReimbursements[formattedDate][groupingElement]
-        expectedRow[reimbursementColumn - 1] = expectedReimbursement
+        expectedAmount = expectedAmount - groupedReimbursements[formattedDate][groupingElement]
       }
 
+      if (typeof expectedAmount === "undefined") throw new Error(`Expected amount undefined`)
+
+      const actualAmount = row[index]
+
+      if (typeof actualAmount === "undefined") throw new Error(`Actual amount undefined`)
+
       printRows = printRows || expectedAmount != actualAmount
-      validationPass = validationPass && !printRows
-      expectedMonthTotal += expectedAmount - expectedReimbursement
-      expectedMonthReimbursement += expectedReimbursement
-      expectedRow[groupingElementIndex] = expectedAmount
+      quantityMismatch = quantityMismatch || expectedAmount != actualAmount
+      expectedMonthAmount += expectedAmount
+      expectedRow[index] = expectedAmount
     })
 
-    const actualMonthTotal = row[totalColumn - 1]
-    let actualMonthReimbursement = 0
-    expectedRow[totalColumn - 1] = expectedMonthTotal
-    if (typeof reimbursementColumn !== "undefined") {
-      expectedRow[reimbursementColumn - 1] = expectedMonthReimbursement
-      actualMonthReimbursement = row[reimbursementColumn - 1]
-    }
-
-    printRows =
-      printRows || expectedMonthTotal !== actualMonthTotal || expectedMonthReimbursement !== actualMonthReimbursement
+    // Hide quantity mismatch errors if there was a row mismatch type error
+    expectedRow[expectedRow.length - 1] = expectedMonthAmount
     if (printRows) {
       console.warn(`Expected row : ${formatRow(expectedRow, 1)}\nActual row : ${formatRow(row, 1)}\n`)
     }
   })
 
   const tips: string[] = []
-  if (!validationPass) {
+  if (quantityMismatch) {
     tips.push("Check amounts for each category")
     tips.push(`Check category/subcategory names are correct for all spends.`)
     tips.push(
@@ -139,12 +118,15 @@ class AllCategories extends BaseSheetHandler {
     }
   }
 
+  getReimbursementColumn(reimbursement: Reimbursement): number {
+    return this.sheetConfig.columns![reimbursement.category]
+  }
+
   validate(): void {
     const currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
     const [headers, data] = [currentSheetRows?.slice(0, 1)[0], currentSheetRows?.slice(1)]
 
     const categories = headers?.slice(1, headers.length - 1)
-      .filter((category) => category !== "Devolución" && category !== "Reimbursements")
 
     const dates = data?.map((row) => row[0])
 
@@ -152,7 +134,7 @@ class AllCategories extends BaseSheetHandler {
     const groupedSpends = groupSpendsByDatesAndCategories(allSpends, dates!, null, categories!)
 
     const allReimbursements = getAllReimbursements()
-    const groupedReimbursements = groupReimbursementsByDatesAndCategories(allReimbursements, dates!, null, categories!)
+    const groupedReimbursements = groupReimbursmentsByDatesAndCategories(allReimbursements, dates!, null, categories!)
 
     validateSheet(this.spreadSheetConfig, this.sheetConfig, groupedSpends, groupedReimbursements, data!, categories!)
   }
@@ -210,10 +192,8 @@ class Category extends BaseSheetHandler {
     }
   }
 
-  processReimbursement(reimbursement: Spend): void {
-    if (reimbursement.category == this.category) {
-      super.processReimbursement(reimbursement)
-    }
+  getReimbursementColumn(reimbursement: Reimbursement): number | undefined {
+    return reimbursement.category === this.category ? this.sheetConfig.columns![reimbursement.subCategory!] : undefined
   }
 
   validate(): void {
@@ -221,7 +201,6 @@ class Category extends BaseSheetHandler {
     const [headers, data] = [currentSheetRows?.slice(0, 1)[0], currentSheetRows?.slice(1)]
 
     const subCategories = headers?.slice(1, headers.length - 1)
-      .filter((category) => category !== "Devolución" && category !== "Reimbursements")
 
     const dates = data?.map((row) => row[0])
 
@@ -229,7 +208,7 @@ class Category extends BaseSheetHandler {
     const groupedSpends = groupSpendsByDatesAndSubCategories(allSpends, dates!, this.category, subCategories!)
 
     const allReimbursements = getAllReimbursements()
-    const groupedReimbursements = groupReimbursementsByDatesAndSubCategories(
+    const groupedReimbursements = groupReimbursmentsByDatesAndSubCategories(
       allReimbursements,
       dates!,
       this.category,
@@ -248,11 +227,6 @@ class Account extends BaseSheetHandler {
   constructor(spreadSheetConfig: SpreadSheetConfig, sheetConfig: SheetConfig) {
     super(spreadSheetConfig, sheetConfig)
     this.account = sheetConfig.name
-  }
-  processReimbursement(reimbursement: Spend): void {
-    if (reimbursement.account == this.account) {
-      super.processReimbursement(reimbursement)
-    }
   }
 
   processSpend(spend: Spend) {
@@ -297,13 +271,15 @@ class Account extends BaseSheetHandler {
     }
   }
 
+  getReimbursementColumn(reimbursement: Reimbursement): number | undefined {
+    return reimbursement.account === this.account ? this.sheetConfig.columns![reimbursement.account] : undefined
+  }
+
   validate(): void {
     const currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
     const [headers, data] = [currentSheetRows?.slice(0, 1)[0], currentSheetRows?.slice(1)]
 
-    const categories = headers
-      ?.slice(1, headers.length - 1)
-      .filter((category) => category !== "Devolución" && category !== "Reimbursements")
+    const categories = headers?.slice(1, headers.length - 1)
 
     const dates = data?.map((row) => row[0])
 
@@ -311,7 +287,7 @@ class Account extends BaseSheetHandler {
     const groupedSpends = groupSpendsByDatesAndCategories(allSpends, dates!, this.sheetConfig.name, categories!)
 
     const allReimbursements = getAllReimbursements()
-    const groupedReimbursements = groupReimbursementsByDatesAndCategories(
+    const groupedReimbursements = groupReimbursmentsByDatesAndCategories(
       allReimbursements,
       dates!,
       this.sheetConfig.name,

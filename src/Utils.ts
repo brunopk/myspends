@@ -47,25 +47,6 @@ function groupSpendsByDatesAndCategories(
 }
 
 /**
- * Groups spends by dates, category and sub-categories provided in parameters (see groupRowsByDatesAndSubCategories 
- * description).
- *
- * @param rows rows with spends from the main spreadsheet
- * @param dates list of dates to filter and group spends as described above
- * @param category category name to filter and group spends as described above
- * @param subCategories list of sub-categories to filter and group as described above
- * @returns an object as described above
- */
-function groupSpendsByDatesAndSubCategories(
-  rows: any[][],
-  dates: Date[],
-  category: string,
-  subCategories: string[]
-): object {
-  return groupRowsByDatesAndSubCategories(rows, spreadSheets.main.sheets.main, dates, category, subCategories)
-}
-
-/**
  * Groups reimbursements by dates, category and sub-categories provided in parameters (see groupRowsByDatesAndCategories
  * description).
  *
@@ -75,32 +56,13 @@ function groupSpendsByDatesAndSubCategories(
  * @param categories list of categories to filter and group as described above
  * @returns an object as described above
  */
-function groupReimbursementsByDatesAndCategories(
+function groupReimbursmentsByDatesAndCategories(
   rows: any[][],
   dates: Date[],
   account: string | null,
   categories: string[]
 ): object {
   return groupRowsByDatesAndCategories(rows, forms.sheets.reimbursements, dates, account, categories)
-}
-
-/**
- * Groups reimbursments by dates, category and sub-categories provided in parameters (see groupRowsByDatesAndSubCategories 
- * description).
- *
- * @param rows rows with spends from the main spreadsheet
- * @param dates list of dates to filter and group spends as described above
- * @param category category name to filter and group spends as described above
- * @param subCategories list of sub-categories to filter and group as described above
- * @returns an object as described above
- */
-function groupReimbursementsByDatesAndSubCategories(
-  rows: any[][],
-  dates: Date[],
-  category: string,
-  subCategories: string[]
-): object {
-  return groupRowsByDatesAndSubCategories(rows, forms.sheets.reimbursements, dates, category, subCategories)
 }
 
 /**
@@ -160,6 +122,44 @@ function groupRowsByDatesAndCategories(
     }
     return acc
   }, {})
+}
+
+/**
+ * Groups spends by dates, category and sub-categories provided in parameters (see groupRowsByDatesAndSubCategories 
+ * description).
+ *
+ * @param rows rows with spends from the main spreadsheet
+ * @param dates list of dates to filter and group spends as described above
+ * @param category category name to filter and group spends as described above
+ * @param subCategories list of sub-categories to filter and group as described above
+ * @returns an object as described above
+ */
+function groupSpendsByDatesAndSubCategories(
+  rows: any[][],
+  dates: Date[],
+  category: string,
+  subCategories: string[]
+): object {
+  return groupRowsByDatesAndSubCategories(rows, spreadSheets.main.sheets.main, dates, category, subCategories)
+}
+
+/**
+ * Groups reimbursments by dates, category and sub-categories provided in parameters (see groupRowsByDatesAndSubCategories 
+ * description).
+ *
+ * @param rows rows with spends from the main spreadsheet
+ * @param dates list of dates to filter and group spends as described above
+ * @param category category name to filter and group spends as described above
+ * @param subCategories list of sub-categories to filter and group as described above
+ * @returns an object as described above
+ */
+function groupReimbursmentsByDatesAndSubCategories(
+  rows: any[][],
+  dates: Date[],
+  category: string,
+  subCategories: string[]
+): object {
+  return groupRowsByDatesAndSubCategories(rows, forms.sheets.reimbursements, dates, category, subCategories)
 }
 
 /**

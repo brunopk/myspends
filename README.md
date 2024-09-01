@@ -39,7 +39,6 @@
        - `subCategory`
    - `spreadSheets` within *src/Config.gs* may have other objects of type `SpreadSheetConfig` representing other spread sheet with any number of sheets.
    - `*.sheets.*.columns` **must have** the `Total` key.
-   - `*.sheets.*.columns` may have the `Reimbursement` (or `Devolución`) key.
    - Values on `*.class` must match with a spread sheet handler (classes in *src/spreadsheets* that extends from `BaseSpreadSheetHandler`).
    - Values on `*.sheets.*.class` must match with a sheet handler (classes in *src/spreadsheets* that extends from `BaseSheetHandler`).
 3. Copy the content of *html/GSite.html* to the corresponding part of the Google Site in order to edit the web interface. Take into account that available options for dropdowns in Google Forms must match with options in the HTML.
