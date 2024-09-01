@@ -14,34 +14,34 @@ abstract class BaseSheetHandler {
 
   processReimbursement(reimbursement: Reimbursement): void {
     if (this.spreadSheetConfig.class !== "Main") {
-      const reimbursementColumn = getReimbursementColumn(this.sheetConfig)
+      const totalReimbursementColumn = getTotalReimbursementColumn(this.sheetConfig)
       const totalColumn = getTotalColumn(this.sheetConfig)
       const rowForMonth = this.getRowForMonth(reimbursement.date.getFullYear(), reimbursement.date.getMonth())
 
-      if (typeof reimbursementColumn !== "undefined") {
+      if (typeof totalReimbursementColumn !== "undefined") {
         if (!rowForMonth) {
           const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
           const newRow = Array(numberOfColumns).fill(0)
           newRow[0] = reimbursement.date
-          newRow[reimbursementColumn - 1] = reimbursement.amount
+          newRow[totalReimbursementColumn - 1] = reimbursement.amount
           newRow[totalColumn - 1] = -reimbursement.amount
 
           addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
         } else {
           setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, formatDate(reimbursement.date))
 
-          const currentValue = getValue(
+          const currentTotalReimbursement = getValue(
             this.spreadSheetConfig.id,
             this.sheetConfig.name,
             rowForMonth,
-            reimbursementColumn
+            totalReimbursementColumn
           )
           setValue(
             this.spreadSheetConfig.id,
             this.sheetConfig.name,
             rowForMonth,
-            reimbursementColumn,
-            currentValue + reimbursement.amount
+            totalReimbursementColumn,
+            currentTotalReimbursement + reimbursement.amount
           )
 
           const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, totalColumn)

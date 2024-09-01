@@ -30,7 +30,7 @@ function getTotalColumn(sheetConfig: SheetConfig): number {
   return columnNumber
 }
 
-function getReimbursementColumn(sheetConfig: SheetConfig): number | undefined {
+function getTotalReimbursementColumn(sheetConfig: SheetConfig): number | undefined {
   let columnNumber = typeof sheetConfig.columns !== "undefined" ? sheetConfig.columns["Devolución"] : undefined
   if (typeof columnNumber === "undefined" && typeof sheetConfig.columns !== "undefined")
     columnNumber = sheetConfig.columns["Reimbursement"]
