@@ -25,20 +25,27 @@ function processGoogleFormInput() {
 
   // Normally active range contains one row (last inserted row)
   for (let i = 1; i <= numRows; i++) {
-    const date = range.getCell(i, forms.sheets.main.columns!.date).getValue()
-    const category = range.getCell(i, forms.sheets.main.columns!.category).getValue()
-    const amount = range.getCell(i, forms.sheets.main.columns!.amount).getValue()
-    const account = range.getCell(i, forms.sheets.main.columns!.account).getValue()
-    const description = range.getCell(i, forms.sheets.main.columns!.description).getValue()
-    const subCategory = range.getCell(i, forms.sheets.main.columns!.subCategory).getValue()
-
     if (sheetName === forms.sheets.main.name) {
+      const date = range.getCell(i, forms.sheets.main.columns!.date).getValue()
+      const category = range.getCell(i, forms.sheets.main.columns!.category).getValue()
+      const amount = range.getCell(i, forms.sheets.main.columns!.amount).getValue()
+      const account = range.getCell(i, forms.sheets.main.columns!.account).getValue()
+      const description = range.getCell(i, forms.sheets.main.columns!.description).getValue()
+      const subCategory = range.getCell(i, forms.sheets.main.columns!.subCategory).getValue()
+
       const newSpend: Spend = { date, category, amount, account, description, subCategory, origin: originForms }
 
       Object.keys(spreadSheetHandlers).forEach((spreadSheetId) => {
         spreadSheetHandlers[spreadSheetId].processSpend(newSpend)
       })
     } else {
+      const date = range.getCell(i, forms.sheets.reimbursements.columns!.date).getValue()
+      const category = range.getCell(i, forms.sheets.reimbursements.columns!.category).getValue()
+      const amount = range.getCell(i, forms.sheets.reimbursements.columns!.amount).getValue()
+      const account = range.getCell(i, forms.sheets.reimbursements.columns!.account).getValue()
+      const description = range.getCell(i, forms.sheets.reimbursements.columns!.description).getValue()
+      const subCategory = range.getCell(i, forms.sheets.reimbursements.columns!.subCategory).getValue()
+
       const newReimbursement: Reimbursement = {
         date,
         category,
