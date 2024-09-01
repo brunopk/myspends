@@ -30,7 +30,7 @@ function validateSheet(
     let expectedMonthReimbursement = 0
     const numberOfColumns = getNumberOfColumns(spreadSheetConfig.id, sheetConfig.name)
     const totalColumn = getTotalColumn(sheetConfig)
-    const reimbursementColumn = getReimbursementColumn(sheetConfig)
+    const totalReimbursementColumn = getTotalReimbursementColumn(sheetConfig)
     const expectedRow = Array(numberOfColumns).fill(0)
     const formattedDate = formatDate(currentDate, 2)
 
@@ -59,12 +59,12 @@ function validateSheet(
 
       let expectedReimbursement = 0
       if (
-        typeof reimbursementColumn !== "undefined" &&
+        typeof totalReimbursementColumn !== "undefined" &&
         Object.keys(groupedReimbursements).includes(formattedDate) &&
         Object.keys(groupedReimbursements[formattedDate]).includes(groupingElement)
       ) {
         expectedReimbursement = groupedReimbursements[formattedDate][groupingElement]
-        expectedRow[reimbursementColumn - 1] = expectedReimbursement
+        expectedRow[totalReimbursementColumn - 1] = expectedReimbursement
       }
 
       printRows = printRows || expectedAmount != actualAmount
@@ -77,9 +77,9 @@ function validateSheet(
     const actualMonthTotal = row[totalColumn - 1]
     let actualMonthReimbursement = 0
     expectedRow[totalColumn - 1] = expectedMonthTotal
-    if (typeof reimbursementColumn !== "undefined") {
-      expectedRow[reimbursementColumn - 1] = expectedMonthReimbursement
-      actualMonthReimbursement = row[reimbursementColumn - 1]
+    if (typeof totalReimbursementColumn !== "undefined") {
+      expectedRow[totalReimbursementColumn - 1] = expectedMonthReimbursement
+      actualMonthReimbursement = row[totalReimbursementColumn - 1]
     }
 
     printRows =

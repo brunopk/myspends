@@ -43,7 +43,6 @@ function processGoogleFormInput() {
       const category = range.getCell(i, forms.sheets.reimbursements.columns!.category).getValue()
       const amount = range.getCell(i, forms.sheets.reimbursements.columns!.amount).getValue()
       const account = range.getCell(i, forms.sheets.reimbursements.columns!.account).getValue()
-      const description = range.getCell(i, forms.sheets.reimbursements.columns!.description).getValue()
       const subCategory = range.getCell(i, forms.sheets.reimbursements.columns!.subCategory).getValue()
 
       const newReimbursement: Reimbursement = {
@@ -51,7 +50,6 @@ function processGoogleFormInput() {
         category,
         amount,
         account,
-        description,
         subCategory,
         origin: originForms
       }
