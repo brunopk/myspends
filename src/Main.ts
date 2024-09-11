@@ -104,7 +104,8 @@ function processRecurrentSpends() {
 
       if (recurrentSpend.sendMail) {
         console.info(`Sending mail to "${recurrentSpendsMailRecipient}".`)
-        MailApp.sendEmail(recurrentSpendsMailRecipient, "", recurrentSpend.mailSubject, recurrentSpend.mailBody)
+        const htmlBody = buildRecurrentSpendHtmlMailBody(recurrentSpend.mailLanguage, recurrentSpend.mailBody)
+        MailApp.sendEmail(recurrentSpendsMailRecipient, recurrentSpend.mailSubject, "", { htmlBody })
       } else {
         console.log("Not sending mails")
       }

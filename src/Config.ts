@@ -161,6 +161,7 @@ const recurrentSpends: RecurrentSpendConfig[] = [
     taskDescription: "Check ... ...",
     mailSubject: "Check ...",
     mailBody: "Check ... ...",
+    mailLanguage: "en",
     type: "Automatic"
   }
 ]
