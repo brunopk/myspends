@@ -307,3 +307,20 @@ function sameDates(a: Date, b: Date): boolean {
     a.getSeconds() === b.getSeconds()
   )
 }
+
+function buildRecurrentSpendHtmlMailBody(language: string, template: string) {
+  let result = `<span>${template}</span><br>`
+
+  switch (language) {
+    case "es":
+      result += `<span>Fecha: ${formatDate(new Date(), 1)}</span><br>`
+      break
+    case "en":
+      result += `<span>Date: ${formatDate(new Date(), 1)}</span><br>`
+      break
+    default:
+      throw new Error(`Invalid language ${language}, allowed values are 'es' or 'en'}`)
+  }
+
+  return result
+}

@@ -53,6 +53,7 @@ type RecurrentSpendConfig = {
   taskDescription: string
   mailSubject: string
   mailBody: string
+  mailLanguage: string
   category: string
   account: string
   description: string
