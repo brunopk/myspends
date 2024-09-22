@@ -49,7 +49,7 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
           origin: 1
         }
       },
-      recurrentSpends: {
+      pending: {
         name: "Pendientes",
         class: "Main",
         columns: {
