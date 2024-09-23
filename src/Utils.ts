@@ -314,21 +314,15 @@ function extractAmountFromRecurrentSpendTask(task: tasks_v1.Schema$Task) {
 
 function buildRecurrentSpendTaskDescription(recurrentSpend: RecurrentSpend, taskId: string) {
   const currentDate = formatDate(new Date())
-  let result = `${recurrentSpend.taskDescription}\n
-    Task ID: ${taskId}
-  `
+  let result = `${recurrentSpend.taskDescription}\n\tTask ID: ${taskId}\n`
 
   switch (recurrentSpend.language) {
     case "es":
-      result += `
-        Fecha: ${currentDate}\n
-        Costo: ${recurrentSpend.amount}\n
+      result += `\tFecha: ${currentDate}\n\tCosto: ${recurrentSpend.amount}
       `
       break
     case "en":
-      result += `
-        Date: ${currentDate}\n
-        Amount: ${recurrentSpend.amount}\n
+      result += `\tDate: ${currentDate}\n\tAmount: ${recurrentSpend.amount}
       `
       break
     default:

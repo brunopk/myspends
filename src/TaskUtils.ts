@@ -47,7 +47,7 @@ function listAllTasks(taskListId: string): tasks_v1.Schema$Task[] {
  * @readonly task id
  */
 function createTask(taskListId: string, title: string, date: Date): string {
-  console.info(`Adding task on tasklist '${taskListId}'`)
+  console.info(`Adding task on tasklist ${taskListId}`)
   const task = Tasks.Tasks?.insert({ due: date.toISOString(), title }, taskListId)
   return task!.id!
 }
@@ -59,7 +59,7 @@ function updateTaskDescription(taskListId: string, taskId: string, description: 
 
 function completeTask(taskListId: string, taskId: string) {
   Tasks.Tasks?.patch({ status: "completed", completed: new Date().toISOString() }, taskListId, taskId)
-  console.info(`Task '${taskId}' on task list '${taskListId}' was marked as completed`)
+  console.info(`Task ${taskId} on task list ${taskListId} was marked as completed`)
 }
 
 function testCreateTask() {
