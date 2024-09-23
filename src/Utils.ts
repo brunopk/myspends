@@ -225,14 +225,14 @@ function groupRowsByDatesAndSubCategories(
   }, {})
 }
 
-function mapPendingSpendToSpend(row: any[]): Spend {
+function generateSpendWithRecurrentSpendRow(row: any[]): Spend {
   const spend: Spend = {
     account: row[spreadSheets.main.sheets.recurrentSpends.columns!.account - 1],
     category: row[spreadSheets.main.sheets.recurrentSpends.columns!.category - 1],
-    date: new Date(),
     description: row[spreadSheets.main.sheets.recurrentSpends.columns!.description - 1],
+    amount: row[spreadSheets.main.sheets.recurrentSpends.columns!.amount - 1],
     origin: originTasks,
-    amount: row[spreadSheets.main.sheets.recurrentSpends.columns!.amount - 1]
+    date: new Date()
   }
   if (row[spreadSheets.main.sheets.recurrentSpends.columns!.subCategory - 1] !== "") {
     spend.subCategory = row[spreadSheets.main.sheets.recurrentSpends.columns!.subCategory - 1]
@@ -303,30 +303,47 @@ function createRecurrentSpendTask(recurrentSpend: RecurrentSpend): string {
   return taskId
 }
 
-function extractAmountFromRecurrentSpendTask(task: tasks_v1.Schema$Task) {
+function extractAmountFromRecurrentSpendTask(task: tasks_v1.Schema$Task): number {
   const taskDescription = task.notes
   if (typeof taskDescription === "undefined" || taskDescription == "") {
     throw new Error(`Empty task description`)
   }
 
-  // TODO: CONTINUE..
+  let regex
+  switch (recurrentSpendsLanguage) {
+    case "es":
+      regex = /.*\s+Task\s+ID\s*:\s*\w+\s+Fecha\s*:\s*\d{1,2}\/\d{1,2}\/\d{4}\s+Costo\s*:\s*(\d+)/
+      break
+    case "en":
+      regex = /.*\s+Task\s+ID\s*:\s*\w+\s+Date\s*:\s*\d{1,2}\/\d{1,2}\/\d{4}\s+Amount\s*:\s*(\d+)/
+      break
+    default:
+      throw new Error(`Invalid language ${recurrentSpendsLanguage}, allowed values are 'es' or 'en'}`)
+  }
+
+  const match = taskDescription?.match(regex)
+  if (match) {
+    return parseInt(match[1], 10)
+  } else {
+    throw Error(`Cannot extract amount from task description: "${taskDescription}"`)
+  }
 }
 
 function buildRecurrentSpendTaskDescription(recurrentSpend: RecurrentSpend, taskId: string) {
   const currentDate = formatDate(new Date())
-  let result = `${recurrentSpend.taskDescription}\n\tTask ID: ${taskId}\n`
+  let result = `${recurrentSpend.taskDescription}\n\nTask ID: ${taskId}\n`
 
-  switch (recurrentSpend.language) {
+  switch (recurrentSpendsLanguage) {
     case "es":
-      result += `\tFecha: ${currentDate}\n\tCosto: ${recurrentSpend.amount}
+      result += `Fecha: ${currentDate}\nCosto: ${recurrentSpend.amount}
       `
       break
     case "en":
-      result += `\tDate: ${currentDate}\n\tAmount: ${recurrentSpend.amount}
+      result += `Date: ${currentDate}\nAmount: ${recurrentSpend.amount}
       `
       break
     default:
-      throw new Error(`Invalid language ${recurrentSpend.language}, allowed values are 'es' or 'en'}`)
+      throw new Error(`Invalid language ${recurrentSpendsLanguage}, allowed values are 'es' or 'en'}`)
   }
 
   return result
@@ -349,7 +366,7 @@ function buildRecurrentSpendRow(recurrentSpend: RecurrentSpend, now: Date, taskI
 function buildRecurrentSpendHtmlMailBody(recurrentSpend: RecurrentSpend) {
   let result = `<span>${recurrentSpend.mailBody}</span><br>`
 
-  switch (recurrentSpend.language) {
+  switch (recurrentSpendsLanguage) {
     case "es":
       result += `<span>Fecha: ${formatDate(new Date(), 1)}</span><br>`
       break
@@ -357,7 +374,7 @@ function buildRecurrentSpendHtmlMailBody(recurrentSpend: RecurrentSpend) {
       result += `<span>Date: ${formatDate(new Date(), 1)}</span><br>`
       break
     default:
-      throw new Error(`Invalid language ${recurrentSpend.language}, allowed values are 'es' or 'en'}`)
+      throw new Error(`Invalid language ${recurrentSpendsLanguage}, allowed values are 'es' or 'en'}`)
   }
 
   return result

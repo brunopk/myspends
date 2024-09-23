@@ -50,7 +50,7 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
         }
       },
       recurrentSpends: {
-        name: "Pendientes",
+        name: "Recurrentes",
         class: "Main",
         columns: {
           timestamp: 1,
@@ -132,6 +132,8 @@ const recurrentSpendsMailRecipient = "asd@asd.com"
 
 const recurrentSpendsTaskList = "xxx"
 
+const recurrentSpendsLanguage = "en"
+
 const recurrentSpends: RecurrentSpend[] = [
   {
     amount: 1,
@@ -146,7 +148,6 @@ const recurrentSpends: RecurrentSpend[] = [
     taskDescription: "Check ... ...",
     mailSubject: "Check ...",
     mailBody: "Check ... ...",
-    language: "en",
     type: "Automatic"
   }
 ]

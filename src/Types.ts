@@ -10,7 +10,6 @@ type Spend = {
 
 type RecurrentSpend = {
   type: string
-  language: string
   dayOfMonth: number
   sendTask: boolean
   sendMail: boolean
