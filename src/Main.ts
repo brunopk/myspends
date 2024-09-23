@@ -99,7 +99,7 @@ function processRecurrentSpends() {
           )
         }
         const row = buildRecurrentSpendRow(recurrentSpend, now, taskId)
-        addRow(spreadSheets.main.id, spreadSheets.main.sheets.pending.name, row)
+        addRow(spreadSheets.main.id, spreadSheets.main.sheets.recurrentSpends.name, row)
       }
 
       if (recurrentSpend.sendMail) {
@@ -116,26 +116,26 @@ function processRecurrentSpends() {
 /*************************************************************************************************************************/
 
 function confirmRecurrentSpends() {
-  const rows = readAllRows(spreadSheets.main.id, spreadSheets.main.sheets.pending.name)
+  const rows = readAllRows(spreadSheets.main.id, spreadSheets.main.sheets.recurrentSpends.name)
   const tasks = listAllTasks(recurrentSpendsTaskList) as tasks_v1.Schema$Task[]
 
   for (let i = 1; i < rows!.length; i++) {
-    const taskId = rows![i][spreadSheets.main.sheets.pending.columns!.taskId - 1]
+    const taskId = rows![i][spreadSheets.main.sheets.recurrentSpends.columns!.taskId - 1]
     const task = tasks.find((task) => task.id === taskId)
     const amount = extractAmountFromRecurrentSpendTask(task)
     let newSpend: Spend | undefined
 
     if (typeof task === "undefined") {
       throw new Error(`Cannot find task "${taskId}" within task list "${recurrentSpendsTaskList}"`)
-    } else if (rows[i][spreadSheets.main.sheets.pending.columns!.completed - 1] && !task.completed) {
+    } else if (rows[i][spreadSheets.main.sheets.recurrentSpends.columns!.completed - 1] && !task.completed) {
       completeTask(recurrentSpendsTaskList, taskId)
       newSpend = mapPendingSpendToSpend(rows![i])
-    } else if (!rows[i][spreadSheets.main.sheets.pending.columns!.completed - 1] && task.completed) {
+    } else if (!rows[i][spreadSheets.main.sheets.recurrentSpends.columns!.completed - 1] && task.completed) {
       setValue(
         spreadSheets.main.id,
-        spreadSheets.main.sheets.pending.name,
+        spreadSheets.main.sheets.recurrentSpends.name,
         i + 1,
-        spreadSheets.main.sheets.pending.columns!.completed,
+        spreadSheets.main.sheets.recurrentSpends.columns!.completed,
         true
       )
       newSpend = mapPendingSpendToSpend(rows![i])

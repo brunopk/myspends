@@ -227,15 +227,15 @@ function groupRowsByDatesAndSubCategories(
 
 function mapPendingSpendToSpend(row: any[]): Spend {
   const spend: Spend = {
-    account: row[spreadSheets.main.sheets.pending.columns!.account - 1],
-    category: row[spreadSheets.main.sheets.pending.columns!.category - 1],
+    account: row[spreadSheets.main.sheets.recurrentSpends.columns!.account - 1],
+    category: row[spreadSheets.main.sheets.recurrentSpends.columns!.category - 1],
     date: new Date(),
-    description: row[spreadSheets.main.sheets.pending.columns!.description - 1],
+    description: row[spreadSheets.main.sheets.recurrentSpends.columns!.description - 1],
     origin: originTasks,
-    amount: row[spreadSheets.main.sheets.pending.columns!.amount - 1]
+    amount: row[spreadSheets.main.sheets.recurrentSpends.columns!.amount - 1]
   }
-  if (row[spreadSheets.main.sheets.pending.columns!.subCategory - 1] !== "") {
-    spend.subCategory = row[spreadSheets.main.sheets.pending.columns!.subCategory - 1]
+  if (row[spreadSheets.main.sheets.recurrentSpends.columns!.subCategory - 1] !== "") {
+    spend.subCategory = row[spreadSheets.main.sheets.recurrentSpends.columns!.subCategory - 1]
   }
   return spend
 }
@@ -314,21 +314,21 @@ function extractAmountFromRecurrentSpendTask(task: tasks_v1.Schema$Task) {
 
 function buildRecurrentSpendTaskDescription(recurrentSpend: RecurrentSpend, taskId: string) {
   const currentDate = formatDate(new Date())
-  let result = `${recurrentSpend.taskDescription}
+  let result = `${recurrentSpend.taskDescription}\n
     Task ID: ${taskId}
   `
 
   switch (recurrentSpend.language) {
     case "es":
       result += `
-        Fecha: ${currentDate}
-        Costo: ${recurrentSpend.amount}
+        Fecha: ${currentDate}\n
+        Costo: ${recurrentSpend.amount}\n
       `
       break
     case "en":
       result += `
-        Date: ${currentDate}
-        Amount: ${recurrentSpend.amount}
+        Date: ${currentDate}\n
+        Amount: ${recurrentSpend.amount}\n
       `
       break
     default:
@@ -339,15 +339,15 @@ function buildRecurrentSpendTaskDescription(recurrentSpend: RecurrentSpend, task
 }
 
 function buildRecurrentSpendRow(recurrentSpend: RecurrentSpend, now: Date, taskId: string): any[] {
-  const row = Array(Object.keys(spreadSheets.main.sheets.pending.columns!).length).fill(0)
-  row[spreadSheets.main.sheets.pending.columns!.category - 1] = recurrentSpend.category
-  row[spreadSheets.main.sheets.pending.columns!.timestamp - 1] = now
-  row[spreadSheets.main.sheets.pending.columns!.amount - 1] = recurrentSpend.amount
-  row[spreadSheets.main.sheets.pending.columns!.account - 1] = recurrentSpend.account
-  row[spreadSheets.main.sheets.pending.columns!.taskId - 1] = taskId
-  row[spreadSheets.main.sheets.pending.columns!.description - 1] = recurrentSpend.description
-  row[spreadSheets.main.sheets.pending.columns!.completed - 1] = false
-  row[spreadSheets.main.sheets.pending.columns!.subCategory - 1] =
+  const row = Array(Object.keys(spreadSheets.main.sheets.recurrentSpends.columns!).length).fill(0)
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.category - 1] = recurrentSpend.category
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.timestamp - 1] = now
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.amount - 1] = recurrentSpend.amount
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.account - 1] = recurrentSpend.account
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.taskId - 1] = taskId
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.description - 1] = recurrentSpend.description
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.completed - 1] = false
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.subCategory - 1] =
     typeof recurrentSpend.subCategory !== "undefined" ? recurrentSpend.subCategory : ""
   return row
 }
