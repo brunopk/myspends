@@ -72,7 +72,7 @@ function processRecurrentSpends() {
 
       let taskId: string | undefined
       if (recurrentSpend.sendTask) {
-        taskId = createTask(recurrentSpendsTaskList, recurrentSpend.taskTitle, recurrentSpend.taskDescription, now)
+        taskId = createRecurrentSpendTask(recurrentSpend)
       } else {
         console.log("Not creating task")
       }
@@ -98,13 +98,13 @@ function processRecurrentSpends() {
             )}"`
           )
         }
-        const row = buildPendingSpendRow(recurrentSpend, now, taskId)
-        addRow(spreadSheets.main.id, spreadSheets.main.sheets.pending.name, row)
+        const row = buildRecurrentSpendRow(recurrentSpend, now, taskId)
+        addRow(spreadSheets.main.id, spreadSheets.main.sheets.recurrentSpends.name, row)
       }
 
       if (recurrentSpend.sendMail) {
         console.info(`Sending mail to "${recurrentSpendsMailRecipient}".`)
-        const htmlBody = buildRecurrentSpendHtmlMailBody(recurrentSpend.mailLanguage, recurrentSpend.mailBody)
+        const htmlBody = buildRecurrentSpendHtmlMailBody(recurrentSpend)
         MailApp.sendEmail(recurrentSpendsMailRecipient, recurrentSpend.mailSubject, "", { htmlBody })
       } else {
         console.log("Not sending mails")
@@ -113,32 +113,44 @@ function processRecurrentSpends() {
   }
 }
 
-function processPendingSpends() {
-  const rows = readAllRows(spreadSheets.main.id, spreadSheets.main.sheets.pending.name)
+/*************************************************************************************************************************/
+
+function confirmRecurrentSpends() {
+  const rows = readAllRows(spreadSheets.main.id, spreadSheets.main.sheets.recurrentSpends.name)?.slice(1)
   const tasks = listAllTasks(recurrentSpendsTaskList) as tasks_v1.Schema$Task[]
 
-  for (let i = 1; i < rows!.length; i++) {
-    const taskId = rows![i][spreadSheets.main.sheets.pending.columns!.taskId - 1]
+  for (let i = 0; i < rows!.length; i++) {
+    const currentRow = rows![i]
+    const taskId = currentRow[spreadSheets.main.sheets.recurrentSpends.columns!.taskId - 1]
     const task = tasks.find((task) => task.id === taskId)
-    let newSpend: Spend | undefined
 
     if (typeof task === "undefined") {
       throw new Error(`Cannot find task "${taskId}" within task list "${recurrentSpendsTaskList}"`)
-    } else if (rows[i][spreadSheets.main.sheets.pending.columns!.completed - 1] && !task.completed) {
-      completeTask(recurrentSpendsTaskList, taskId)
-      newSpend = mapPendingSpendToSpend(rows![i])
-    } else if (!rows[i][spreadSheets.main.sheets.pending.columns!.completed - 1] && task.completed) {
-      setValue(
-        spreadSheets.main.id,
-        spreadSheets.main.sheets.pending.name,
-        i + 1,
-        spreadSheets.main.sheets.pending.columns!.completed,
-        true
-      )
-      newSpend = mapPendingSpendToSpend(rows![i])
     }
 
-    if (typeof newSpend !== "undefined") {
+    console.info(`Processing task '${taskId}'`)
+
+    if (!currentRow[spreadSheets.main.sheets.recurrentSpends.columns!.completed - 1] && task.completed) {
+      setValue(
+        spreadSheets.main.id,
+        spreadSheets.main.sheets.recurrentSpends.name,
+        i + 2,
+        spreadSheets.main.sheets.recurrentSpends.columns!.completed,
+        true
+      )
+
+      const amount = extractAmountFromRecurrentSpendTask(task)
+      currentRow[spreadSheets.main.sheets.recurrentSpends.columns!.amount - 1] = amount
+      setValue(
+        spreadSheets.main.id,
+        spreadSheets.main.sheets.recurrentSpends.name,
+        i + 2,
+        spreadSheets.main.sheets.recurrentSpends.columns!.amount,
+        amount
+      )
+
+      const newSpend = generateSpendWithRecurrentSpendRow(currentRow)
+
       Object.keys(spreadSheetHandlers).forEach((spreadSheetId) => {
         spreadSheetHandlers[spreadSheetId].processSpend(newSpend)
       })

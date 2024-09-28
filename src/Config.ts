@@ -6,7 +6,7 @@ const forms:  FormConfig = {
   sheets: {
     main: {
       name: "",
-      type: "",
+      class: "",
       columns: {
         category: 3,
         date: 2,
@@ -18,7 +18,7 @@ const forms:  FormConfig = {
     },
     reimbursements: {
       name: "",
-      type: "",
+      class: "",
       columns: {
         category: 3,
         date: 2,
@@ -35,11 +35,11 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
   main: {
     id: "1r93R3hKOCV6St4sac_88YZRM6OuYO9LxaxwMa2gWomE",
     name: "Principal",
-    type: "Main",
+    class: "Main",
     sheets: {
       main: {
         name: "Principal",
-        type: "Main",
+        class: "Main",
         columns: {
           category: 1,
           subCategory: 1,
@@ -49,9 +49,9 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
           origin: 1
         }
       },
-      pending: {
-        name: "Pendientes",
-        type: "Main",
+      recurrentSpends: {
+        name: "Recurrentes",
+        class: "Main",
         columns: {
           timestamp: 1,
           taskId: 1,
@@ -68,11 +68,11 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
   monthly: {
     id: "1nE0j6lgMZdimaLtO_31OKIpzVNNGBkVGB_xiPeAHoOw",
     name: "Mensual",
-    type: "Monthly",
+    class: "Monthly",
     sheets: {
       all_categories: {
         name: "Categorías",
-        type: "AllCategories",
+        class: "AllCategories",
         columns: {
           "Column A": 0,
           "Column B": 0,
@@ -81,62 +81,47 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
       },
       category1: {
         name: "",
-        type: "Category",
+        class: "Category",
         columns: {
           "Column A": 0,
           "Column B": 0,
           "Total": 0
-        },
-        extra: {
-          type: sheetType.category
         }
       },
       category2: {
         name: "",
-        type: "Category",
+        class: "Category",
         columns: {
           "Column A": 0,
           "Column B": 0,
           "Total": 0
-        },
-        extra: {
-          type: sheetType.category
         }
       },
       account1: {
         name: "Account 1",
-        type: "Account",
+        class: "Account",
         columns: {
           "Column A": 0,
           "Column B": 0,
           "Total": 0
-        },
-        extra: {
-          type: sheetType.account
         }
       },
       account2: {
         name: "Account 2",
-        type: "Account",
+        class: "Account",
         columns: {
           "Column A": 0,
           "Column B": 0,
           "Total": 0
-        },
-        extra: {
-          type: sheetType.account
         }
       },
       account3: {
         name: "Account 3",
-        type: "Account",
+        class: "Account",
         columns: {
           "Column A": 0,
           "Column B": 0,
           "Total": 0
-        },
-        extra: {
-          type: sheetType.account
         }
       }
     }
@@ -147,7 +132,9 @@ const recurrentSpendsMailRecipient = "asd@asd.com"
 
 const recurrentSpendsTaskList = "xxx"
 
-const recurrentSpends: RecurrentSpendConfig[] = [
+const recurrentSpendsLanguage = "en"
+
+const recurrentSpends: RecurrentSpend[] = [
   {
     amount: 1,
     category: "Category x",
@@ -161,7 +148,6 @@ const recurrentSpends: RecurrentSpendConfig[] = [
     taskDescription: "Check ... ...",
     mailSubject: "Check ...",
     mailBody: "Check ... ...",
-    mailLanguage: "en",
     type: "Automatic"
   }
 ]

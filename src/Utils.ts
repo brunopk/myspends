@@ -1,3 +1,4 @@
+import { tasks_v1 } from "googleapis"
 import { sheets } from "googleapis/build/src/apis/sheets"
 
 /**
@@ -224,31 +225,17 @@ function groupRowsByDatesAndSubCategories(
   }, {})
 }
 
-function buildPendingSpendRow(recurrentSpend: RecurrentSpendConfig, now: Date, taskId: string): any[] {
-  const row = Array(Object.keys(spreadSheets.main.sheets.pending.columns!).length).fill(0)
-  row[spreadSheets.main.sheets.pending.columns!.category - 1] = recurrentSpend.category
-  row[spreadSheets.main.sheets.pending.columns!.subCategory - 1] =
-    typeof recurrentSpend.subCategory !== "undefined" ? recurrentSpend.subCategory : ""
-  row[spreadSheets.main.sheets.pending.columns!.timestamp - 1] = now
-  row[spreadSheets.main.sheets.pending.columns!.amount - 1] = recurrentSpend.amount
-  row[spreadSheets.main.sheets.pending.columns!.account - 1] = recurrentSpend.account
-  row[spreadSheets.main.sheets.pending.columns!.taskId - 1] = taskId
-  row[spreadSheets.main.sheets.pending.columns!.description - 1] = recurrentSpend.description
-  row[spreadSheets.main.sheets.pending.columns!.completed - 1] = false
-  return row
-}
-
-function mapPendingSpendToSpend(row: any[]): Spend {
+function generateSpendWithRecurrentSpendRow(row: any[]): Spend {
   const spend: Spend = {
-    account: row[spreadSheets.main.sheets.pending.columns!.account - 1],
-    category: row[spreadSheets.main.sheets.pending.columns!.category - 1],
-    date: new Date(),
-    description: row[spreadSheets.main.sheets.pending.columns!.description - 1],
+    account: row[spreadSheets.main.sheets.recurrentSpends.columns!.account - 1],
+    category: row[spreadSheets.main.sheets.recurrentSpends.columns!.category - 1],
+    description: row[spreadSheets.main.sheets.recurrentSpends.columns!.description - 1],
+    amount: row[spreadSheets.main.sheets.recurrentSpends.columns!.amount - 1],
     origin: originTasks,
-    amount: row[spreadSheets.main.sheets.pending.columns!.amount - 1]
+    date: new Date()
   }
-  if (row[spreadSheets.main.sheets.pending.columns!.subCategory - 1] !== "") {
-    spend.subCategory = row[spreadSheets.main.sheets.pending.columns!.subCategory - 1]
+  if (row[spreadSheets.main.sheets.recurrentSpends.columns!.subCategory - 1] !== "") {
+    spend.subCategory = row[spreadSheets.main.sheets.recurrentSpends.columns!.subCategory - 1]
   }
   return spend
 }
@@ -308,10 +295,78 @@ function sameDates(a: Date, b: Date): boolean {
   )
 }
 
-function buildRecurrentSpendHtmlMailBody(language: string, template: string) {
-  let result = `<span>${template}</span><br>`
+function createRecurrentSpendTask(recurrentSpend: RecurrentSpend): string {
+  const now = new Date()
+  const taskId = createTask(recurrentSpendsTaskList, recurrentSpend.taskTitle, now)
+  const taskDescription = buildRecurrentSpendTaskDescription(recurrentSpend, taskId)
+  updateTaskDescription(recurrentSpendsTaskList, taskId, taskDescription)
+  return taskId
+}
 
-  switch (language) {
+function extractAmountFromRecurrentSpendTask(task: tasks_v1.Schema$Task): number {
+  const taskDescription = task.notes
+  if (typeof taskDescription === "undefined" || taskDescription == "") {
+    throw new Error(`Empty task description`)
+  }
+
+  let regex
+  switch (recurrentSpendsLanguage) {
+    case "es":
+      regex = /.*\s+Task\s+ID\s*:\s*\w+\s+Fecha\s*:\s*\d{1,2}\/\d{1,2}\/\d{4}\s+Costo\s*:\s*(\d+)/
+      break
+    case "en":
+      regex = /.*\s+Task\s+ID\s*:\s*\w+\s+Date\s*:\s*\d{1,2}\/\d{1,2}\/\d{4}\s+Amount\s*:\s*(\d+)/
+      break
+    default:
+      throw new Error(`Invalid language ${recurrentSpendsLanguage}, allowed values are 'es' or 'en'}`)
+  }
+
+  const match = taskDescription?.match(regex)
+  if (match) {
+    return parseInt(match[1], 10)
+  } else {
+    throw Error(`Cannot extract amount from task description: "${taskDescription}"`)
+  }
+}
+
+function buildRecurrentSpendTaskDescription(recurrentSpend: RecurrentSpend, taskId: string) {
+  const currentDate = formatDate(new Date())
+  let result = `${recurrentSpend.taskDescription}\n\nTask ID: ${taskId}\n`
+
+  switch (recurrentSpendsLanguage) {
+    case "es":
+      result += `Fecha: ${currentDate}\nCosto: ${recurrentSpend.amount}
+      `
+      break
+    case "en":
+      result += `Date: ${currentDate}\nAmount: ${recurrentSpend.amount}
+      `
+      break
+    default:
+      throw new Error(`Invalid language ${recurrentSpendsLanguage}, allowed values are 'es' or 'en'}`)
+  }
+
+  return result
+}
+
+function buildRecurrentSpendRow(recurrentSpend: RecurrentSpend, now: Date, taskId: string): any[] {
+  const row = Array(Object.keys(spreadSheets.main.sheets.recurrentSpends.columns!).length).fill(0)
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.category - 1] = recurrentSpend.category
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.timestamp - 1] = now
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.amount - 1] = recurrentSpend.amount
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.account - 1] = recurrentSpend.account
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.taskId - 1] = taskId
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.description - 1] = recurrentSpend.description
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.completed - 1] = false
+  row[spreadSheets.main.sheets.recurrentSpends.columns!.subCategory - 1] =
+    typeof recurrentSpend.subCategory !== "undefined" ? recurrentSpend.subCategory : ""
+  return row
+}
+
+function buildRecurrentSpendHtmlMailBody(recurrentSpend: RecurrentSpend) {
+  let result = `<span>${recurrentSpend.mailBody}</span><br>`
+
+  switch (recurrentSpendsLanguage) {
     case "es":
       result += `<span>Fecha: ${formatDate(new Date(), 1)}</span><br>`
       break
@@ -319,7 +374,7 @@ function buildRecurrentSpendHtmlMailBody(language: string, template: string) {
       result += `<span>Date: ${formatDate(new Date(), 1)}</span><br>`
       break
     default:
-      throw new Error(`Invalid language ${language}, allowed values are 'es' or 'en'}`)
+      throw new Error(`Invalid language ${recurrentSpendsLanguage}, allowed values are 'es' or 'en'}`)
   }
 
   return result
