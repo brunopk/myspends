@@ -30,7 +30,7 @@ function listAllTasks(taskListId: string): tasks_v1.Schema$Task[] {
   // Full sync
 
   do {
-    tasks = Tasks.Tasks?.list(taskListId, { showHidden: true })
+    tasks = Tasks.Tasks?.list(taskListId, { showHidden: true, pageToken })
     tasks?.items?.forEach((task) => allTasks.push(task))
     pageToken = tasks?.nextPageToken
   } while (pageToken)
