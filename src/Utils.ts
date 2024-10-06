@@ -379,3 +379,25 @@ function buildRecurrentSpendHtmlMailBody(recurrentSpend: RecurrentSpend) {
 
   return result
 }
+
+function validateRecurrentSpend(recurrentSpend: RecurrentSpend) {
+  if (![manualRecurrentSpend, automaticRecurrentSpend].includes(recurrentSpend.type)) {
+    throw new Error(`Invalid recurrent spend type "${recurrentSpend.type}"`)
+  }
+
+  if (recurrentSpend.sendTask && typeof recurrentSpend.taskTitle === "undefined") {
+    throw new Error(`No taskTitle defined for recurrent spend ${JSON.stringify(recurrentSpend)}`)
+  }
+
+  if (recurrentSpend.sendTask && typeof recurrentSpend.taskDescription === "undefined") {
+    throw new Error(`No taskDescription defined for recurrent spend ${JSON.stringify(recurrentSpend)}`)
+  }
+
+  if (recurrentSpend.sendMail && typeof recurrentSpend.mailBody === "undefined") {
+    throw new Error(`No mailBody defined for recurrent spend ${JSON.stringify(recurrentSpend)}`)
+  }
+
+  if (recurrentSpend.sendMail && typeof recurrentSpend.mailSubject === "undefined") {
+    throw new Error(`No mailSubject defined for recurrent spend ${JSON.stringify(recurrentSpend)}`)
+  }
+}
