@@ -18,7 +18,15 @@
     const subCategorySelect = document.getElementsByName("subcategory")[0];
     let subCategoryList = [defaultSubCategory];
     if (selectedCategory !== defaultCategory) {
-      subCategoryList = Object.keys(categoryTree[selectedCategory]).sort();
+      const allSubcategories = Object.keys(categoryTree[selectedCategory])
+      if (allSubcategories.includes(defaultSubCategory)) {
+        subCategoryList = allSubcategories.filter(subCategory => subCategory !== defaultSubCategory)
+        subCategoryList.sort()
+        subCategoryList.push(defaultCategory)
+      } else {
+        allSubcategories.sort()
+        subCategoryList = allSubcategories
+      }
     }
 
     populateSelect(subCategorySelect, subCategoryList, subCategoryList[0]);
