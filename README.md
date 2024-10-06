@@ -42,7 +42,7 @@
    - `*.sheets.*.columns` may have the `Reimbursement` (or `Devolución`) key.
    - Values on `*.class` must match with a spread sheet handler (classes in *src/spreadsheets* that extends from `BaseSpreadSheetHandler`).
    - Values on `*.sheets.*.class` must match with a sheet handler (classes in *src/spreadsheets* that extends from `BaseSheetHandler`).
-3. Copy the content of *html/GSite.html* to the corresponding part of the Google Site in order to edit the web interface. Take into account that available options for dropdowns in Google Forms must match with options in the HTML.
+3. Copy the content of *html/GSite.html* to Google Site and follow instructions in section "Google Site" below.
 4. Upload the content :
 
    ```shell
@@ -53,8 +53,24 @@
 
 ---
 
+## Google Site
+
+After copying the HTML edit the following constants :
+
+- `categoryTree` (categories and subcategories must match with names in sheets).
+- `defaultCategory` 
+- `defaultSubCategory` (this is the default sub-category. It may also appear in the categoryTree if, for example, a category includes this default sub-category, but it is not mandatory)
+- `defaultAccountList`
+- `forms`
+
+---
+
 When creating spreadsheets and sheets don't forget :
 
 - Category sheets within the *Monthly* spreadsheet **must be** named with valid category names.
 - Account sheets withing the *Monthly* spreadsheet **must be** named with valid account names.
 - The last column for all sheets is the total column.
+
+---
+
+
