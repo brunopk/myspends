@@ -51,8 +51,6 @@
 
 5. Set the corresponding triggers for Google Apps Script (function `processGoogleFormInput`).
 
----
-
 ## Google Site
 
 After copying the HTML edit the following constants :
@@ -63,14 +61,10 @@ After copying the HTML edit the following constants :
 - `defaultAccountList`
 - `forms`
 
----
+## Spread sheets
 
 When creating spreadsheets and sheets don't forget :
 
 - Category sheets within the *Monthly* spreadsheet **must be** named with valid category names.
 - Account sheets withing the *Monthly* spreadsheet **must be** named with valid account names.
 - The last column for all sheets is the total column.
-
----
-
-
