@@ -298,8 +298,10 @@ function sameDates(a: Date, b: Date): boolean {
 function createRecurrentSpendTask(recurrentSpend: RecurrentSpend): string {
   const now = new Date()
   const taskId = createTask(recurrentSpendsTaskList, recurrentSpend.taskTitle, now)
-  const taskDescription = buildRecurrentSpendTaskDescription(recurrentSpend, taskId)
+  const taskDescription = buildRecurrentSpendTaskDescription(recurrentSpend)
+  const taskTitle = buildRecurrentSpendTaskTitle(recurrentSpend, taskId)
   updateTaskDescription(recurrentSpendsTaskList, taskId, taskDescription)
+  updateTaskTitle(recurrentSpendsTaskList, taskId, taskTitle)
   return taskId
 }
 
@@ -329,9 +331,9 @@ function extractAmountFromRecurrentSpendTask(task: tasks_v1.Schema$Task): number
   }
 }
 
-function buildRecurrentSpendTaskDescription(recurrentSpend: RecurrentSpend, taskId: string) {
+function buildRecurrentSpendTaskDescription(recurrentSpend: RecurrentSpend) {
   const currentDate = formatDate(new Date())
-  let result = `${recurrentSpend.taskDescription}\n\nTask ID: ${taskId}\n`
+  let result = `${recurrentSpend.taskDescription}\n\n`
 
   switch (recurrentSpendsLanguage) {
     case "es":
@@ -347,6 +349,10 @@ function buildRecurrentSpendTaskDescription(recurrentSpend: RecurrentSpend, task
   }
 
   return result
+}
+
+function buildRecurrentSpendTaskTitle(recurrentSpend: RecurrentSpend, taskId: string) {
+  return `${recurrentSpend.taskTitle} (${taskId})`
 }
 
 function buildRecurrentSpendRow(recurrentSpend: RecurrentSpend, now: Date, taskId: string): any[] {
