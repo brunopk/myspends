@@ -369,8 +369,9 @@ function buildRecurrentSpendRow(recurrentSpend: RecurrentSpend, now: Date, taskI
   return row
 }
 
-function buildRecurrentSpendHtmlMailBody(recurrentSpend: RecurrentSpend) {
-  let result = `<span>${recurrentSpend.mailBody}</span><br>`
+function buildRecurrentSpendHtmlMailBody(recurrentSpend: RecurrentSpend, recurrentSpendTaskId: string) {
+  let result = `<span>${recurrentSpend.mailBody}</span><br><br>`
+  result += `<span>Task ID: ${recurrentSpendTaskId}</span><br>`
 
   switch (recurrentSpendsLanguage) {
     case "es":
