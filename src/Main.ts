@@ -64,12 +64,12 @@ function processGoogleFormInput() {
 function processRecurrentSpends() {
   const now = new Date()
   for (let i = 0; i < recurrentSpends.length; i++) {
+    validateRecurrentSpend(recurrentSpends[i])
+  }
+
+  for (let i = 0; i < recurrentSpends.length; i++) {
     const recurrentSpend = recurrentSpends[i]
     if (now.getDate() == recurrentSpend.dayOfMonth) {
-      if (![manualRecurrentSpend, automaticRecurrentSpend].includes(recurrentSpend.type)) {
-        throw new Error(`Invalid recurrent spend type "${recurrentSpend.type}"`)
-      }
-
       let taskId: string | undefined
       if (recurrentSpend.sendTask) {
         taskId = createRecurrentSpendTask(recurrentSpend)
@@ -104,7 +104,7 @@ function processRecurrentSpends() {
 
       if (recurrentSpend.sendMail) {
         console.info(`Sending mail to "${recurrentSpendsMailRecipient}".`)
-        const htmlBody = buildRecurrentSpendHtmlMailBody(recurrentSpend)
+        const htmlBody = buildRecurrentSpendHtmlMailBody(recurrentSpend, taskId)
         MailApp.sendEmail(recurrentSpendsMailRecipient, recurrentSpend.mailSubject, "", { htmlBody })
       } else {
         console.log("Not sending mails")

@@ -57,6 +57,11 @@ function updateTaskDescription(taskListId: string, taskId: string, description: 
   Tasks.Tasks?.patch({ notes: description }, taskListId, taskId)
 }
 
+function updateTaskTitle(taskListId: string, taskId: string, title: string) {
+  console.info(`Changing task title for task ${taskId} of task list ${taskListId}`)
+  Tasks.Tasks?.patch({ title }, taskListId, taskId)
+}
+
 function completeTask(taskListId: string, taskId: string) {
   Tasks.Tasks?.patch({ status: "completed", completed: new Date().toISOString() }, taskListId, taskId)
   console.info(`Task ${taskId} on task list ${taskListId} was marked as completed`)

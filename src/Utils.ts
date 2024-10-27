@@ -298,8 +298,10 @@ function sameDates(a: Date, b: Date): boolean {
 function createRecurrentSpendTask(recurrentSpend: RecurrentSpend): string {
   const now = new Date()
   const taskId = createTask(recurrentSpendsTaskList, recurrentSpend.taskTitle, now)
-  const taskDescription = buildRecurrentSpendTaskDescription(recurrentSpend, taskId)
+  const taskDescription = buildRecurrentSpendTaskDescription(recurrentSpend)
+  const taskTitle = buildRecurrentSpendTaskTitle(recurrentSpend, taskId)
   updateTaskDescription(recurrentSpendsTaskList, taskId, taskDescription)
+  updateTaskTitle(recurrentSpendsTaskList, taskId, taskTitle)
   return taskId
 }
 
@@ -329,9 +331,9 @@ function extractAmountFromRecurrentSpendTask(task: tasks_v1.Schema$Task): number
   }
 }
 
-function buildRecurrentSpendTaskDescription(recurrentSpend: RecurrentSpend, taskId: string) {
+function buildRecurrentSpendTaskDescription(recurrentSpend: RecurrentSpend) {
   const currentDate = formatDate(new Date())
-  let result = `${recurrentSpend.taskDescription}\n\nTask ID: ${taskId}\n`
+  let result = `${recurrentSpend.taskDescription}\n\n`
 
   switch (recurrentSpendsLanguage) {
     case "es":
@@ -349,6 +351,10 @@ function buildRecurrentSpendTaskDescription(recurrentSpend: RecurrentSpend, task
   return result
 }
 
+function buildRecurrentSpendTaskTitle(recurrentSpend: RecurrentSpend, taskId: string) {
+  return `${recurrentSpend.taskTitle} (${taskId})`
+}
+
 function buildRecurrentSpendRow(recurrentSpend: RecurrentSpend, now: Date, taskId: string): any[] {
   const row = Array(Object.keys(spreadSheets.main.sheets.recurrentSpends.columns!).length).fill(0)
   row[spreadSheets.main.sheets.recurrentSpends.columns!.category - 1] = recurrentSpend.category
@@ -363,8 +369,9 @@ function buildRecurrentSpendRow(recurrentSpend: RecurrentSpend, now: Date, taskI
   return row
 }
 
-function buildRecurrentSpendHtmlMailBody(recurrentSpend: RecurrentSpend) {
-  let result = `<span>${recurrentSpend.mailBody}</span><br>`
+function buildRecurrentSpendHtmlMailBody(recurrentSpend: RecurrentSpend, recurrentSpendTaskId: string) {
+  let result = `<span>${recurrentSpend.mailBody}</span><br><br>`
+  result += `<span>Task ID: ${recurrentSpendTaskId}</span><br>`
 
   switch (recurrentSpendsLanguage) {
     case "es":
@@ -378,4 +385,26 @@ function buildRecurrentSpendHtmlMailBody(recurrentSpend: RecurrentSpend) {
   }
 
   return result
+}
+
+function validateRecurrentSpend(recurrentSpend: RecurrentSpend) {
+  if (![manualRecurrentSpend, automaticRecurrentSpend].includes(recurrentSpend.type)) {
+    throw new Error(`Invalid recurrent spend type "${recurrentSpend.type}"`)
+  }
+
+  if (recurrentSpend.sendTask && typeof recurrentSpend.taskTitle === "undefined") {
+    throw new Error(`No taskTitle defined for recurrent spend ${JSON.stringify(recurrentSpend)}`)
+  }
+
+  if (recurrentSpend.sendTask && typeof recurrentSpend.taskDescription === "undefined") {
+    throw new Error(`No taskDescription defined for recurrent spend ${JSON.stringify(recurrentSpend)}`)
+  }
+
+  if (recurrentSpend.sendMail && typeof recurrentSpend.mailBody === "undefined") {
+    throw new Error(`No mailBody defined for recurrent spend ${JSON.stringify(recurrentSpend)}`)
+  }
+
+  if (recurrentSpend.sendMail && typeof recurrentSpend.mailSubject === "undefined") {
+    throw new Error(`No mailSubject defined for recurrent spend ${JSON.stringify(recurrentSpend)}`)
+  }
 }
