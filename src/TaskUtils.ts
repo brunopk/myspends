@@ -22,7 +22,6 @@ function listTaskLists() {
  * @param taskList
  */
 function listAllTasks(taskListId: string): tasks_v1.Schema$Task[] {
-  const now = new Date().toISOString()
   const allTasks: tasks_v1.Schema$Tasks[] = []
   let pageToken: string | null | undefined = null
   let tasks: tasks_v1.Schema$Tasks | undefined

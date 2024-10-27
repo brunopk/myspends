@@ -314,10 +314,10 @@ function extractAmountFromRecurrentSpendTask(task: tasks_v1.Schema$Task): number
   let regex
   switch (recurrentSpendsLanguage) {
     case "es":
-      regex = /.*\s+Task\s+ID\s*:\s*\w+\s+Fecha\s*:\s*\d{1,2}\/\d{1,2}\/\d{4}\s+Costo\s*:\s*(\d+)/
+      regex = /.*\s+Fecha\s*:\s*\d{1,2}\/\d{1,2}\/\d{4}\s+Costo\s*:\s*(\d+)/
       break
     case "en":
-      regex = /.*\s+Task\s+ID\s*:\s*\w+\s+Date\s*:\s*\d{1,2}\/\d{1,2}\/\d{4}\s+Amount\s*:\s*(\d+)/
+      regex = /.*\s+Date\s*:\s*\d{1,2}\/\d{1,2}\/\d{4}\s+Amount\s*:\s*(\d+)/
       break
     default:
       throw new Error(`Invalid language ${recurrentSpendsLanguage}, allowed values are 'es' or 'en'}`)
