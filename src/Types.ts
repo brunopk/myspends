@@ -53,3 +53,8 @@ type FormConfig = {
   readonly spreadSheetName: string
   readonly sheets: { [name: string]: SheetConfig }
 }
+
+type HistoricDataMail = {
+  readonly htmlBody: string
+  readonly options: GoogleAppsScript.Mail.MailAdvancedParameters
+}

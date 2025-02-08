@@ -13,6 +13,8 @@ const automaticRecurrentSpend = "Automatic"
 const manualRecurrentSpend = "Manual"
 
 /*************************************************************************************************************************/
+/*                                      FUNCTIONS TRIGGERED AFTER FORM COMPLETION                                        */
+/*************************************************************************************************************************/
 
 function processGoogleFormInput() {
   const range = SpreadsheetApp.getActiveRange()
@@ -114,6 +116,8 @@ function processRecurrentSpends() {
 }
 
 /*************************************************************************************************************************/
+/*                                       FUNCTIONS TRIGGERED BY TIME EVENTS                                              */
+/*************************************************************************************************************************/
 
 function confirmRecurrentSpends() {
   const rows = readAllRows(spreadSheets.main.id, spreadSheets.main.sheets.recurrentSpends.name)?.slice(1)
@@ -158,6 +162,21 @@ function confirmRecurrentSpends() {
   }
 }
 
+function sendHistoricData() {
+  console.info("Building chart")
+  const chart = buildColumnChart()
+
+  console.info("Building mail")
+  const mail = buildHistoricDataMail(chart)
+
+  console.info(`Content type: ${chart.getBlob().getContentType()}`)
+
+  const mailRecipient = "brunopiaggiok@gmail.com"
+  MailApp.sendEmail(mailRecipient, "Chart", "", mail)
+}
+
+/*************************************************************************************************************************/
+/*                                      FUNCTIONS INTENDED TO BE MANUALLY TRIGGERED                                      */
 /*************************************************************************************************************************/
 
 /**
