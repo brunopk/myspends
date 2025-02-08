@@ -2,6 +2,16 @@ import { tasks_v1 } from "googleapis"
 import { sheets } from "googleapis/build/src/apis/sheets"
 
 /**
+ * Calculate saved percentage
+ * @param savedAmount use `calculateSavedAmount` to obtain this value
+ * @param income income amount
+ * @returns returns saved percentage or `undefined` if income is 0
+ */
+function calculateSavedPercentage(savedAmount: number, income: number): number {
+  return Math.round((savedAmount * 100) / income)
+}
+
+/**
  * Read and returns all rows from the reimbursements form
  */
 function getAllReimbursements(): any[][] {

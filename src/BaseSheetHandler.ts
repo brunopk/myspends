@@ -12,6 +12,11 @@ abstract class BaseSheetHandler {
 
   abstract validate(): void
 
+  // TODO: CONTINUE
+
+  // TODO: calculate the new columns here (saved amount, saved percentage, etc)
+  // TODO: change validation functions to take into account new columns
+
   processReimbursement(reimbursement: Reimbursement): void {
     if (this.spreadSheetConfig.class !== "Main") {
       const totalReimbursementColumn = getTotalReimbursementColumn(this.sheetConfig)

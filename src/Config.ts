@@ -128,6 +128,8 @@ const spreadSheets : { [name: string]: SpreadSheetConfig } = {
   }
 }
 
+const defaultIncome = 10
+
 const recurrentSpendsMailRecipient = "asd@asd.com"
 
 const recurrentSpendsTaskList = "xxx"
