@@ -14,8 +14,7 @@ abstract class BaseSheetHandler {
 
   // TODO: CONTINUE
 
-  // TODO: calculate the new columns here (saved amount, saved percentage, etc)
-  // TODO: change validation functions to take into account new columns
+  // TODO: calculate the new columns here (saved amount, saved percentage, etc) if the column "Income" etc are present
 
   processReimbursement(reimbursement: Reimbursement): void {
     if (this.spreadSheetConfig.class !== "Main") {
