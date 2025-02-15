@@ -19,11 +19,11 @@ The format for *.clasp.json* is the following:
 
 ```json
 {
-  "scriptId":"19qnNqPDCRF2qnT4dgZwHoUCzuFEjC4eY5nDzN74dEeYi8n3cckM5wdhg",
-  "rootDir":"/Users/youruser/git/mis-gastos"
+  "scriptId":"19xyz",
+  "rootDir":"/Users/user/mis-gastos"
 }
 ```
 
 ## Development
 
-Node version:** 16.17.0
+Node version: 16.17.0
