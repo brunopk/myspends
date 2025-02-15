@@ -83,15 +83,25 @@ function getValue(spreadSheetId: string, sheetName: string, row: number, column:
 }
 
 /**
- * Get value
+ * Modify a cell
+ * @param spreadSheetName .
  * @param spreadSheetId .
  * @param sheetName .
  * @param row row in the range 1..n
  * @param column column in the range 1..n
  * @returns .
  */
-function setValue(spreadSheetId: string, sheetName: string, row: number, column: number, newValue: any) {
-  console.info(`Updating cell on row ${row} and column ${column} of sheet "${sheetName}"`)
+function setValue(
+  spreadSheetName: string,
+  spreadSheetId: string,
+  sheetName: string,
+  row: number,
+  column: number,
+  newValue: any
+) {
+  console.info(
+    `Updating cell on row ${row} and column ${column} of sheet "${sheetName}" within spread sheet "${spreadSheetName}"`
+  )
   const spreadSheet = SpreadsheetApp.openById(spreadSheetId)
   const sheet = spreadSheet.getSheetByName(sheetName)
   const dataRange = sheet?.getDataRange()

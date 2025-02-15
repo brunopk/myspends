@@ -8,10 +8,8 @@
  * `groupSpendsByDatesAndCategories` in Utils.ts
  * @param groupedReimbursements result of invoking `groupReimbursementsByDatesAndSubCategories` or
  * `groupReimbursementsByDatesAndCategories` in Utils.ts
- * @param data
- * data to validate
- * @param groupingElements categories or subcategories (see `groupRowsByDatesAndSubCategories` and
- * `groupRowsByDatesAndCategories` in Utils.ts)
+ * @param data data to validate
+ * @param groupingElements may be categories, subcategories or account names
  */
 function validateSheet(
   spreadSheetConfig: SpreadSheetConfig,
@@ -92,7 +90,7 @@ function validateSheet(
   const tips: string[] = []
   if (!validationPass) {
     tips.push("Check amounts for each category")
-    tips.push(`Check category/subcategory names are correct for all spends.`)
+    tips.push(`Check category/subcategory/account names are correct for all spends.`)
     tips.push(
       `Check if the first row in sheet '${sheetConfig.name}' within spreadsheet '${spreadSheetConfig.name}' contains valid category/subcategory names`
     )
@@ -118,7 +116,14 @@ class AllCategories extends BaseSheetHandler {
 
       addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
     } else {
-      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, formatDate(spend.date))
+      setValue(
+        this.spreadSheetConfig.name,
+        this.spreadSheetConfig.id,
+        this.sheetConfig.name,
+        rowForMonth,
+        1,
+        formatDate(spend.date)
+      )
 
       const currentCategoryValue = getValue(
         this.spreadSheetConfig.id,
@@ -127,6 +132,7 @@ class AllCategories extends BaseSheetHandler {
         categoryColumn
       )
       setValue(
+        this.spreadSheetConfig.name,
         this.spreadSheetConfig.id,
         this.sheetConfig.name,
         rowForMonth,
@@ -182,7 +188,14 @@ class Category extends BaseSheetHandler {
 
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
-        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, formatDate(spend.date))
+        setValue(
+          this.spreadSheetConfig.name,
+          this.spreadSheetConfig.id,
+          this.sheetConfig.name,
+          rowForMonth,
+          1,
+          formatDate(spend.date)
+        )
 
         const currentSubcategoryTotal = getValue(
           this.spreadSheetConfig.id,
@@ -191,6 +204,7 @@ class Category extends BaseSheetHandler {
           subcategoryColumn
         )
         setValue(
+          this.spreadSheetConfig.name,
           this.spreadSheetConfig.id,
           this.sheetConfig.name,
           rowForMonth,
@@ -247,7 +261,7 @@ class Accounts extends BaseSheetHandler {
 
   constructor(spreadSheetConfig: SpreadSheetConfig, sheetConfig: SheetConfig) {
     super(spreadSheetConfig, sheetConfig)
-    this.availableAccounts = Object.keys(sheetConfig.columns!)
+    this.availableAccounts = this.getAvailableAccounts(sheetConfig)
   }
 
   processReimbursement(reimbursement: Spend): void {
@@ -269,7 +283,14 @@ class Accounts extends BaseSheetHandler {
 
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
-        setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, formatDate(spend.date))
+        setValue(
+          this.spreadSheetConfig.name,
+          this.spreadSheetConfig.id,
+          this.sheetConfig.name,
+          rowForMonth,
+          1,
+          formatDate(spend.date)
+        )
 
         const columnForAccount = this.sheetConfig.columns![spend.account]
         const currentAccountAmount = getValue(
@@ -279,6 +300,7 @@ class Accounts extends BaseSheetHandler {
           columnForAccount
         )
         setValue(
+          this.spreadSheetConfig.name,
           this.spreadSheetConfig.id,
           this.sheetConfig.name,
           rowForMonth,
@@ -288,6 +310,7 @@ class Accounts extends BaseSheetHandler {
 
         const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, totalColumn)
         setValue(
+          this.spreadSheetConfig.name,
           this.spreadSheetConfig.id,
           this.sheetConfig.name,
           rowForMonth,
@@ -296,7 +319,7 @@ class Accounts extends BaseSheetHandler {
         )
       }
     } else {
-      console.debug(
+      console.info(
         `Discarding spend ${JSON.stringify(spend)}, available accounts to process are ${JSON.stringify(
           this.availableAccounts
         )}`
@@ -306,26 +329,32 @@ class Accounts extends BaseSheetHandler {
 
   validate(): void {
     const currentSheetRows = readAllRows(this.spreadSheetConfig.id, this.sheetConfig.name)
-    const [headers, data] = [currentSheetRows?.slice(0, 1)[0], currentSheetRows?.slice(1)]
-
-    const categories = headers
-      ?.slice(1, headers.length - 1)
-      .filter((category) => category !== "Devolución" && category !== "Reimbursements")
+    const data = currentSheetRows?.slice(1)
 
     const dates = data?.map((row) => row[0])
 
     const allSpends = getAllSpends()
-    const groupedSpends = groupSpendsByDatesAndCategories(allSpends, dates!, this.sheetConfig.name, categories!)
+    const groupedSpends = groupSpendsByDatesAndAccounts(allSpends, dates!, this.availableAccounts)
 
     const allReimbursements = getAllReimbursements()
-    const groupedReimbursements = groupReimbursementsByDatesAndCategories(
+    const groupedReimbursements = groupReimbursementsByDatesAndAccounts(
       allReimbursements,
       dates!,
-      this.sheetConfig.name,
-      categories!
+      this.availableAccounts
     )
 
-    validateSheet(this.spreadSheetConfig, this.sheetConfig, groupedSpends, groupedReimbursements, data!, categories!)
+    validateSheet(
+      this.spreadSheetConfig,
+      this.sheetConfig,
+      groupedSpends,
+      groupedReimbursements,
+      data!,
+      this.availableAccounts
+    )
+  }
+
+  private getAvailableAccounts(sheetConfig: SheetConfig): string[] {
+    return Object.keys(sheetConfig.columns!).filter((columnName) => !SPECIAL_COLUMNS.includes(columnName))
   }
 }
 
