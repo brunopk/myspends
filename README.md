@@ -2,10 +2,10 @@
 
 ## How to use the App Script
 
-1. Create spread sheets (see [doc/Spreadsheets](doc/Spreadsheets.md)).
-2. Create the site with Google Sites (see [doc/Site](doc/Site.md)).
+1. [Create spread sheets](doc/Spreadsheets.md).
+2. [Create the site with Google Sites](doc/Site.md).
 3. Copy the correct project id to *.clasp.json* and upload the content to Google Apps Script with `clasp push`.
-4. Edit *src/Config.gs* on Google Apps Script with the corresponding [configurations](doc/ConfigFile.md).
+4. Edit [src/Config.gs](src/Config.ts) on Google Apps Script with the corresponding [configurations](doc/ConfigFile.md).
 5. Copy the content of *html/GSite.html* to Google Site and follow instructions in section "Google Site" below.
 6. Upload the content :
 
