@@ -2,6 +2,16 @@ import { tasks_v1 } from "googleapis"
 import { sheets } from "googleapis/build/src/apis/sheets"
 
 /**
+ * Calculate saved percentage
+ * @param savedAmount use `calculateSavedAmount` to obtain this value
+ * @param income income amount
+ * @returns returns saved percentage or `undefined` if income is 0
+ */
+function calculateSavedPercentage(savedAmount: number, income: number): number {
+  return Math.round((savedAmount * 100) / income)
+}
+
+/**
  * Read and returns all rows from the reimbursements form
  */
 function getAllReimbursements(): any[][] {
@@ -27,6 +37,18 @@ function getAllSpends(): any[][] {
     )
 
   return rows.slice(1)
+}
+
+/**
+ * Groups spends by dates and accounts (see groupRowsByDatesAndAccounts description).
+ *
+ * @param rows rows with spends from the main spreadsheet
+ * @param dates list of dates to filter and group spends as described above
+ * @param accounts acounts name to filter and group spends as described above
+ * @returns an object as described above
+ */
+function groupSpendsByDatesAndAccounts(rows: any[][], dates: Date[], accounts: string[]): object {
+  return groupRowsByDatesAndAccounts(rows, spreadSheets.main.sheets.main, dates, accounts)
 }
 
 /**
@@ -67,6 +89,19 @@ function groupSpendsByDatesAndSubCategories(
 }
 
 /**
+ * Groups reimbursements by dates and accounts provided in parameters (see groupRowsByDatesAndAccounts description).
+ *
+ * @param rows rows with spends from the main spreadsheet
+ * @param dates list of dates to filter and group spends as described above
+ * @param account account name to filter spends, or null to return spends made on any account
+ * @param categories list of categories to filter and group as described above
+ * @returns an object as described above
+ */
+function groupReimbursementsByDatesAndAccounts(rows: any[][], dates: Date[], accounts: string[]): object {
+  return groupRowsByDatesAndAccounts(rows, forms.sheets.reimbursements, dates, accounts)
+}
+
+/**
  * Groups reimbursements by dates, category and sub-categories provided in parameters (see groupRowsByDatesAndCategories
  * description).
  *
@@ -102,6 +137,60 @@ function groupReimbursementsByDatesAndSubCategories(
   subCategories: string[]
 ): object {
   return groupRowsByDatesAndSubCategories(rows, forms.sheets.reimbursements, dates, category, subCategories)
+}
+
+/**
+ * Groups rows (spends or reimbursements, both have the same columns) by dates and accounts provided in parameters.
+ * The result will be an object like this :
+ *
+ * ```
+ * {
+ *   "4/2024" : {
+ *     "account_1" : 1
+ *     "account_2" : 1
+ *   },
+ *   "5/2024" : {
+ *     "account_1" : 1,
+ *     "account_2" : 1
+ *   },
+ * }
+ * ```
+ *
+ * Notice only date and month of spends are considered for the first level keys. For example, if there are two spends one
+ * in 3/4/2024" and another in "4/4/2024", both will account for the same sub-group "4/2024".
+ *
+ *
+ * @param rows rows with spends from the main spreadsheet
+ * @param dates list of dates to filter and group spends as described above
+ * @param accounts list of accounts to filter and group as described above
+ * @returns an object as described above
+ */
+function groupRowsByDatesAndAccounts(
+  rows: any[][],
+  sheetConfig: SheetConfig,
+  dates: Date[],
+  accounts: string[]
+): object {
+  const formattedDates = dates.map((date) => formatDate(date, 2))
+
+  return rows.reduce((acc, row: any[]) => {
+    const currentFormattedDate = formatDate(row[sheetConfig.columns!.date - 1], 2)
+    const currentAccount = row[sheetConfig.columns!.account - 1]
+
+    if (formattedDates.includes(currentFormattedDate) && accounts.includes(currentAccount)) {
+      if (!acc[currentFormattedDate]) {
+        acc[currentFormattedDate] = {}
+      }
+
+      if (!acc[currentFormattedDate][currentAccount]) {
+        acc[currentFormattedDate][currentAccount] = row[sheetConfig.columns!.amount - 1]
+      } else {
+        acc[currentFormattedDate][currentAccount] =
+          acc[currentFormattedDate][currentAccount] + row[sheetConfig.columns!.amount - 1]
+      }
+    }
+    return acc
+  }, {})
 }
 
 /**

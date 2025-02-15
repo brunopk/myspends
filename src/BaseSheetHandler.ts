@@ -12,6 +12,10 @@ abstract class BaseSheetHandler {
 
   abstract validate(): void
 
+  // TODO: CONTINUE
+
+  // TODO: calculate the new columns here (saved amount, saved percentage, etc) if the column "Income" etc are present
+
   processReimbursement(reimbursement: Reimbursement): void {
     if (this.spreadSheetConfig.class !== "Main") {
       const totalReimbursementColumn = getTotalReimbursementColumn(this.sheetConfig)
@@ -63,8 +67,9 @@ abstract class BaseSheetHandler {
 
   /**
    * Get the corresponding row for the given month.
-   * @param date date from 0 to 11
-   * @returns index of the row or undefined
+   * @param year as returned by `getFullYear` method of `Date`
+   * @param month as returned by `getMonth` method of `Date`
+   * @returns index of the row or undefined if there is no row found
    */
   protected getRowForMonth(year: number, month: number): number | undefined {
     let rowForCurrentMonth: number | undefined

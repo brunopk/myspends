@@ -23,6 +23,8 @@ function getNumberOfColumns(spreadSheetId: string, sheetName: string): number {
   return allRows![0].length!
 }
 
+// TODO: actualizar README explicando estás columnas especiales  
+
 function getTotalColumn(sheetConfig: SheetConfig): number {
   const columnNumber = sheetConfig.columns!["Total"]
   if (typeof columnNumber === "undefined")
@@ -34,6 +36,34 @@ function getTotalReimbursementColumn(sheetConfig: SheetConfig): number | undefin
   let columnNumber = typeof sheetConfig.columns !== "undefined" ? sheetConfig.columns["Devolución"] : undefined
   if (typeof columnNumber === "undefined" && typeof sheetConfig.columns !== "undefined")
     columnNumber = sheetConfig.columns["Reimbursement"]
+  return columnNumber
+}
+
+function getIncomeColumn(sheetConfig: SheetConfig): number {
+  let columnNumber = typeof sheetConfig.columns !== "undefined" ? sheetConfig.columns["Ingreso"] : undefined
+  if (typeof columnNumber === "undefined" && typeof sheetConfig.columns !== "undefined")
+    columnNumber = sheetConfig.columns["Income"]
+  if (typeof columnNumber === "undefined")
+    throw new Error(`Income column not configured for sheet "${sheetConfig.name}"`)
+  return columnNumber
+}
+
+function getSavedAmountColumn(sheetConfig: SheetConfig): number {
+  let columnNumber = typeof sheetConfig.columns !== "undefined" ? sheetConfig.columns["Ahorrado"] : undefined
+  if (typeof columnNumber === "undefined" && typeof sheetConfig.columns !== "undefined")
+    columnNumber = sheetConfig.columns["Saved"]
+  if (typeof columnNumber === "undefined")
+    throw new Error(`Saved amount column not configured for sheet "${sheetConfig.name}"`)
+  return columnNumber
+}
+
+function getSavedPercentageColumn(sheetConfig: SheetConfig): number {
+  let columnNumber =
+    typeof sheetConfig.columns !== "undefined" ? sheetConfig.columns["Ahorrado (porcentaje)"] : undefined
+  if (typeof columnNumber === "undefined" && typeof sheetConfig.columns !== "undefined")
+    columnNumber = sheetConfig.columns["Saved (percentage)"]
+  if (typeof columnNumber === "undefined")
+    throw new Error(`Saved percentage column not configured for sheet "${sheetConfig.name}"`)
   return columnNumber
 }
 
@@ -53,15 +83,25 @@ function getValue(spreadSheetId: string, sheetName: string, row: number, column:
 }
 
 /**
- * Get value
+ * Modify a cell
+ * @param spreadSheetName .
  * @param spreadSheetId .
  * @param sheetName .
  * @param row row in the range 1..n
  * @param column column in the range 1..n
  * @returns .
  */
-function setValue(spreadSheetId: string, sheetName: string, row: number, column: number, newValue: any) {
-  console.info(`Updating cell on row ${row} and column ${column} of sheet "${sheetName}"`)
+function setValue(
+  spreadSheetName: string,
+  spreadSheetId: string,
+  sheetName: string,
+  row: number,
+  column: number,
+  newValue: any
+) {
+  console.info(
+    `Updating cell on row ${row} and column ${column} of sheet "${sheetName}" within spread sheet "${spreadSheetName}"`
+  )
   const spreadSheet = SpreadsheetApp.openById(spreadSheetId)
   const sheet = spreadSheet.getSheetByName(sheetName)
   const dataRange = sheet?.getDataRange()
