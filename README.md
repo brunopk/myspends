@@ -2,7 +2,7 @@
 
 **Node version:** 16.17.0
 
----
+## How to use the App Script
 
 1. Copy the correct project id to *.clasp.json* and upload the content to Google Apps Script with `clasp push`.
 2. Edit *src/Config.gs* on Google Apps Script with the corresponding [configurations](doc/ConfigFile.md).
@@ -13,6 +13,8 @@
    clasp push
    ```
 
+5. Set the corresponding triggers for Google Apps Script (function `processGoogleFormInput`).
+
 The format for *.clasp.json* is the following:
 
 ```json
@@ -21,8 +23,6 @@ The format for *.clasp.json* is the following:
   "rootDir":"/Users/youruser/git/mis-gastos"
 }
 ```
-
-1. Set the corresponding triggers for Google Apps Script (function `processGoogleFormInput`).
 
 ## Google Site
 
