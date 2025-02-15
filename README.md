@@ -13,7 +13,16 @@
    clasp push
    ```
 
-5. Set the corresponding triggers for Google Apps Script (function `processGoogleFormInput`).
+The format for *.clasp.json* is the following:
+
+```json
+{
+  "scriptId":"19qnNqPDCRF2qnT4dgZwHoUCzuFEjC4eY5nDzN74dEeYi8n3cckM5wdhg",
+  "rootDir":"/Users/youruser/git/mis-gastos"
+}
+```
+
+1. Set the corresponding triggers for Google Apps Script (function `processGoogleFormInput`).
 
 ## Google Site
 
