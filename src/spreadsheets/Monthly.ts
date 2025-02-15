@@ -108,19 +108,12 @@ class AllCategories extends BaseSheetHandler {
   processSpend(spend: Spend): void {
     const categoryColumn = this.sheetConfig.columns![spend.category]
     const totalColumn = getTotalColumn(this.sheetConfig)
-    const incomeColumn = getIncomeColumn(this.sheetConfig)
-    const savedAmountColumn = getSavedAmountColumn(this.sheetConfig)
-    const savedPercentageColumn = getSavedPercentageColumn(this.sheetConfig)
-
     const rowForMonth = this.getRowForMonth(spend.date.getFullYear(), spend.date.getMonth())
     if (!rowForMonth) {
       const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
       const newRow = Array(numberOfColumns).fill(0)
       newRow[0] = spend.date
       newRow[categoryColumn - 1] = spend.amount
-      newRow[incomeColumn - 1] = defaultIncome
-      newRow[savedAmountColumn - 1] = defaultIncome - spend.amount
-      newRow[savedPercentageColumn - 1] = calculateSavedPercentage(defaultIncome - spend.amount, defaultIncome)
       newRow[totalColumn - 1] = spend.amount
 
       addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
@@ -142,15 +135,7 @@ class AllCategories extends BaseSheetHandler {
       )
 
       const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, totalColumn)
-      const newTotal = currentTotal + spend.amount
       setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, totalColumn, currentTotal + spend.amount)
-
-      const currentIncome = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, incomeColumn)
-      const newSavedAmount = currentIncome - newTotal
-      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, savedAmountColumn, newSavedAmount)
-
-      const newSavedPercentage = calculateSavedPercentage(newSavedAmount, currentIncome)
-      setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, savedPercentageColumn, newSavedPercentage)
     }
   }
 
@@ -257,13 +242,14 @@ class Category extends BaseSheetHandler {
 
 /*************************************************************************************************************************/
 
-class Account extends BaseSheetHandler {
-  private account: string
+class Accounts extends BaseSheetHandler {
+  private availableAccounts: string[]
 
   constructor(spreadSheetConfig: SpreadSheetConfig, sheetConfig: SheetConfig) {
     super(spreadSheetConfig, sheetConfig)
-    this.account = sheetConfig.name
+    this.availableAccounts = Object.keys(sheetConfig.columns!)
   }
+
   processReimbursement(reimbursement: Spend): void {
     if (reimbursement.account == this.account) {
       super.processReimbursement(reimbursement)
@@ -271,33 +257,33 @@ class Account extends BaseSheetHandler {
   }
 
   processSpend(spend: Spend) {
-    if (spend.account === this.sheetConfig.name) {
+    if (this.availableAccounts.includes(spend.account)) {
       const rowForMonth = this.getRowForMonth(spend.date.getFullYear(), spend.date.getMonth())
       const numberOfColumns = getNumberOfColumns(this.spreadSheetConfig.id, this.sheetConfig.name)
       const totalColumn = getTotalColumn(this.sheetConfig)
       if (!rowForMonth) {
         const newRow = Array(numberOfColumns).fill(0)
         newRow[0] = spend.date
-        newRow[this.sheetConfig.columns![spend.category] - 1] = spend.amount
+        newRow[this.sheetConfig.columns![spend.account] - 1] = spend.amount
         newRow[totalColumn - 1] = spend.amount
 
         addRow(this.spreadSheetConfig.id, this.sheetConfig.name, newRow)
       } else {
         setValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, 1, formatDate(spend.date))
 
-        const columnForCategory = this.sheetConfig.columns![spend.category]
-        const currentCategoryAmount = getValue(
+        const columnForAccount = this.sheetConfig.columns![spend.account]
+        const currentAccountAmount = getValue(
           this.spreadSheetConfig.id,
           this.sheetConfig.name,
           rowForMonth,
-          columnForCategory
+          columnForAccount
         )
         setValue(
           this.spreadSheetConfig.id,
           this.sheetConfig.name,
           rowForMonth,
-          columnForCategory,
-          currentCategoryAmount + spend.amount
+          columnForAccount,
+          currentAccountAmount + spend.amount
         )
 
         const currentTotal = getValue(this.spreadSheetConfig.id, this.sheetConfig.name, rowForMonth, totalColumn)
@@ -309,6 +295,12 @@ class Account extends BaseSheetHandler {
           currentTotal + spend.amount
         )
       }
+    } else {
+      console.debug(
+        `Discarding spend ${JSON.stringify(spend)}, available accounts to process are ${JSON.stringify(
+          this.availableAccounts
+        )}`
+      )
     }
   }
 
@@ -344,22 +336,28 @@ class Account extends BaseSheetHandler {
 class Monthly extends BaseSpreadSheetHandler {
   constructor(spreadSheetConfig: SpreadSheetConfig) {
     const sheetHandlers: BaseSheetHandler[] = []
+
     Object.keys(spreadSheetConfig.sheets).forEach((key) => {
       const sheetConfig = spreadSheetConfig.sheets[key]
+
       switch (sheetConfig.class) {
         case "AllCategories":
           sheetHandlers.push(new AllCategories(spreadSheetConfig, sheetConfig))
           break
+
         case "Category":
           sheetHandlers.push(new Category(spreadSheetConfig, sheetConfig))
           break
-        case "Account":
-          sheetHandlers.push(new Account(spreadSheetConfig, sheetConfig))
+
+        case "Accounts":
+          sheetHandlers.push(new Accounts(spreadSheetConfig, sheetConfig))
           break
+
         default:
           throw new Error(`Unknown sheet class "${sheetConfig.class}"`)
       }
     })
+
     super(spreadSheetConfig, sheetHandlers)
   }
 }
