@@ -369,24 +369,6 @@ function buildRecurrentSpendRow(recurrentSpend: RecurrentSpend, now: Date, taskI
   return row
 }
 
-function buildRecurrentSpendHtmlMailBody(recurrentSpend: RecurrentSpend, recurrentSpendTaskId: string) {
-  let result = `<span>${recurrentSpend.mailBody}</span><br><br>`
-  result += `<span>Task ID: ${recurrentSpendTaskId}</span><br>`
-
-  switch (recurrentSpendsLanguage) {
-    case "es":
-      result += `<span>Fecha: ${formatDate(new Date(), 1)}</span><br>`
-      break
-    case "en":
-      result += `<span>Date: ${formatDate(new Date(), 1)}</span><br>`
-      break
-    default:
-      throw new Error(`Invalid language ${recurrentSpendsLanguage}, allowed values are 'es' or 'en'}`)
-  }
-
-  return result
-}
-
 function validateRecurrentSpend(recurrentSpend: RecurrentSpend) {
   if (![manualRecurrentSpend, automaticRecurrentSpend].includes(recurrentSpend.type)) {
     throw new Error(`Invalid recurrent spend type "${recurrentSpend.type}"`)

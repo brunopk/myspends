@@ -13,6 +13,8 @@ const automaticRecurrentSpend = "Automatic"
 const manualRecurrentSpend = "Manual"
 
 /*************************************************************************************************************************/
+/*                                      FUNCTIONS TRIGGERED AFTER FORM COMPLETION                                        */
+/*************************************************************************************************************************/
 
 function processGoogleFormInput() {
   const range = SpreadsheetApp.getActiveRange()
@@ -114,6 +116,8 @@ function processRecurrentSpends() {
 }
 
 /*************************************************************************************************************************/
+/*                                       FUNCTIONS TRIGGERED BY TIME EVENTS                                              */
+/*************************************************************************************************************************/
 
 function confirmRecurrentSpends() {
   const rows = readAllRows(spreadSheets.main.id, spreadSheets.main.sheets.recurrentSpends.name)?.slice(1)
@@ -158,6 +162,41 @@ function confirmRecurrentSpends() {
   }
 }
 
+function sendReport() {
+  console.info("Building chart")
+  /*const chart = buildColumnChart(
+    [
+      [23, 3, 4],
+      [24, 6, 8]
+    ],
+    "Chart",
+    ["Month 1", "Month 2"],
+    ["Category 1", "Category 2", "Category 3"],
+    "Month"
+  )*/
+
+  const chart = buildLineChart(
+    [
+      [1, 1],
+      [2, 3]
+    ],
+    "Label 1",
+    "Chart",
+    "X Axis",
+    "Y Axis"
+  )
+
+  console.info("Building mail")
+  const mail = buildHistoricDataMail(chart)
+
+  console.info(`Content type: ${chart.getBlob().getContentType()}`)
+
+  const mailRecipient = "brunopiaggiok@gmail.com"
+  MailApp.sendEmail(mailRecipient, "Chart", "", mail)
+}
+
+/*************************************************************************************************************************/
+/*                                      FUNCTIONS INTENDED TO BE MANUALLY TRIGGERED                                      */
 /*************************************************************************************************************************/
 
 /**
