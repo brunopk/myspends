@@ -1,19 +1,19 @@
 # Mis gastos
 
-**Node version:** 16.17.0
-
 ## How to use the App Script
 
-1. Copy the correct project id to *.clasp.json* and upload the content to Google Apps Script with `clasp push`.
-2. Edit *src/Config.gs* on Google Apps Script with the corresponding [configurations](doc/ConfigFile.md).
-3. Copy the content of *html/GSite.html* to Google Site and follow instructions in section "Google Site" below.
-4. Upload the content :
+1. Create spread sheets (see [doc/Spreadsheets](doc/Spreadsheets.md)).
+2. Create the site with Google Sites (see [doc/Site](doc/Site.md)).
+3. Copy the correct project id to *.clasp.json* and upload the content to Google Apps Script with `clasp push`.
+4. Edit *src/Config.gs* on Google Apps Script with the corresponding [configurations](doc/ConfigFile.md).
+5. Copy the content of *html/GSite.html* to Google Site and follow instructions in section "Google Site" below.
+6. Upload the content :
 
    ```shell
    clasp push
    ```
 
-5. Set the corresponding triggers for Google Apps Script (function `processGoogleFormInput`).
+7. Set the corresponding triggers for Google Apps Script (function `processGoogleFormInput`).
 
 The format for *.clasp.json* is the following:
 
@@ -24,22 +24,6 @@ The format for *.clasp.json* is the following:
 }
 ```
 
-## Google Site
+## Development
 
-After copying the HTML edit the following constants :
-
-- `categoryTree` (categories and subcategories must match with names in sheets).
-- `defaultCategory` 
-- `defaultSubCategory` (this is the default sub-category. It may also appear in the categoryTree if, for example, a category includes this default sub-category, but it is not mandatory)
-- `defaultAccountList`
-- `forms`
-
-## Spread sheets
-
-When creating spreadsheets and sheets don't forget :
-
-- Category sheets within the *Monthly* spreadsheet **must be** named with valid category names.
-- Account sheets withing the *Monthly* spreadsheet **must be** named with valid account names.
-- The last column for all sheets is the total column.
-
-For more information refer to [doc/Spreadsheets](doc/Spreadsheets.md).
+Node version:** 16.17.0
